@@ -19,14 +19,14 @@ adjust.qdevs <- function(parfile,projrep,psfish=14:17,SCALE=1,FY=2010)
 x <-projrep$Rlz.t.fsh[,-1] # take off the first column now to make it line up
 xx <- projrep$nRlz.fsh 
 # need to identify the fisheries to look at and find their catchability groups
-qrows <- SKJ$projpar$ffl[psfish,29]
+qrows <- parfile$ffl[psfish,29]
 # number of groups
-nqgrps <- max(SKJ$projpar$ffl[,29])
+nqgrps <- max(parfile$ffl[,29])
 # number of fishing realizations per group
 nqgrpreal <- rep(NA,nqgrps)
 for(i in 1:nqgrps)
 {
-tmp <- unique(as.vector(x[SKJ$projpar$ffl[,29]==i,]))
+tmp <- unique(as.vector(x[parfile$ffl[,29]==i,]))
 nqgrpreal[i] <- length(tmp[!is.na(tmp)])
 }
 
