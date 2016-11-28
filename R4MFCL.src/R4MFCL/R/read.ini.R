@@ -5,6 +5,7 @@ read.ini <- function(ini.file)
 ##============================================================================
 {
   a <- readLines(ini.file)
+  a <- a[nchar(a)>=1]     #get rid of blank lines 
   hpts <- grep("^#",a)
   ini.obj <- list()
  
