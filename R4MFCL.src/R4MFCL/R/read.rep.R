@@ -6,61 +6,152 @@ read.rep <- function(rep.file) {
   # SDH October 2011 - adapt for projections ##
   # NMD November 2011 - small fix for input of NexpbyYrFsh
   # SDH September 2013 - added yrs and alltimes. Won't cover all options, but will save calculating each time they're needed.
+  # YT  Feb./March 2017 Update for multi-species/sex model
+  require(magrittr)
+  datfromstr<-function (datstring)
+  {
+ #   print(datstring)
+ #   return(as.numeric(unlist(strsplit(trimws(datstring), split = "[[:blank:]]+"))))  # trimws is avalable from  R >=3.2.0
+    out<-if(length(datstring)>1){
+      datstring %>% trimws() %>% strsplit(split = "[[:blank:]]+") %>% sapply(.,"as.numeric",USE.NAMES =FALSE,simplify="array") %>%t()
+    }else{
+      datstring %>% trimws() %>% strsplit(split = "[[:blank:]]+") %>% "[["(1) %>% as.numeric()
+    }
+    return(out)
+  }
   a <- readLines(rep.file)
+  # Identify version number of plot.rep file
+  viewerVer<-strsplit(a[2],split=" +")[[1]][2]
+  viewerVer.num<-as.numeric(viewerVer)
   # find startpoint
-  pos1 <- grep("Observed spawning Biomass",a) ;  top <- a[1:pos1]
+ # pos1 <- grep("Observed spawning Biomass",a) ;  top <- a[1:pos1]
   # find endppoint
-  pos2 <- grep("F at MSY",a) ; rem <- a[(pos1+1):length(a)]
+#  pos2 <- grep("F at MSY",a) ; rem <- a[(pos1+1):length(a)] # YT, 2017/02//27, I do not know if this line i necessary. For the time being, it is commented out
   # load data
-  pos1 <- grep("# Number of time periods",a) ; nTimes <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-  pos1 <- grep("# Year 1",a) ; Year1 <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-  pos1 <- grep("# Number of regions",a) ; nReg <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-  pos1 <- grep("# Number of age classes",a) ; nAges <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-  pos1 <- grep("# Number of recruitments per year",a) ; nRecs.yr <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-  pos1 <- grep("# Number of fisheries",a) ; nFisheries <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-  pos1 <- grep("# Number of realizations per fishery",a) ; nRlz.fsh <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-  pos1 <- grep("# Region for each fishery",a) ; Region.fsh <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-c(1)])
+  frqfilename<-strsplit(a[3],split=" +")[[1]][5]
+  pos1 <- grep("# Number of time periods",a) ; nTimes <- datfromstr(a[pos1+1]) # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  pos1 <- grep("# Year 1",a) ; Year1 <- datfromstr(a[pos1+1]) #as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  pos1 <- grep("# Number of regions",a) ; nReg <- datfromstr(a[pos1+1]) #as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+
+  if(viewerVer.num>=3){pos1 <- grep("# Number of species",a); nSp<-1 ; nSp <- datfromstr(a[pos1+1]) }else{nSp<- 1 }
+  if(viewerVer.num>=4){pos1 <- grep("# Multi species pointer",a) ; spPtr<-NA; spPtr <- datfromstr(a[pos1+1]) }else{spPtr<-NA}
+  if(viewerVer.num>=4){pos1 <- grep("# Species sex pointer",a) ; spSexPtr<-NA; spSexPtr <- datfromstr(a[pos1+1]) }else{spSexPtr<-NA}
+  pos1 <- grep("# Number of age classes",a) ; nAges <- datfromstr(a[pos1+1]) # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  if(viewerVer.num>=3){pos1 <- grep("# Regions species pointer",a) ; regSpPtr<-NA; regSpPtr <- datfromstr(a[pos1+1]) }else{regSpPtr<-NA}
+  pos1 <- grep("# Number of recruitments per year",a) ; nRecs.yr <- datfromstr(a[pos1+1]) # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  pos1 <- grep("# Number of fisheries",a) ; nFisheries <- datfromstr(a[pos1+1]) # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  pos1 <- grep("# Number of realizations per fishery",a) ; nRlz.fsh <- datfromstr(a[pos1+1]) # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+#  cat("L44 in read.rep.r ;")
+  pos1 <- grep("# Region for each fishery",a) ; Region.fsh <- datfromstr(a[pos1+1]) #as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-c(1)])
   pos1 <- grep("# Time of each realization by fishery",a) ; Rlz.t.fsh <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh))
-    for (i in 1:nFisheries) { Rlz.t.fsh[i,1:nRlz.fsh[i]] <- as.numeric(unlist(strsplit(a[pos1+i],split="[[:blank:]]+"))[-1]) }
-  pos1 <- grep("# Mean lengths at age",a) ; mean.LatAge <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-  pos1 <- grep("# SD of length at age",a) ; sd.LatAge <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-  pos1 <- grep("# Mean weights at age",a) ; mean.WatAge <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-  pos1 <- grep("# Natural mortality at age",a) ; MatAge <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-  pos1 <- grep("# Selectivity by age class ",a) ; SelAtAge <- t(sapply(a[(pos1+1):(pos1+nFisheries)],datfromstr,USE.NAMES =F))
+    for (i in 1:nFisheries) {
+      Rlz.t.fsh[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i]) #as.numeric(unlist(strsplit(a[pos1+i],split="[[:blank:]]+"))[-1])
+    }
+
+#  pos1 <- grep("# Mean lengths at age",a) ; if(nSp>1)pos1<-pos1[1];mean.LatAge <- datfromstr(a[pos1+1]) #as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+#  pos1 <- grep("# SD of length at age",a) ; if(nSp>1)pos1<-pos1[1];sd.LatAge   <- datfromstr(a[pos1+1]) #as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+#  pos1 <- grep("# Mean weights at age",a) ; if(nSp>1)pos1<-pos1[1];mean.WatAge <- datfromstr(a[pos1+1]) #as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+#  if(nSp>1){
+#    for(j in 2:nSp){
+#      pos1 <- grep("# Mean lengths at age",a) ; pos1<-pos1[j];mean.LatAge <- rbind(mean.LatAge,as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1]))
+#      pos1 <- grep("# SD of length at age",a) ; pos1<-pos1[j];sd.LatAge <- rbind(sd.LatAge,as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1]))
+#      pos1 <- grep("# Mean weights at age",a) ; pos1<-pos1[j];mean.WatAge <- rbind(mean.WatAge,as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1]))
+#    }
+#  }
+
+  pos1 <- grep("# Mean lengths at age",a) ; mean.LatAge <-datfromstr(a[pos1+1])
+  pos1 <- grep("# SD of length at age",a) ; sd.LatAge   <- datfromstr(a[pos1+1]) #as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  pos1 <- grep("# Mean weights at age",a) ; mean.WatAge <- datfromstr(a[pos1+1]) #as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+
+
+  pos1 <- grep("# Natural mortality at age",a) # ;
+
+#  MatAge <- if(nSp==1){as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])}else{
+#                                                            t(sapply(stringr::str_split(stringr::str_trim(a[pos1+1:nSp]),"[[:blank:]]+"),as.numeric))
+#                                                              }
+  MatAge <- datfromstr(a[pos1+1:nSp])
+#  cat("L73 in read.rep.r ;\n")
+  pos1 <- grep("# Selectivity by age class ",a) ; SelAtAge <- datfromstr(a[(pos1+1):(pos1+nFisheries)]) # t(sapply(a[(pos1+1):(pos1+nFisheries)],datfromstr,USE.NAMES =F))
+
   pos1 <- grep("# Catchability by realization ",a) ; qAtAge <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh)) ;
-    for(i in 1:nFisheries) { qAtAge[i,1:nRlz.fsh[i]] <- as.numeric(unlist(strsplit(a[pos1+i],split="[[:blank:]]+"))[-1]) }
+    for(i in 1:nFisheries) {
+#     qAtAge[i,1:nRlz.fsh[i]] <- as.numeric(unlist(strsplit(a[pos1+i],split="[[:blank:]]+"))[-1])
+      qAtAge[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i])
+    }
   pos1 <- grep("# Catchability\\+effort dev\\. by realization ",a) ; qEdevAtAge <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh)) ;
-    for(i in 1:nFisheries) { qEdevAtAge[i,1:nRlz.fsh[i]] <- as.numeric(unlist(strsplit(a[pos1+i],split="[[:blank:]]+"))[-1]) }
-  pos1 <- grep("# Fishing mortality by age class \\(across\\) and year \\(down\\)",a) ; FbyAgeYr <- t(sapply(a[(pos1+1):(pos1+nTimes)],datfromstr,USE.NAMES =F))
+    for(i in 1:nFisheries) {
+#     qEdevAtAge[i,1:nRlz.fsh[i]] <- as.numeric(unlist(strsplit(a[pos1+i],split="[[:blank:]]+"))[-1])
+      qEdevAtAge[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i])
+    }
+
+  pos1 <- grep("# Fishing mortality by age class \\(across\\) and year \\(down\\)",a)
+  if(viewerVer.num<3){
+#    FbyAgeYr <- t(sapply(a[(pos1+1):(pos1+nTimes)],datfromstr,USE.NAMES =F,simplify="array"))
+    FbyAgeYr <- datfromstr(a[(pos1+1):(pos1+nTimes)])
+  }else{
+    FbyAgeYr <-if(nSp==1){
+ #     t(sapply(a[(pos1+2):(pos1+1+nTimes)],datfromstr,USE.NAMES =F,simplify="array"))
+      datfromstr(a[(pos1+2):(pos1+1+nTimes)])
+    }else{
+      lapply(1:nSp,function(sp){datfromstr(a[(pos1+1+sp+(sp-1)*nTimes):(pos1+sp+sp*nTimes)])})
+    }
+  }
+#  cat("L99 in read.rep;") #;browser()
   yrs  <- Year1 + (0:(nTimes-1))/nRecs.yr + ifelse(nRecs.yr==1,0,1/(2*nRecs.yr))
   alltimes  <- sort(unique(as.vector(Rlz.t.fsh)))
 
-  pos1 <- grep("# Fishing mortality by age class \\(across\\), year \\(down\\) and region \\(block\\)",a) ; FatYrAgeReg <- array(dim=c(nTimes,nAges,nReg)) ;
+  pos1 <- grep("# Fishing mortality by age class \\(across\\), year \\(down\\) and region \\(block\\)",a)
+#  cat("L48\n");browser()
+  if(viewerVer.num<3){
+    FatYrAgeReg <-array(dim=c(nTimes,nAges,nReg))
     for(j in 1:nReg) {
       pos1 <- pos1 + 1
       for(i in 1:nTimes) {
         pos1 <- pos1 + 1
+    #    cat("i,j,pos1 :",i,",",j,",",pos1,"\n")
         FatYrAgeReg[i,,j] <- as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1]) } }
-
-#  browser()
+  }else{
+    FatYrAgeReg <-lapply(1:nSp,function(sp){
+                      tmp<-array(dim=c(nTimes,nAges[sp],nReg))
+                      for(j in 1:nReg) {
+                        pos1 <- pos1 + 1
+#                        for(i in 1:nTimes) {
+#                          pos1 <- pos1 + 1
+#                          tmp[i,,j] <- datfromstr(a[pos1])
+#                        }
+#                        cat("L111\n");browser()
+                        tmp[,,j]<-datfromstr(a[pos1+1:nTimes]);pos1<-pos1+nTimes
+                      }
+                     return(tmp)
+                    })
+  }
+#  cat("L128 in read.rep.R;") #;browser()
 # SDH 2011/10/24 added 4 lines so the code works when extra comment text is added for projections
   posyr <- rep(1,nTimes)
-  if(length(grep("#   Projected",a, ignore.case = T)) > 0) {
+  if(length(grep("#   Projected",a, ignore.case = TRUE)) > 0) {
     projyrs <- grep("# Exploitable population biomass by fishery \\(across\\) and year \\(down\\)",a) - max(grep("#   Projected",a, ignore.case = T)) - 1
     posyr[nTimes-projyrs+1] <- 2
     }
-  pos1 <- grep("# Population Number by age \\(across\\), year \\(down\\) and region",a, ignore.case = T) ; NatYrAgeReg <- array(dim=c(nTimes,nAges,nReg)) ;
+  pos1 <- grep("# Population Number by age \\(across\\), year \\(down\\) and region",a, ignore.case = TRUE)
+  nAges1<-if(nSp>1){nAges[1]}else{nAges};NatYrAgeReg <- array(dim=c(nTimes,nAges1,nReg)) ;
+#  cat("L137 in read.rep.R ; ") #;browser()
+  # YT 2017/02/17 If, in the future, MFCL becomes to allow different nAges by sp/sex, this code needs to be upgrades
     for(j in 1:nReg) {
       pos1 <- pos1 + 1
       for(i in 1:nTimes) {
         pos1 <- pos1 + posyr[i] # SDH 2011/10/24 changed from  'pos1 <- pos1 + 1'
-        NatYrAgeReg[i,,j] <- as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1]) }
-      }
+ #       cat("j,i : ",j,",",i, ",pos1, posyr[i] : ", pos1,",",posyr[i], "\n") # ;browser()
+ #       ttt.tmp<-as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1]);print(ttt.tmp)
+ #       NatYrAgeReg[i,,j] <- as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1])
+        NatYrAgeReg[i,,j] <- datfromstr(a[pos1])
+     }
+    }
   if(length(pos1)==0)  {
-    pos1 <- grep("# Exploitable population by fishery \\(across\\) and year \\(down\\)",a) 
+    pos1 <- grep("# Exploitable population by fishery \\(across\\) and year \\(down\\)",a)
   } else {
     pos1 <- grep("# Exploitable population biomass by fishery \\(across\\) and year \\(down\\)",a)
   }
+#  cat("L154 in read.rep.R ;")
   if(length(pos1)!=0) NexpbyYrFsh <- t(sapply(a[(pos1+1):(pos1+nTimes)],datfromstr,USE.NAMES =F)) else NexpbyYrFsh <- NA
   pos1 <- grep("# Exploitable population in same units as catch by fishery \\(across\\) and year \\(down\\)",a) ;
   if(length(pos1)!=0) {
@@ -84,12 +175,14 @@ read.rep <- function(rep.file) {
     for(i in 1:nFisheries) { PredCPUE[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i]) }
 
   pos1 <- grep("# Yield analysis option",a) ; YieldOption <- as.numeric(a[pos1+1])
-  if(YieldOption==1)
+  SRR <- if(YieldOption==1)
   {
-    SRR <- as.numeric(unlist(strsplit(a[pos1+3],split="[[:blank:]]+"))[c(4,7,10)])
-   }
+    as.numeric(unlist(strsplit(a[pos1+3],split="[[:blank:]]+"))[c(4,7,10)])
+  }else{
+    NA
+  }
 
-  pos1 <- grep("# Observed spawning Biomass",a) ; Obs.SB <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  pos1 <- grep("# Observed spawning Biomass",a) ; Obs.SB <- datfromstr(a[pos1+1]) # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   pos1 <- grep("# Observed recruitment",a) ; Obs.R <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   pos1 <- grep("# Spawning Biomass",a) ; Pred.SB <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   pos1 <- grep("# Predicted recruitment",a) ; Pred.R <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
@@ -148,20 +241,21 @@ read.rep <- function(rep.file) {
     if(length(pos1) > 0) {
       nMPars <- grep("# Region 2",a[pos1:length(a)])[1] - 3;
       MoveRates <- array(dim=c(nMPars,nReg,nReg)) ;
-     for (i in 1:nReg) {
+      for (i in 1:nReg) {
         MoveRates[,,i] <- t(sapply(a[(pos1+2):(pos1+nMPars+1)],datfromstr,USE.NAMES =F))
         pos1 <- pos1 + nMPars + 1
         }
      } else { MoveRates <- NA }
      } else { MoveRates <- NA }
+  ## Note, lenLiks and wtLiks are not included current version of plot.rep 2017-05-12 YT
   pos1 <- grep("# length-sample components of likelihood by fishery",a) ; lenLiks <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   pos1 <- grep("# weight-sample components of likelihood by fishery",a) ; wtLiks <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-
+  ######################
   pos1 <- grep("# Total biomass in absence of fishing",a) ;
   if(length(pos1)>0) {
-    TotalBiomass.nofish <- t(sapply(a[(pos1+1):(pos1+nTimes)],datfromstr,USE.NAMES =F))
-    pos1 <- grep("# Adult biomass in absence of fishing",a)[1] ; if(length(pos1)>0) AdultBiomass.nofish <- t(sapply(a[(pos1+1):(pos1+nTimes)],datfromstr,USE.NAMES =F)) else AdultBiomass.nofish <- NA
-    pos1 <- grep("# Exploitable populations in absence of fishing",a)[1] ; if(length(pos1)>0) ExplBiomass.nofish <- t(sapply(a[(pos1+1):(pos1+nTimes)],datfromstr,USE.NAMES =F)) else ExplBiomass.nofish <- NA
+    TotalBiomass.nofish <- datfromstr(a[(pos1+1):(pos1+nTimes)]) # t(sapply(a[(pos1+1):(pos1+nTimes)],datfromstr,USE.NAMES =F))
+    pos1 <- grep("# Adult biomass in absence of fishing",a)[1] ;  AdultBiomass.nofish <-if(length(pos1)>0){datfromstr(a[(pos1+1):(pos1+nTimes)])}else{NA} # t(sapply(a[(pos1+1):(pos1+nTimes)],datfromstr,USE.NAMES =F)) else AdultBiomass.nofish <- NA
+    pos1 <- grep("# Exploitable populations in absence of fishing",a)[1] ; ExplBiomass.nofish <- if(length(pos1)>0){datfromstr(a[(pos1+1):(pos1+nTimes)])}else{NA}
     pos1 <- grep("# Predicted catch for interaction analysis",a)[1] ;
     if(length(pos1)>0) {
       PredCatch.interact <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh)) ;
@@ -188,7 +282,7 @@ read.rep <- function(rep.file) {
             MoveRates=MoveRates,
             lenLiks=lenLiks,wtLiks=wtLiks,
             TotalBiomass.nofish=TotalBiomass.nofish,AdultBiomass.nofish=AdultBiomass.nofish,ExplBiomass.nofish=ExplBiomass.nofish,
-            PredCatch.interact=PredCatch.interact)
+            PredCatch.interact=PredCatch.interact,
+            version=viewerVer.num,nSp=nSp,spPtr=spPtr,spSexPtr=spSexPtr,regSpPtr=regSpPtr,filename=rep.file,frqfilename=frqfilename)
   return(rep.obj)
   }
-  
