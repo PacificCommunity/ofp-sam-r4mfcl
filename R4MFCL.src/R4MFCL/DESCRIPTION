@@ -6,7 +6,7 @@ Description: Functions for automating the running and analysis of MULTIFAN-CL st
 Depends: lattice
 Maintainer:  Robert Scott <roberts2@spc.int>; Simon Hoyle <simon.hoyle@gmail.com> and Sam McKechnie <samm@spc.int>
 License: GPL-2
-Date: 2015-01-13
+Date: 2017-05-12
 Suggests: maps, mapdata, mapproj
 LazyLoad: Yes
 LazyData: No
