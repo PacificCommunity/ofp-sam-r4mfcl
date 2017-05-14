@@ -16,7 +16,7 @@ function(par.file) {
     return(out)
   }
   a <- readLines(par.file)
-#  cat("L9\n");browser()
+#  cat("L19\n");browser()
   pfl <- datfromstr(a[2]) # as.numeric(unlist(strsplit(a[2],split="[[:blank:]]+"))[-1])
   version<-pfl[200]
   nages <- a[5]
@@ -28,7 +28,6 @@ function(par.file) {
   nSp<-ifelse(is.na(mp.afl.ln),1,2) ## YT current code does not support multi-species model with number of species more than 2
  # cat("L29\n");browser()
   mp.afl<-if(!is.na(mp.afl.ln)){
-  #    as.numeric(unlist(strsplit(a[mp.afl.ln],split="[[:blank:]]+"))[-1])
       datfromstr(a[mp.afl.ln])
   }else{NULL}
 
@@ -49,24 +48,12 @@ function(par.file) {
     tsw <- 1
 #   load block of tag flags
     pos1 <- pos2 ; pos2 <- min(grep("# tag fish rep",a))
-#    tfl <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-#    for (i in (pos1+2):(pos2-1)) {
-#      tfl <- rbind(tfl, as.numeric(unlist(strsplit(a[i],split="[[:blank:]]+"))[-1]))
-#    }
     tfl<-datfromstr(a[(pos1+1):(pos2-1)])
 #   load block of tag fish rep
     pos1 <- pos2 ; pos2 <- grep("# tag fish rep group flags",a)
-#    trpfl <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-#    for (i in (pos1+2):(pos2-2)) {
-#      trpfl <- rbind(trpfl, as.numeric(unlist(strsplit(a[i],split="[[:blank:]]+"))[-1]))
-#    }
     trpfl<-datfromstr(a[(pos1+1):(pos2-1)])
 #   load block of tag fish rep group flags
     pos1 <- pos2 ; pos2 <- grep("# tag_fish_rep active flags",a)
-#    trpgpfl <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-#    for (i in (pos1+2):(pos2-1)) {
-#      trpgpfl <- rbind(trpgpfl, as.numeric(unlist(strsplit(a[i],split="[[:blank:]]+"))[-1]))
-#    }
     trpgpfl<-datfromstr(a[(pos1+1):(pos2-1)])
 # Check for presence of tag_fish_rep target and tag_fish_rep penalty blocks
     if(length(as.numeric(grep("# tag_fish_rep target",a))) > 0) (tsw2 <- 1)
@@ -77,47 +64,29 @@ function(par.file) {
     } else {
       pos2 <- grep("# region control flags",a)
     }
-#    trpacfl <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-#    for (i in (pos1+2):(pos2-1)) {
-#      trpacfl <- rbind(trpacfl, as.numeric(unlist(strsplit(a[i],split="[[:blank:]]+"))[-1]))
-#    }
     trpacfl<-datfromstr(a[(pos1+1):(pos2-1)])
     if(tsw2 == 1 ){
 #   load block of tag_fish_rep target
       pos1 <- pos2 ; pos2 <- grep("# tag_fish_rep penalty",a)
-#      treptarg <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-#      for (i in (pos1+2):(pos2-2)) {        # Note this is pos2-2 because there is a blank line
-#        treptarg <- rbind(treptarg, as.numeric(unlist(strsplit(a[i],split="[[:blank:]]+"))[-1]))
-#      }
       treptarg<-datfromstr(a[(pos1+1):(pos2-1)])
 #   load block of tag_fish_rep penalty
       pos1 <- pos2 ; pos2 <- grep("# region control flags",a)
-#      treppen <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-#      for (i in (pos1+2):(pos2-2)) {        # Note this is pos2-2 because there is a blank line
-#        treppen <- rbind(treppen, as.numeric(unlist(strsplit(a[i],split="[[:blank:]]+"))[-1]))
-#      }
       treppen<-datfromstr(a[(pos1+1):(pos2-1)])
     }
   } else if(length(as.numeric(grep("tag flags",a))) > 0) {   # Tag reporting rate parameter blocks - just load tag flags
 #   load block of tag flags
     tsw3 <- 1
     pos1 <- pos2 ; pos2 <- grep("# region control flags",a)
-#    tfl <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-#    for (i in (pos1+2):(pos2-1)) {
-#      tfl <- rbind(tfl, as.numeric(unlist(strsplit(a[i],split="[[:blank:]]+"))[-1]))
-#    }
     tfl<-datfromstr(a[(pos1+1):(pos2-1)])
   } else { #no tag data at all
     tsw1 <- 1
   }
 ## 13/03/2017 YT Added code to read region control flags
   pos1<-grep("# region control flags",a)+1;pos2<-ifelse(nSp>1,grep("# species flags",a)-1,grep("# percent maturity",a)-1)
- # cat("L102\n");browser()
-#  rcfl<-a[pos1:pos2] %>% str_trim() %>% str_split(pattern=" +") %>% sapply(as.numeric,simplify="array") %>% t()
+ # cat("L86\n");browser()
   rcfl<-datfromstr(a[pos1:pos2])
   sp.fl<-if(nSp>1){
     pos1<-grep("# species flags",a)+1
-#    a[pos1+0:1] %>% str_trim() %>% str_split(pattern=" +") %>% sapply(as.numeric,simplify="array") %>% t()
     datfromstr(a[pos1+0:1])
   }else{NULL}
   pos1 <- grep("# percent maturity", a)[1]+1; maturity <- as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1])
@@ -132,14 +101,11 @@ function(par.file) {
   pos1 <- grep("# relative recruitment", a)[1]+2; rel_recruitment <- datfromstr(a[pos1]) #as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1])
   if(nSp>1){pos1 <- grep("# multi-species relative recruitment", a)[1]+2; mp.rel_recruitment <- datfromstr(a[pos1])}
   pos1 <- grep("# fishery selectivity", a)[1]+1 #; selectivity <- datfromstr(a[pos1]) #as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1])
-#  cat("L96 in read.par.R ; ") #;browser()
-#  for (i in (pos1+1):(pos1+nfisheries-1)) {
-#    selectivity <- rbind(selectivity, as.numeric(unlist(strsplit(a[i],split="[[:blank:]]+"))[-1]))
-#    }
+#  cat("L104 in read.par.R ; ") #;browser()
   selectivity <- datfromstr(a[pos1:(pos1+nfisheries-1)])
   pos1 <- grep("# natural mortality coefficient", a)[1]+2; Mbase <- as.double(a[pos1])
   if(nSp>1){mp.Mbase<-as.double(a[pos1+2])}
-#  cat("L101 in read.par.R ; ");browser()
+#  cat("L108 in read.par.R ; ");browser()
   pos1 <- grep("# effort deviation coefficients", a)[1]; pos1b <- pos1+nfisheries; effdevcoffs <- datfromstr(a[(pos1+1):pos1b]) #strsplit(a[(pos1+1):pos1b],split="[[:blank:]]+")
   rowMax <- max(sapply(effdevcoffs, length))
   effdevcoffs <- do.call(rbind, lapply(effdevcoffs, function(x){ length(x) <- rowMax; as.numeric(x[2:rowMax]) }))
@@ -157,12 +123,10 @@ function(par.file) {
      mp.Lmax <- datfromstr(a[pos1+8])[1] # as.numeric(unlist(strsplit(a[pos1+8],split="[[:blank:]]+"))[1])
      mp.K    <- datfromstr(a[pos1+9])[1] # as.numeric(unlist(strsplit(a[pos1+9],split="[[:blank:]]+"))[1])
   }
-#  cat("L158 in read.par.r\n");browser()
+#  cat("L126 in read.par.r\n");browser()
   pos1 <- grep("# Variance parameters", a)[1];
-#  growth_vars <- c(as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[1]),
-#    as.numeric(unlist(strsplit(str_trim(a[pos1+2]),split="[[:blank:]]+"))[1]))
   growth_vars <-c(datfromstr(a[pos1+1])[1],datfromstr(a[pos1+2])[1])
-#  cat("L140\n");browser()
+#  cat("L129\n");browser()
   pos1 <- grep("# extra par for Richards", a)[1]; Richards <- as.double(a[pos1 + 1])
   if(nSp>1){
     mp.Richards <- as.double(a[pos1 + 5])
@@ -171,6 +135,16 @@ function(par.file) {
   M_offsets <-  datfromstr(a[pos1+4]) # as.numeric(unlist(strsplit(a[pos1+4],split="[[:blank:]]+"))[-1])
   gr_offsets <- datfromstr(a[pos1+5]) #as.numeric(unlist(strsplit(a[pos1+5],split="[[:blank:]]+"))[-1])
 
+  if(nSp>1){
+    pos1_0 <- grep("#multi-species age-class related parameters \\(age_pars\\), species:",a)
+    mp.M_offsets<-list()
+    mp.gr_offsets<-list()
+    for(sp in 2:nSp){
+      pos1<-pos1_0[sp-1]
+      mp.M_offsets[[sp]] <-  datfromstr(a[pos1+4])
+      mp.gr_offsets[[sp]] <- datfromstr(a[pos1+5])
+    }
+  }
 ## extra fishery parameters (fishpars)
 pos1<-grep("^# extra fishery parameters",a)[1]+3
 nrow<-if(version>=1052){
@@ -178,7 +152,6 @@ nrow<-if(version>=1052){
 }else{
   20
 }
-#fish_pars<- a[pos1+1:nrow-1] %>% str_trim() %>% str_split(pattern=" +") %>% sapply(as.numeric,simplify="array") %>% t()
 fish_pars<- datfromstr(a[pos1+1:nrow-1])
 pos1<-grep("# species parameters",a);sp_pars<-datfromstr(a[pos1+1:20+1])
 
@@ -250,15 +223,21 @@ pos1<-grep("# species parameters",a);sp_pars<-datfromstr(a[pos1+1:20+1])
   par.obj$version<-version
   par.obj$filename<-par.file
   par.obj$fish_pars<-fish_pars
+  par.obj$rcfl<-rcfl # region control flags
   if(nSp>1){
     par.obj$mp.Lmin<-mp.Lmin
     par.obj$mp.Lmax<-mp.Lmax
     par.obj$mp.K<-mp.K
+    par.obj$mp.Richards<-mp.Richards
     par.obj$mp.maturity<-mp.maturity
     par.obj$mp.afl<-mp.afl
     par.obj$mp.nages<-mp.nages
     par.obj$mp.rel_recruitment<-mp.rel_recruitment
     par.obj$sp_pars<-sp_pars
+    par.obj$mp.totpop<-mp.totpop
+    par.obj$mp.Mbase<-mp.Mbase
+    par.obj$mp.M_offsets<-mp.M_offsets
+    par.obj$mp.gr_offsets<-mp.gr_offsets
   }
   return(par.obj)
-  }
+}
