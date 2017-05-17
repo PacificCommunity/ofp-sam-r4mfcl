@@ -112,7 +112,7 @@ function(frq.file,frq.title="",ntop=0,fishdefs=NA) {
     fish <- data.frame(fishreg=fishreg,ctype=ctype,fishdefs)
     if(version>=6) { reg <- list(relreg=relreg,incidence=incidence,seas_reg_flags=seas_reg_flags) } else
     { reg <- list(relreg=relreg,incidence=incidence) }
-    if(version>=6) { struct <- list(nreg=nreg,nf=nf,gendiff=gendiff,ntg=ntg,yr1=yr1,ta=ta,tb=tb,tc=tc,td=td,te=te,age_inds=age_inds) } else {
+    if(version>=6) { struct <- list(nreg=nreg,nf=nf,gendiff=gendiff,ntg=ntg,yr1=yr1,ta=ta,tb=tb,tc=tc,td=td,te=te,age_inds=age_inds,nsp=nsp) } else {
       struct <- list(nreg=nreg,nf=nf,gendiff=gendiff,ntg=ntg,yr1=yr1,ta=ta,tb=tb,tc=tc,td=td,te=te) }
     struct[["nf"]] <- length(unique(mat[,4]))
     rtn <- list(frq.title=frq.title,top=top,fish=fish,reg=reg,struct=struct,dflags=dflags,mpy=mpy,mweeks=mweeks,dl=dl,mat=mat,version=te)

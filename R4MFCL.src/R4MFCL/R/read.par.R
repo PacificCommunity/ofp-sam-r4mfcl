@@ -34,7 +34,7 @@ function(par.file) {
   pos1 <- grep("fish flags",a) ; if(length(pos1)>1)pos1<-pos1[1]
   pos2 <- grep("tag flags",a) ;
   if(length(pos2)==0)   pos2 <- grep("# region control flags",a) ;
-  cat("L37 read.par.r ;") # ;browser()
+#  cat("L37 read.par.r ;") # ;browser()
   ffl<-datfromstr(a[(pos1+1):(pos2-1)])
 #  cat("L21 read.par.r ;");browser()
   nfisheries <- dim(ffl)[1]
