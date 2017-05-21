@@ -42,8 +42,8 @@ mtext(side =2, "F/Fmsy", line=4, cex=1.5)
 
 if(FRENCH)
 {
-mtext(side=4, at= 1.5, "Surpêche", line=0.5, cex=1.2)
-mtext(side=3, at= 0.5, "Surpêché", line=0.5, cex=1.2)
+mtext(side=4, at= 1.5, "Surp\u00e9che", line=0.5, cex=1.2)
+mtext(side=3, at= 0.5, "Surp\u00e9ch\u00ea", line=0.5, cex=1.2)
 }else{
 mtext(side=4, at= 1.5, "Overfishing", line=0.5, cex=1.2)
 mtext(side=3, at= 0.5, "Overfished", line=0.5, cex=1.2)
