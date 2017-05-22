@@ -139,10 +139,12 @@ read.ini1002<-function(ini.file,nSp=2,nReg=2,mpy=4,incidence=c(1,1),verbose=TRUE
   i<-i+ifelse(nSp==1,nages,sum(nages))
   ini.obj$M<-allnums[i+1:nSp-1];i<-i+nSp
   ini.obj$movemap <-allnums[i+1:mpy-1];i<-i+mpy
-  ini.obj$diffcoffs <-if(nReg==1){0}else{
-      matrix(data=allnums[i+1:length(ini.obj$movemap)*sum(incidence)*2-1],nrow=length(ini.obj$movemap)*nSp,byrow=TRUE)
+  ini.obj$diffcoffs <-if(nReg==1){
+      0
+    }else{
+      matrix(data=allnums[i+1:(length(ini.obj$movemap)*sum(incidence)*nSp)-1],nrow=length(ini.obj$movemap)*nSp,byrow=TRUE)
     }
-    i<-i+ifelse(nReg==1,nSp,2*length(ini.obj$movemap)*sum(incidence))
+    i<-i+ifelse(nReg==1,nSp,length(ini.obj$movemap)*sum(incidence)*nSp)
   nages1<-if(nSp==1){nages}else{nages[1]}
   ini.obj$age_pars <-matrix(data=allnums[i+1:(nages1*10*nSp)-1],byrow=TRUE,ncol=nages1);i<-i+nages1*10*nSp
   ini.obj$recbyreg <-if(nSp==1){allnums[i+1:nReg-1]}else{matrix(data=allnums[i+1:(nReg*nSp)-1],byrow=TRUE,ncol=nReg)};i<-i+nReg*nSp
@@ -178,6 +180,7 @@ read.ini1002<-function(ini.file,nSp=2,nReg=2,mpy=4,incidence=c(1,1),verbose=TRUE
   }
   ini.obj$Nmeanconstr <- allnums[i];i<-i+1
   # need to add codes to read mean constraints
+  ini.obj$nSp<-nSp
   return(ini.obj)
 }
 

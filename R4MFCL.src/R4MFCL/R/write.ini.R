@@ -6,6 +6,7 @@ function(ini.file,ini.obj, old.format=FALSE) {
 ##  revised, YT May 2017 for 2 sex model
 ##============================================================================
   o <- ini.obj
+  nSp<-ifelse(is.null(o$nSp),1,o$nSp)
   #a1 <- character()
   con <- file(ini.file,open="w")
   on.exit(close(con))
@@ -16,8 +17,8 @@ function(ini.file,ini.obj, old.format=FALSE) {
   if(length(o$nages)==1){
     writeLines(c("# number of age classes",o$nages),con)
   }else{
-    writeLines(c("# number of age classes",o$nages),con)
-    writeLines(c("# number of age classes (for female)",o$nages),con)
+    writeLines(c("# number of age classes",o$nages[1]),con)
+    writeLines(c("# number of age classes (for female)",o$nages[2]),con)
   }
 
   if(!is.null(o$reg.flg)){
@@ -75,10 +76,21 @@ function(ini.file,ini.obj, old.format=FALSE) {
 
 
   writeLines("# age_pars",con)
+  if(o$nSp==1){
   write.table(o$age_pars,con,quote=F,append=T,row.names=F,col.names=F)
+  }else{
+    writeLines("# age_pars",con)
+    write.table(o$age_pars[1:10,],con,quote=F,append=T,row.names=F,col.names=F)
+    writeLines("# age_pars for female",con)
+    write.table(o$age_pars[11:20,],con,quote=F,append=T,row.names=F,col.names=F)
+  }
 
-  writeLines(c("# recruitment distribution by region",paste(o$recbyreg,collapse=" ")),con)
-
+  if(o$nSp==1){
+    writeLines(c("# recruitment distribution by region",paste(o$recbyreg,collapse=" ")),con)
+  }else{
+    writeLines(c("# recruitment distribution by region",paste(o$recbyreg[1,],collapse=" ")),con)
+    writeLines(c("# recruitment distribution by region for female",paste(o$recbyreg[2,],collapse=" ")),con)
+  }
   if(length(o$nages)==1){
     writeLines(c("# The von Bertalanffy parameters",
                "# Initial  lower bound  upper bound",
@@ -107,10 +119,6 @@ function(ini.file,ini.obj, old.format=FALSE) {
                 paste(paste(o$VBLmax[1,],collapse=" ")),
                "# K (per year)",
                 paste(paste(o$VBK[1,],collapse=" ")),
-               "# Length-weight parameters",
-                paste(paste(o$LW[1,],collapse=" ")),
-               "# sv(29), steepness",
-                o$steepness[1],
                "# The von Bertalanffy parameters of female/species2",
                "# Initial  lower bound  upper bound",
                "# ML1",
@@ -119,6 +127,10 @@ function(ini.file,ini.obj, old.format=FALSE) {
                 paste(paste(o$VBLmax[2,],collapse=" ")),
                "# K (per year)",
                 paste(paste(o$VBK[2,],collapse=" ")),
+               "# Length-weight parameters",
+                paste(paste(o$LW[1,],collapse=" ")),
+               "# sv(29), steepness",
+                o$steepness[1],
                "# Length-weight parameters",
                 paste(paste(o$LW[2,],collapse=" ")),
                "# sv(29), steepness",
