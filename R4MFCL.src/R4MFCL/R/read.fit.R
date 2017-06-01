@@ -1,8 +1,9 @@
  read.fit <-
-function(fit.file) {
+function(fit.file,verbose=FALSE) {
   # Simon Hoyle March 2010
   # loads the observed and expected LF from the length.fit file by fishery and time period
-  # YT March 2017 to catch up version 2 fit file
+  # YT March-April 2017 to catch up versions 2 and 3 fit file
+  # YT June 2017 fixed for version 3 fit file with single species
 #  require(stringr)
   require(dplyr)
   require(tidyr)
@@ -60,20 +61,35 @@ function(fit.file) {
   for (f in 1:nfish) {
     if (recsperfish[f] > 0) {
       dloc <- seq(fishlocs[f]+1,by=7+pos.offset+nages,length.out=recsperfish[f])
-      dates[[f]] <- data.frame(datfromstr(a[dloc])) # data.frame(t(matrix(as.numeric(unlist(strsplit(a[dloc],split="[[:blank:]]+"))),nrow=3)))
+      dates[[f]] <- if(recsperfish[f]>1){
+        data.frame(datfromstr(a[dloc])) # data.frame(t(matrix(as.numeric(unlist(strsplit(a[dloc],split="[[:blank:]]+"))),nrow=3)))
+      }else{
+        data.frame(t(datfromstr(a[dloc])))
+      }
       if(version>2){
         spPtrloc<-seq(fishlocs[f]+2,by=7+pos.offset+nages,length.out=recsperfish[f])
-        spPtr[[f]]<-data.frame(datfromstr(a[spPtrloc])) # data.frame(t(matrix(as.numeric(unlist(strsplit(str_trim(a[spPtrloc]),split="[[:blank:]]+"))),nrow=nSp)))
+        spPtr[[f]]<-if(nSp>1){
+          data.frame(datfromstr(a[spPtrloc])) # data.frame(t(matrix(as.numeric(unlist(strsplit(str_trim(a[spPtrloc]),split="[[:blank:]]+"))),nrow=nSp)))
+        }else{
+          data.frame(t(datfromstr(a[spPtrloc])))
+        }
         smplSz[[f]]<-as.numeric(a[spPtrloc+1])
       }
+#      cat("L74\n");browser()
       obsloc <- seq(fishlocs[f]+4+pos.offset,by=7+pos.offset+nages,length.out=recsperfish[f])
-      obslf[[f]] <- data.frame(datfromstr(a[obsloc])) #data.frame(t(matrix(as.numeric(unlist(strsplit(str_trim(a[obsloc]),split="[[:blank:]]+"))),nrow=nbins)))
-      predlf[[f]] <- data.frame(datfromstr(a[obsloc+1])) # data.frame(t(matrix(as.numeric(unlist(strsplit(str_trim(a[obsloc+1]),split="[[:blank:]]+"))),nrow=nbins)))
+      if(recsperfish[f]>1){
+        obslf[[f]] <- data.frame(datfromstr(a[obsloc])) #data.frame(t(matrix(as.numeric(unlist(strsplit(str_trim(a[obsloc]),split="[[:blank:]]+"))),nrow=nbins)))
+        predlf[[f]] <- data.frame(datfromstr(a[obsloc+1])) # data.frame(t(matrix(as.numeric(unlist(strsplit(str_trim(a[obsloc+1]),split="[[:blank:]]+"))),nrow=nbins)))
+      }else{
+        obslf[[f]] <- data.frame(t(datfromstr(a[obsloc]))) #data.frame(t(matrix(as.numeric(unlist(strsplit(str_trim(a[obsloc]),split="[[:blank:]]+"))),nrow=nbins)))
+        predlf[[f]] <- data.frame(t(datfromstr(a[obsloc+1]))) # data.frame(t(matrix(as.numeric(unlist(strsplit(str_trim(a[obsloc+1]),split="[[:blank:]]+"))),nrow=nbins)))
+      }
     }
-
   }
-#  cat("L75\n");browser()
+  if(verbose){cat("L79;")}
   newdata.obs<-lapply((1:nfish)[!sapply(dates,"is.null")],function(i){
+    if(verbose)cat("L82;")
+ #   if(i==9){cat("L83\n");browser()}
     tmp<-if(version<=2){
       cbind(dates[[i]],obslf[[i]])
     }else{
@@ -92,8 +108,10 @@ function(fit.file) {
     tmp$Set<-"Obs"
     return(tmp)
   })
-#  cat("L95\n") # ;browser()
+  if(verbose)cat("L95\n") # ;browser()
   newdata.obs<-do.call("rbind",newdata.obs)
+  if(verbose)cat("L97\n") # ;browser()
+
 ###################################################
   newdata.pred<-lapply((1:nfish)[!sapply(dates,"is.null")],function(i){
     tmp<-if(version<=2){
@@ -116,8 +134,9 @@ function(fit.file) {
     tmp$Set<-"Pred"
     return(tmp)
   })
+  if(verbose)cat("L121\n") # ;browser()
   newdata.pred<-do.call("rbind",newdata.pred)
- # cat("L120 in read.fit.r\n") #;browser()
+  if(verbose)cat("L123 in read.fit.r\n") #;browser()
   newdata<-rbind(newdata.obs,newdata.pred)
 #  cat("L122\n");browser()
   colnames(newdata.pred)[1:3]<-colnames(newdata.obs)[1:3]<-colnames(newdata)[1:3]<-c("timeperiod","month","week")
