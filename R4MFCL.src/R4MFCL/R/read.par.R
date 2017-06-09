@@ -1,10 +1,11 @@
  read.par <-
-function(par.file) {
+function(par.file,DEBUG=FALSE) {
   # by Simon Hoyle June 2008
   # This is only partly built. Needs to be extended so it gets the whole par file into an object. Then do the same for write.par...
   # Nick : added sections explicitly for # tag flags; # tag fish rep; # tag fish rep group flags; # tag_fish_rep active flags; # tag_fish_rep target; # tag_fish_rep penalty
   # NMD 22/06/12 - allow instance of no tag flags or tag pars at all (e.g. striped marlin)
   # YT : 27/02/17 : Upgraded for multi species/sex model
+  # YT : 10/06/2017 : made it compatible to para file version 1042
   require(magrittr)
   datfromstr<-function (datstring)
   {
@@ -16,7 +17,7 @@ function(par.file) {
     return(out)
   }
   a <- readLines(par.file)
-#  cat("L19\n");browser()
+  cat("L19\n")#;browser()
   pfl <- datfromstr(a[2]) # as.numeric(unlist(strsplit(a[2],split="[[:blank:]]+"))[-1])
   version<-pfl[200]
   nages <- a[5]
@@ -26,7 +27,7 @@ function(par.file) {
 # 13/03/2017 YT added code to read multi-sp/sex age flags
   mp.afl.ln<-ifelse(!is.na(ax<-grep(a,pattern="# multi-species age flags")[1]+1),ax,NA)
   nSp<-ifelse(is.na(mp.afl.ln),1,2) ## YT current code does not support multi-species model with number of species more than 2
- # cat("L29\n");browser()
+  cat("L29\n") #;browser()
   mp.afl<-if(!is.na(mp.afl.ln)){
       datfromstr(a[mp.afl.ln])
   }else{NULL}
@@ -34,8 +35,8 @@ function(par.file) {
   pos1 <- grep("fish flags",a) ; if(length(pos1)>1)pos1<-pos1[1]
   pos2 <- grep("tag flags",a) ;
   if(length(pos2)==0)   pos2 <- grep("# region control flags",a) ;
-#  cat("L37 read.par.r ;") # ;browser()
   ffl<-datfromstr(a[(pos1+1):(pos2-1)])
+  cat("L37 read.par.r ;") # ;browser()
 #  cat("L21 read.par.r ;");browser()
   nfisheries <- dim(ffl)[1]
 # Check if there are the new tag report sections in the par file
@@ -83,7 +84,7 @@ function(par.file) {
   }
 ## 13/03/2017 YT Added code to read region control flags
   pos1<-grep("# region control flags",a)+1;pos2<-ifelse(nSp>1,grep("# species flags",a)-1,grep("# percent maturity",a)-1)
- # cat("L86\n");browser()
+  cat("L86\n") #;browser()
   rcfl<-datfromstr(a[pos1:pos2])
   sp.fl<-if(nSp>1){
     pos1<-grep("# species flags",a)+1
@@ -101,11 +102,11 @@ function(par.file) {
   pos1 <- grep("# relative recruitment", a)[1]+2; rel_recruitment <- datfromstr(a[pos1]) #as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1])
   if(nSp>1){pos1 <- grep("# multi-species relative recruitment", a)[1]+2; mp.rel_recruitment <- datfromstr(a[pos1])}
   pos1 <- grep("# fishery selectivity", a)[1]+1 #; selectivity <- datfromstr(a[pos1]) #as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1])
-#  cat("L104 in read.par.R ; ") #;browser()
+  cat("L104 in read.par.R ; ") #;browser()
   selectivity <- datfromstr(a[pos1:(pos1+nfisheries-1)])
   pos1 <- grep("# natural mortality coefficient", a)[1]+2; Mbase <- as.double(a[pos1])
   if(nSp>1){mp.Mbase<-as.double(a[pos1+2])}
-#  cat("L108 in read.par.R ; ");browser()
+  cat("L108 in read.par.R ; ")  #;browser()
   pos1 <- grep("# effort deviation coefficients", a)[1]; pos1b <- pos1+nfisheries; effdevcoffs <- datfromstr(a[(pos1+1):pos1b]) #strsplit(a[(pos1+1):pos1b],split="[[:blank:]]+")
   rowMax <- max(sapply(effdevcoffs, length))
   effdevcoffs <- do.call(rbind, lapply(effdevcoffs, function(x){ length(x) <- rowMax; as.numeric(x[2:rowMax]) }))
@@ -123,17 +124,19 @@ function(par.file) {
      mp.Lmax <- datfromstr(a[pos1+8])[1] # as.numeric(unlist(strsplit(a[pos1+8],split="[[:blank:]]+"))[1])
      mp.K    <- datfromstr(a[pos1+9])[1] # as.numeric(unlist(strsplit(a[pos1+9],split="[[:blank:]]+"))[1])
   }
-#  cat("L126 in read.par.r\n");browser()
+  cat("L126 in read.par.r\n") #;browser()
   pos1 <- grep("# Variance parameters", a)[1];
   growth_vars <-c(datfromstr(a[pos1+1])[1],datfromstr(a[pos1+2])[1])
-#  cat("L129\n");browser()
+  cat("L129\n") #;browser()
   pos1 <- grep("# extra par for Richards", a)[1]; Richards <- as.double(a[pos1 + 1])
+  cat("L131\n") #;browser()
   if(nSp>1){
     mp.Richards <- as.double(a[pos1 + 5])
   }
   pos1 <- grep("# age-class related parameters \\(age_pars\\)", a)[1];
   M_offsets <-  datfromstr(a[pos1+4]) # as.numeric(unlist(strsplit(a[pos1+4],split="[[:blank:]]+"))[-1])
   gr_offsets <- datfromstr(a[pos1+5]) #as.numeric(unlist(strsplit(a[pos1+5],split="[[:blank:]]+"))[-1])
+cat("L138\n") #;browser()
 
   if(nSp>1){
     pos1_0 <- grep("#multi-species age-class related parameters \\(age_pars\\), species:",a)
@@ -152,9 +155,15 @@ nrow<-if(version>=1052){
 }else{
   20
 }
+cat("L157\n") #;browser()
 fish_pars<- datfromstr(a[pos1+1:nrow-1])
+cat("L159\n") #;browser()
+if(version>1042){
 pos1<-grep("# species parameters",a);sp_pars<-datfromstr(a[pos1+1:20+1])
+}else{
 
+}
+cat("L161\n") #;browser()
 # Check for existence of new tagging inputs
   if(tsw != 0){
     if(tsw2 == 1){  # Load all tag reporting rate blocks
@@ -239,5 +248,5 @@ pos1<-grep("# species parameters",a);sp_pars<-datfromstr(a[pos1+1:20+1])
     par.obj$mp.M_offsets<-mp.M_offsets
     par.obj$mp.gr_offsets<-mp.gr_offsets
   }
-  return(par.obj)
+  return(invisible(par.obj))
 }
