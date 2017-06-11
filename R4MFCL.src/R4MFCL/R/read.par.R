@@ -158,7 +158,7 @@ nrow<-if(version>=1052){
 cat("L157\n") #;browser()
 fish_pars<- datfromstr(a[pos1+1:nrow-1])
 cat("L159\n") #;browser()
-if(version>1042){
+if(version>1046){
 pos1<-grep("# species parameters",a);sp_pars<-datfromstr(a[pos1+1:20+1])
 }else{
 

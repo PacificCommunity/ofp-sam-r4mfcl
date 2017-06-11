@@ -182,7 +182,7 @@ read.rep <- function(rep.file) {
     NA
   }
 
-  pos1 <- grep("# Observed spawning Biomass",a) ; Obs.SB <- datfromstr(a[pos1+1]) # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  pos1 <- grep("# Observed spawning Biomass",a) ; Obs.SB <- if(length(pos1)>0){datfromstr(a[pos1+1])}else{NULL} # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   pos1 <- grep("# Observed recruitment",a) ; Obs.R <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   pos1 <- grep("# Spawning Biomass",a) ; Pred.SB <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   pos1 <- grep("# Predicted recruitment",a) ; Pred.R <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
