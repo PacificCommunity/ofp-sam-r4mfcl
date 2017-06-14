@@ -86,14 +86,18 @@ function(fit.file,verbose=FALSE) {
       }
     }
   }
-  if(verbose){cat("L79;")}
+  if(verbose){cat("L89;")}
   newdata.obs<-lapply((1:nfish)[!sapply(dates,"is.null")],function(i){
-    if(verbose)cat("L82;")
+    if(verbose)cat("L91;i=",i,";")
  #   if(i==9){cat("L83\n");browser()}
     tmp<-if(version<=2){
       cbind(dates[[i]],obslf[[i]])
     }else{
+      if(dim(dates[[i]])[1]>1){
       cbind(dates[[i]],spPtr[[i]],smplSz[[i]],obslf[[i]])
+      }else{
+      cbind(dates[[i]],t(spPtr[[i]]),smplSz[[i]],obslf[[i]])
+      }
     }
     tmp$Fishery<-i
     tmp$Sp<-if(version>2){
@@ -103,21 +107,30 @@ function(fit.file,verbose=FALSE) {
     }else{
       NA
     }
+  #  if(i==9){cat("L110\n");browser()}
     if(version>2)tmp$Gender<-ifelse(fishSpPtr[i]==1,1,2)
     if(version>=2)tmp$RealFishery<-ifelse(i<=nfish,i,i-nfish)
+    colnames(tmp)[1:3]<-c("Year","Month","Week")
+    if(version>2)colnames(tmp)[4:5]<-c("Sp1","Sp2")
     tmp$Set<-"Obs"
+ #   if(i==9){cat("L110\n") #;browser()}
     return(tmp)
   })
-  if(verbose)cat("L95\n") # ;browser()
+  if(verbose)cat("L119;") # ;browser()
   newdata.obs<-do.call("rbind",newdata.obs)
-  if(verbose)cat("L97\n") # ;browser()
+  if(verbose)cat("L121;") # ;browser()
 
 ###################################################
   newdata.pred<-lapply((1:nfish)[!sapply(dates,"is.null")],function(i){
     tmp<-if(version<=2){
       cbind(dates[[i]],predlf[[i]])
     }else{
-      cbind(dates[[i]],spPtr[[i]],smplSz[[i]],predlf[[i]])
+    #  cbind(dates[[i]],spPtr[[i]],smplSz[[i]],predlf[[i]])
+      if(dim(dates[[i]])[1]>1){
+        cbind(dates[[i]],spPtr[[i]],smplSz[[i]],obslf[[i]])
+      }else{
+        cbind(dates[[i]],t(spPtr[[i]]),smplSz[[i]],obslf[[i]])
+      }
     }
 #    tmp<-cbind(dates[[i]],predlf[[i]])
 #    if(version>=2)tmp<-cbind(tmp,spPtr[[i]],smplSz[[i]])
@@ -131,12 +144,14 @@ function(fit.file,verbose=FALSE) {
     }
     if(version>2)tmp$Gender<-ifelse(fishSpPtr[i]==1,1,2)
     if(version>=2)tmp$RealFishery<-ifelse(i<=nfish,i,i-nfish)
+        colnames(tmp)[1:3]<-c("Year","Month","Week")
+    if(version>2)colnames(tmp)[4:5]<-c("Sp1","Sp2")
     tmp$Set<-"Pred"
     return(tmp)
   })
-  if(verbose)cat("L121\n") # ;browser()
+  if(verbose)cat("L152;") # ;browser()
   newdata.pred<-do.call("rbind",newdata.pred)
-  if(verbose)cat("L123 in read.fit.r\n") #;browser()
+  if(verbose)cat("L154 in read.fit.r\n") #;browser()
   newdata<-rbind(newdata.obs,newdata.pred)
 #  cat("L122\n");browser()
   colnames(newdata.pred)[1:3]<-colnames(newdata.obs)[1:3]<-colnames(newdata)[1:3]<-c("timeperiod","month","week")
