@@ -91,7 +91,7 @@ function(fit.file,verbose=FALSE,rep=NULL,overall.composition.plot=FALSE,fit=FALS
         obslf[[f]] <- data.frame(t(datfromstr(a[obsloc]))) #data.frame(t(matrix(as.numeric(unlist(strsplit(str_trim(a[obsloc]),split="[[:blank:]]+"))),nrow=nbins)))
         predlf[[f]] <- data.frame(t(datfromstr(a[obsloc+1]))) # data.frame(t(matrix(as.numeric(unlist(strsplit(str_trim(a[obsloc+1]),split="[[:blank:]]+"))),nrow=nbins)))
       }
-      if(verbose)cat("L94\n") # ;browser()
+      if(verbose)cat("L94 ; ") # ;browser()
  #     cat("f=",f,"; ",colnames(obslf[[f]]),", nbins=",nbins,"\n" )
       colnames(obslf[[f]])<-
         colnames(predlf[[f]])<-paste0("B",seq(from=binfirst,length.out=nbins,by=binwidth))
@@ -198,7 +198,7 @@ function(fit.file,verbose=FALSE,rep=NULL,overall.composition.plot=FALSE,fit=FALS
     if(verbose)cat("length(pcatch1)=",length(pcatch1),"\n")
 
     for(i in 1:length(newdata.pred)){
-      if(verbose)cat("L201 i=",i,"\n")
+      if(verbose)cat("L201 i=",i,";")
 
       fish<-as.numeric(unique(newdata.pred[[i]]$Fishery))
 #       if(fish==12)browser()
@@ -310,7 +310,8 @@ function(fit.file,verbose=FALSE,rep=NULL,overall.composition.plot=FALSE,fit=FALS
         paste(if(nfish/2<10){
           plot.data$RealFishery}else{stringr::str_pad(paste(plot.data$RealFishery),width=2,pad="0")},
           plot.ctl$fleetlabs[as.numeric(paste(plot.data$RealFishery))],sep="_")
-      p<-plot.data %>% filter(Set=="Obs") %>% ggplot(aes(x=SizeBin,y=n))+
+      if(verbose){cat("L313\n");cat("colnames(plot.data):\n",colnames(plot.data),"\n")}
+      p<-plot.data %>% dplyr::filter(.,Set=="Obs") %>% ggplot(aes(x=SizeBin,y=n))+
         geom_bar(stat="identity", colour=plot.ctl$fillcol, fill=plot.ctl$fillcol)+
         facet_wrap(~Fishery,ncol=plot.ctl$Ncols,scales="free_y",dir=plot.ctl$dir)
       p<-p+xlab(plot.ctl$xlabel) + ylab("Samples")
