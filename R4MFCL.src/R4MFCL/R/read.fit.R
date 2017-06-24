@@ -316,7 +316,8 @@ function(fit.file,verbose=FALSE,rep=NULL,overall.composition.plot=FALSE,fit=FALS
         facet_wrap(~Fishery,ncol=plot.ctl$Ncols,scales="free_y",dir=plot.ctl$dir)
       p<-p+xlab(plot.ctl$xlabel) + ylab("Samples")
       if(fit){
-        p<-p+ plot.data %>% filter(Set=="Pred") %>%
+        if(verbose){cat("L319\n");cat("colnames(plot.data):\n",colnames(plot.data),"\n")}
+        p<-p+ plot.data %>% dplyr::filter(.,Set=="Pred") %>%
           geom_line(data=.,aes(x=SizeBin,y=n,group=Gender,color=Gender), size=plot.ctl$line.wdth,position="Stack")
       }
       p<-p+scale_y_continuous(breaks=pretty_breaks(n=plot.ctl$nbrks)) +
@@ -338,7 +339,7 @@ function(fit.file,verbose=FALSE,rep=NULL,overall.composition.plot=FALSE,fit=FALS
                     else
                       stop("nSp=",nSp)
                    } %>% gather(key=bin,value=frq,-United)->tmp2
-  if(verbose)cat("L340;") # ;browser()
+  if(verbose)cat("L342;") # ;browser()
   longdata.pred<-tmp2 %>% { if(version==1)
                         separate(.,col=United,into=c("timeperiod","month","week","Fishery","Set"),sep="_")
                       else if(version==2)
@@ -352,7 +353,7 @@ function(fit.file,verbose=FALSE,rep=NULL,overall.composition.plot=FALSE,fit=FALS
                       else
                         stop("nSp=",nSp)
                     }
-  if(verbose)cat("L354 finished read.fit\n") # ;browser()
+  if(verbose)cat("L356 finished read.fit\n") # ;browser()
   results<-list(dates=dates,
                         obslf=obslf,
                         predlf=predlf,
