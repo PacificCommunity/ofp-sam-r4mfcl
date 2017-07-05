@@ -40,6 +40,8 @@ read.rep <- function(rep.file) {
   if(viewerVer.num>=3){pos1 <- grep("# Regions species pointer",a) ; regSpPtr<-NA; regSpPtr <- datfromstr(a[pos1+1]) }else{regSpPtr<-NA}
   pos1 <- grep("# Number of recruitments per year",a) ; nRecs.yr <- datfromstr(a[pos1+1]) # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   pos1 <- grep("# Number of fisheries",a) ; nFisheries <- datfromstr(a[pos1+1]) # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  pos1 <- grep("# Fishery selectivity seasons",a) ; SelexSeasons <- datfromstr(a[pos1+1])
+  pos1 <- grep("# Fishery selectivity time-blocks",a) ; SelexTblocks <- datfromstr(a[pos1+1])
   pos1 <- grep("# Number of realizations per fishery",a) ; nRlz.fsh <- datfromstr(a[pos1+1]) # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
 #  cat("L44 in read.rep.r ;")
   pos1 <- grep("# Region for each fishery",a) ; Region.fsh <- datfromstr(a[pos1+1]) #as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-c(1)])
@@ -71,8 +73,8 @@ read.rep <- function(rep.file) {
 #                                                              }
   MatAge <- datfromstr(a[pos1+1:nSp])
 #  cat("L73 in read.rep.r ;\n")
-  pos1 <- grep("# Selectivity by age class ",a) ; SelAtAge <- datfromstr(a[(pos1+1):(pos1+nFisheries)]) # t(sapply(a[(pos1+1):(pos1+nFisheries)],datfromstr,USE.NAMES =F))
-
+#  pos1 <- grep("# Selectivity by age class ",a) ; SelAtAge <- datfromstr(a[(pos1+1):(pos1+nFisheries)]) # t(sapply(a[(pos1+1):(pos1+nFisheries)],datfromstr,USE.NAMES =F))
+  pos1 <- grep("# Selectivity by age class ",a) ; SelAtAge <- datfromstr(a[(pos1+1):(pos1+sum(SelexTblocks))]) ## Need to check for older versions
   pos1 <- grep("# Catchability by realization ",a) ; qAtAge <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh)) ;
     for(i in 1:nFisheries) {
 #     qAtAge[i,1:nRlz.fsh[i]] <- as.numeric(unlist(strsplit(a[pos1+i],split="[[:blank:]]+"))[-1])
@@ -283,6 +285,7 @@ read.rep <- function(rep.file) {
             lenLiks=lenLiks,wtLiks=wtLiks,
             TotalBiomass.nofish=TotalBiomass.nofish,AdultBiomass.nofish=AdultBiomass.nofish,ExplBiomass.nofish=ExplBiomass.nofish,
             PredCatch.interact=PredCatch.interact,
-            version=viewerVer.num,nSp=nSp,spPtr=spPtr,spSexPtr=spSexPtr,regSpPtr=regSpPtr,filename=rep.file,frqfilename=frqfilename)
+            version=viewerVer.num,nSp=nSp,spPtr=spPtr,spSexPtr=spSexPtr,regSpPtr=regSpPtr,filename=rep.file,frqfilename=frqfilename,
+            SelexSeasons=SelexSeasons,SelexTblocks=SelexTblocks)
   return(rep.obj)
   }
