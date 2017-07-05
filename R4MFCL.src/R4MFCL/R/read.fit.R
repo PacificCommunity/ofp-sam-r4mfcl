@@ -217,13 +217,17 @@ function(fit.file,verbose=FALSE,rep=NULL,overall.composition.plot=FALSE,fit=FALS
 #  browser()
   newdata<-rbind(newdata.obs,newdata.pred)
   if(verbose)cat("L219 ;")
-  if(nSp>1){
-    colnames(newdata)[6+1:nbins]<-
-      paste0(ifelse(fit.file=="length.fit","L","W"),seq(from=binfirst,length.out=nbins,by=binwidth))
+  if(version==1){
+    colnames(newdata)[3+1:nbins]<-
+        paste0(ifelse(fit.file=="length.fit","L","W"),seq(from=binfirst,length.out=nbins,by=binwidth))
   }else{
-    colnames(newdata)[5+1:nbins]<-
-      paste0(ifelse(fit.file=="length.fit","L","W"),seq(from=binfirst,length.out=nbins,by=binwidth))
-
+    if(nSp>1){
+      colnames(newdata)[6+1:nbins]<-
+        paste0(ifelse(fit.file=="length.fit","L","W"),seq(from=binfirst,length.out=nbins,by=binwidth))
+    }else{
+      colnames(newdata)[5+1:nbins]<-
+        paste0(ifelse(fit.file=="length.fit","L","W"),seq(from=binfirst,length.out=nbins,by=binwidth))
+    }
   }
   if(verbose)cat("L228\n") #;browser()
   colnames(newdata.pred)[1:3]<-colnames(newdata.obs)[1:3]<-colnames(newdata)[1:3]<-c("timeperiod","month","week")
@@ -239,7 +243,8 @@ function(fit.file,verbose=FALSE,rep=NULL,overall.composition.plot=FALSE,fit=FALS
   colnames(newdata.pred)[col.offset+1+nSp+1:nbins]<-
   colnames(newdata.obs)[col.offset+1+nSp+1:nbins]<-paste0(binfirst+(0:(nbins-1))*binwidth)
 #  colnames(newdata)[col.offset+1+nSp+1:nbins]<-
-  if(verbose)cat("L242;")  #;browser()
+  if(verbose)cat("L242;")  #;
+#  browser()
   tmp<-newdata %>% {
                     if(version==1)
                       unite(.,United,timeperiod,month,week,Fishery,Set,remove=TRUE,sep="_")

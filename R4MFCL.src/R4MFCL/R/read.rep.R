@@ -40,8 +40,9 @@ read.rep <- function(rep.file) {
   if(viewerVer.num>=3){pos1 <- grep("# Regions species pointer",a) ; regSpPtr<-NA; regSpPtr <- datfromstr(a[pos1+1]) }else{regSpPtr<-NA}
   pos1 <- grep("# Number of recruitments per year",a) ; nRecs.yr <- datfromstr(a[pos1+1]) # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   pos1 <- grep("# Number of fisheries",a) ; nFisheries <- datfromstr(a[pos1+1]) # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-  pos1 <- grep("# Fishery selectivity seasons",a) ; SelexSeasons <- datfromstr(a[pos1+1])
-  pos1 <- grep("# Fishery selectivity time-blocks",a) ; SelexTblocks <- datfromstr(a[pos1+1])
+#  cat("L43\n");browser()
+  if(viewerVer.num>=3){pos1 <- grep("# Fishery selectivity seasons",a) ; SelexSeasons <- datfromstr(a[pos1+1])}else{SelexSeasons <-rep(1,nFisheries)}
+  if(viewerVer.num>=3){pos1 <- grep("# Fishery selectivity time-blocks",a) ; SelexTblocks <- datfromstr(a[pos1+1])}else{SelexTblocks <-rep(1,nFisheries)}
   pos1 <- grep("# Number of realizations per fishery",a) ; nRlz.fsh <- datfromstr(a[pos1+1]) # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
 #  cat("L44 in read.rep.r ;")
   pos1 <- grep("# Region for each fishery",a) ; Region.fsh <- datfromstr(a[pos1+1]) #as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-c(1)])
