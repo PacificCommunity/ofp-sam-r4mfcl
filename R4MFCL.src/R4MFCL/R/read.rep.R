@@ -178,11 +178,21 @@ read.rep <- function(rep.file) {
     for(i in 1:nFisheries) { PredCPUE[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i]) }
 
   pos1 <- grep("# Yield analysis option",a) ; YieldOption <- as.numeric(a[pos1+1])
-  SRR <- if(YieldOption==1)
+  if(YieldOption==1)
   {
-    as.numeric(unlist(strsplit(a[pos1+3],split="[[:blank:]]+"))[c(4,7,10)])
+    pos.offset<-ifelse(nSp==1,3,4) ## YT This needs to be updated for multispecies model (2 sex model is OK)
+    tmp<-strsplit(a[pos1+pos.offset],split="[[:blank:]]+")[[1]]
+    columns.vec<-if(length(tmp)==13){c(4,7,10,13)}else{c(4,7,10)}
+    names(columns.vec)<-if(length(tmp)==13){c("alpha","beta","steepness","varRdev")}else{c("alpha","beta","steepness")}
+    tmp<-as.numeric(tmp[columns.vec])
+    names(tmp)<-names(columns.vec)
+    SRR <-tmp
+    SPR0<-4 * SRR[2]* SRR[3] / (SRR[1]*(1 -SRR[3]));names(SPR0)<-"SPR0"
+    SSB0<- SRR[1]*SPR0-SRR[2];names(SSB0)<-"SSB0"
+    R0<-SRR[1]-SRR[2]/SPR0;names(R0)<-R0
   }else{
-    NA
+    SRR <- NA
+    SPR0<-NULL;SSB0<-NULL;R0<-NULL
   }
 
   pos1 <- grep("# Observed spawning Biomass",a) ; Obs.SB <- if(length(pos1)>0){datfromstr(a[pos1+1])}else{NULL} # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
@@ -289,6 +299,6 @@ read.rep <- function(rep.file) {
             TotalBiomass.nofish=TotalBiomass.nofish,AdultBiomass.nofish=AdultBiomass.nofish,ExplBiomass.nofish=ExplBiomass.nofish,
             PredCatch.interact=PredCatch.interact,
             version=viewerVer.num,nSp=nSp,spPtr=spPtr,spSexPtr=spSexPtr,regSpPtr=regSpPtr,filename=rep.file,frqfilename=frqfilename,
-            SelexSeasons=SelexSeasons,SelexTblocks=SelexTblocks)
-  return(rep.obj)
+            SelexSeasons=SelexSeasons,SelexTblocks=SelexTblocks,SSB0=SSB0,SPR0=SPR0,R0=R0)
+  return(invisible(rep.obj))
   }
