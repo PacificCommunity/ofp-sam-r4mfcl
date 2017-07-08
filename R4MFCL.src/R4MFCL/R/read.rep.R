@@ -180,7 +180,14 @@ read.rep <- function(rep.file) {
   pos1 <- grep("# Yield analysis option",a) ; YieldOption <- as.numeric(a[pos1+1])
   if(YieldOption==1)
   {
-    pos.offset<-ifelse(nSp==1,3,4) ## YT This needs to be updated for multispecies model (2 sex model is OK)
+    if(length(grep("# BH autocorrelation",a))>0){
+      BH.ar<-as.numeric(strsplit(a[grep("# BH autocorrelation",a)],split=" +")[[1]][4])
+      pos.offset<-4
+    }else{
+      BH.ar<-NULL
+      pos.offset<-3
+    }
+ #   pos.offset<-ifelse(nSp==1,3,4) ## YT This needs to be updated for multispecies model (2 sex model is OK)
     tmp<-strsplit(a[pos1+pos.offset],split="[[:blank:]]+")[[1]]
     columns.vec<-if(length(tmp)==13){c(4,7,10,13)}else{c(4,7,10)}
     names(columns.vec)<-if(length(tmp)==13){c("alpha","beta","steepness","varRdev")}else{c("alpha","beta","steepness")}
@@ -189,7 +196,7 @@ read.rep <- function(rep.file) {
     SRR <-tmp
     SPR0<-4 * SRR[2]* SRR[3] / (SRR[1]*(1 -SRR[3]));names(SPR0)<-"SPR0"
     SSB0<- SRR[1]*SPR0-SRR[2];names(SSB0)<-"SSB0"
-    R0<-SRR[1]-SRR[2]/SPR0;names(R0)<-R0
+    R0<-SRR[1]-SRR[2]/SPR0;names(R0)<-R0;names(R0)<-"R0"
   }else{
     SRR <- NA
     SPR0<-NULL;SSB0<-NULL;R0<-NULL
@@ -299,6 +306,6 @@ read.rep <- function(rep.file) {
             TotalBiomass.nofish=TotalBiomass.nofish,AdultBiomass.nofish=AdultBiomass.nofish,ExplBiomass.nofish=ExplBiomass.nofish,
             PredCatch.interact=PredCatch.interact,
             version=viewerVer.num,nSp=nSp,spPtr=spPtr,spSexPtr=spSexPtr,regSpPtr=regSpPtr,filename=rep.file,frqfilename=frqfilename,
-            SelexSeasons=SelexSeasons,SelexTblocks=SelexTblocks,SSB0=SSB0,SPR0=SPR0,R0=R0)
+            SelexSeasons=SelexSeasons,SelexTblocks=SelexTblocks,SSB0=SSB0,SPR0=SPR0,R0=R0,BH.ar=BH.ar)
   return(invisible(rep.obj))
   }
