@@ -39,6 +39,8 @@ function(par.file,verbose=TRUE) {
   if(verbose)cat("L37 ;") # ;browser()
 #  cat("L21 read.par.r ;");browser()
   nfisheries <- dim(ffl)[1]
+  ## check if selectivity time block is implemented
+  do.selblocks<-ifelse(any(ffl[,71]>0),TRUE,FALSE)
 # Check if there are the new tag report sections in the par file
   tsw <- 0  #Default switch setting on tag parameters to zero
   tsw1 <- 0  #Default switch setting on tag parameters to zero
@@ -102,8 +104,12 @@ function(par.file,verbose=TRUE) {
   pos1 <- grep("# relative recruitment", a)[1]+2; rel_recruitment <- datfromstr(a[pos1]) #as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1])
   if(nSp>1){pos1 <- grep("# multi-species relative recruitment", a)[1]+2; mp.rel_recruitment <- datfromstr(a[pos1])}
   pos1 <- grep("# fishery selectivity", a)[1]+1 #; selectivity <- datfromstr(a[pos1]) #as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1])
-  if(verbose)cat("L104 ; ") #;browser()
-  selectivity <- datfromstr(a[pos1:(pos1+nfisheries-1)])
+  if(verbose)cat("L107 ; ") #;browser()
+  selectivity <- if(!do.selblocks){
+    datfromstr(a[pos1:(pos1+nfisheries-1)])
+  }else{
+    datfromstr(a[pos1:(pos1+nfisheries-1+sum(ffl[,71]))])
+  }
   pos1 <- grep("# natural mortality coefficient", a)[1]+2; Mbase <- as.double(a[pos1])
   if(nSp>1){mp.Mbase<-as.double(a[pos1+2])}
   if(verbose)cat("L108 ; ")  #;browser()
@@ -163,7 +169,7 @@ pos1<-grep("# species parameters",a);sp_pars<-datfromstr(a[pos1+1:20+1])
 }else{
 
 }
-if(verbose)cat("L161\n") #;browser()
+if(verbose)cat("L172\n") #;browser()
 # Check for existence of new tagging inputs
   if(tsw != 0){
     if(tsw2 == 1){  # Load all tag reporting rate blocks
@@ -233,6 +239,7 @@ if(verbose)cat("L161\n") #;browser()
   par.obj$filename<-par.file
   par.obj$fish_pars<-fish_pars
   par.obj$rcfl<-rcfl # region control flags
+  par.obj$do.selblocks<-do.selblocks
   if(nSp>1){
     par.obj$mp.Lmin<-mp.Lmin
     par.obj$mp.Lmax<-mp.Lmax
