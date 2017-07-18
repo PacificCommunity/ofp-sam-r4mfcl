@@ -76,7 +76,7 @@ function(ini.file,ini.obj, old.format=FALSE) {
 
 
   writeLines("# age_pars",con)
-  if(o$nSp==1){
+  if(is.null(o$nSp) || o$nSp==1){
   write.table(o$age_pars,con,quote=F,append=T,row.names=F,col.names=F)
   }else{
     writeLines("# age_pars",con)

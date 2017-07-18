@@ -7,6 +7,10 @@ read.ini <- function(ini.file,nSp=2,nReg=2,mpy=4,incidence=c(1,1))
 ## Additional new arguments
 ## This also allows to have non-standard comments lines
 ##============================================================================
+## incidence : incidence matrix defined in frq file
+## mpy : number of movements per year
+## nSp : number of species
+## nReg : number of region
 {
   a <- readLines(ini.file)
   hpts <- grep("^#",a)
