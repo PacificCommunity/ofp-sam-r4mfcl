@@ -89,13 +89,14 @@ read.ini <- function(ini.file,nSp=2,nReg=2,mpy=4,incidence=c(1,1))
     ini.obj$recbyreg <- scanText(a[pos],what=0)
 
     b <- scanText(a[(hpts[hpts>pos][1]):length(a)],what=0, comment.char="#")
+    cat("L92\n");browser()
     ini.obj$VBLmin   <- b[1:3]
     ini.obj$VBLmax   <- b[4:6]
     ini.obj$VBK      <- b[7:9]
     ini.obj$LW       <- b[10:11]
-    ini.obj$steepness<- b[12]  # YT 24/02/2017
-    ini.obj$sdLatA   <- b[13:15]
-    ini.obj$Ldep_sd  <- b[16:18]
+    ini.obj$steepness<- ini.obj$sv29 #  b[12]  # YT 24/02/2017
+    ini.obj$sdLatA   <- b[12:14]
+    ini.obj$Ldep_sd  <- b[15:17]
     ini.obj$Nmeanconstr <- b[18:length(b)]
   }
   return(ini.obj)

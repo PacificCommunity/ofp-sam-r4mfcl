@@ -76,7 +76,8 @@ function(ini.file,ini.obj, old.format=FALSE) {
 
 
   writeLines("# age_pars",con)
-  if(is.null(o$nSp) || o$nSp==1){
+  nSp<-ifelse(is.null(o$nSp),1,o$nSp)
+  if(nSp==1){
   write.table(o$age_pars,con,quote=F,append=T,row.names=F,col.names=F)
   }else{
     writeLines("# age_pars",con)
@@ -85,7 +86,7 @@ function(ini.file,ini.obj, old.format=FALSE) {
     write.table(o$age_pars[11:20,],con,quote=F,append=T,row.names=F,col.names=F)
   }
 
-  if(o$nSp==1){
+  if(nSp==1){
     writeLines(c("# recruitment distribution by region",paste(o$recbyreg,collapse=" ")),con)
   }else{
     writeLines(c("# recruitment distribution by region",paste(o$recbyreg[1,],collapse=" ")),con)
