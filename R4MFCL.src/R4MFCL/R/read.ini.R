@@ -89,7 +89,7 @@ read.ini <- function(ini.file,nSp=2,nReg=2,mpy=4,incidence=c(1,1))
     ini.obj$recbyreg <- scanText(a[pos],what=0)
 
     b <- scanText(a[(hpts[hpts>pos][1]):length(a)],what=0, comment.char="#")
-    cat("L92\n");browser()
+ #   cat("L92\n");browser()
     ini.obj$VBLmin   <- b[1:3]
     ini.obj$VBLmax   <- b[4:6]
     ini.obj$VBK      <- b[7:9]
