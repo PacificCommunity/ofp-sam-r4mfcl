@@ -23,7 +23,8 @@ line1 <- grep("Predicted catch by fishery by year and age", a)
 # Determine number of lines to skip
 #start.lines <- seq(from=line1,length=Nfish,by=(Nyears+x)) + 1:Nfish
 start.lines <-grep("^Fishery",a)[grep("^Fishery",a)>line1][1:Nfish]+1
-catage <- array(NA,dim=c(Nyears,Nages,Nfish),dimnames=list(seq(from=Fyear,length=Nyears,by=1),c(1:Nages),c(1:Nfish)))
+Nages1<-if(is.null(myrep$nSp) || myrep$nSp==1){Nages}else{Nages[1]}
+catage <- array(NA,dim=c(Nyears,Nages1,Nfish),dimnames=list(seq(from=Fyear,length=Nyears,by=1),c(1:Nages1),c(1:Nfish)))
 if(verbose)cat("L27;")
 #browser()
 # create an array with all the catch at age data
@@ -34,7 +35,7 @@ if(verbose)cat("L27;")
     dat <-a[start.lines[i]+1:Nyears-1] %>% sapply(.,trimws) %>% strsplit(.,split=" +") %>% sapply(.,"as.numeric") %>% t()
     dimnames(dat)<-NULL
 #    browser()
-    catage[,,i] <- matrix(dat,nrow=Nyears,ncol=Nages,byrow=FALSE)
+    catage[,,i] <- matrix(dat,nrow=Nyears,ncol=Nages1,byrow=FALSE)
 #    browser()
   }
 
