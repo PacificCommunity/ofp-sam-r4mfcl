@@ -1,6 +1,6 @@
 #rep.file <- "I:/assessments/Pop dy modeling/MFCL/R functions/testing/200201plot.rep"
 
-read.rep <- function(rep.file) {
+read.rep <- function(rep.file,verbose=FALSE) {
   # Simon Hoyle June 2008
   # NMD June 2011 - flexibility for tag reporting rates structure
   # SDH October 2011 - adapt for projections ##
@@ -40,11 +40,11 @@ read.rep <- function(rep.file) {
   if(viewerVer.num>=3){pos1 <- grep("# Regions species pointer",a) ; regSpPtr<-NA; regSpPtr <- datfromstr(a[pos1+1]) }else{regSpPtr<-NA}
   pos1 <- grep("# Number of recruitments per year",a) ; nRecs.yr <- datfromstr(a[pos1+1]) # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   pos1 <- grep("# Number of fisheries",a) ; nFisheries <- datfromstr(a[pos1+1]) # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-#  cat("L43\n");browser()
+  if(verbose)cat("L43\n") #;browser()
   if(viewerVer.num>=3){pos1 <- grep("# Fishery selectivity seasons",a) ; SelexSeasons <- datfromstr(a[pos1+1])}else{SelexSeasons <-rep(1,nFisheries)}
   if(viewerVer.num>=3){pos1 <- grep("# Fishery selectivity time-blocks",a) ; SelexTblocks <- datfromstr(a[pos1+1])}else{SelexTblocks <-rep(1,nFisheries)}
   pos1 <- grep("# Number of realizations per fishery",a) ; nRlz.fsh <- datfromstr(a[pos1+1]) # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-#  cat("L44 in read.rep.r ;")
+  if(verbose)cat("L47 in read.rep.r ;")
   pos1 <- grep("# Region for each fishery",a) ; Region.fsh <- datfromstr(a[pos1+1]) #as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-c(1)])
   pos1 <- grep("# Time of each realization by fishery",a) ; Rlz.t.fsh <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh))
     for (i in 1:nFisheries) {
@@ -73,7 +73,7 @@ read.rep <- function(rep.file) {
 #                                                            t(sapply(stringr::str_split(stringr::str_trim(a[pos1+1:nSp]),"[[:blank:]]+"),as.numeric))
 #                                                              }
   MatAge <- datfromstr(a[pos1+1:nSp])
-#  cat("L73 in read.rep.r ;\n")
+  if(verbose)cat("L76 in read.rep.r ;\n")
 #  pos1 <- grep("# Selectivity by age class ",a) ; SelAtAge <- datfromstr(a[(pos1+1):(pos1+nFisheries)]) # t(sapply(a[(pos1+1):(pos1+nFisheries)],datfromstr,USE.NAMES =F))
   pos1 <- grep("# Selectivity by age class ",a) ; SelAtAge <- datfromstr(a[(pos1+1):(pos1+sum(SelexTblocks))]) ## Need to check for older versions
   pos1 <- grep("# Catchability by realization ",a) ; qAtAge <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh)) ;
