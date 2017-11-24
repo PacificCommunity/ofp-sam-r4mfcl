@@ -2,7 +2,10 @@
 #' @param fit.file CHRACTER file name of *.fit file
 #' @param verbose produce verbose screen outputs?
 #' @param rep outputs of read.rep
-#' @param
+#' @param overall.composition.plot if TRUE make a plot of overall.composition.plot
+#' @param fit if TRUE and if overall.composition.plo is TRUE predicted fits will be overlayed to overall.composition.plot
+#' @param plot.ctl list of control param,aters for overall.composition.plot
+#' @import dplyr  
  read.fit <-
 function(fit.file,verbose=FALSE,rep=NULL,overall.composition.plot=FALSE,fit=FALSE,plot=TRUE,
   plot.ctl=list(xlabel="Length(cm)",dir="h",line.wdth=0.5,Ncols=2,lincol="#FF3333",fillcol="#6699CC",nbrks=3)) {
