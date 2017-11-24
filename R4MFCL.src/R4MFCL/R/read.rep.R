@@ -1,5 +1,9 @@
 #rep.file <- "I:/assessments/Pop dy modeling/MFCL/R functions/testing/200201plot.rep"
-
+#'Function to read plot.rep file
+#'@param rep.file CHARACTER file name of plot.rep file
+#'@param verbose LOGICAL if TRUE produce verbose outputs on screen
+#'@import magrittr
+#'@export
 read.rep <- function(rep.file,verbose=FALSE) {
   # Simon Hoyle June 2008
   # NMD June 2011 - flexibility for tag reporting rates structure

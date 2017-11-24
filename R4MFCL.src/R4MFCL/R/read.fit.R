@@ -1,3 +1,8 @@
+#' Function to read {length, weight}.fit files
+#' @param fit.file CHRACTER file name of *.fit file
+#' @param verbose produce verbose screen outputs?
+#' @param rep outputs of read.rep
+#' @param
  read.fit <-
 function(fit.file,verbose=FALSE,rep=NULL,overall.composition.plot=FALSE,fit=FALSE,plot=TRUE,
   plot.ctl=list(xlabel="Length(cm)",dir="h",line.wdth=0.5,Ncols=2,lincol="#FF3333",fillcol="#6699CC",nbrks=3)) {
@@ -30,14 +35,13 @@ function(fit.file,verbose=FALSE,rep=NULL,overall.composition.plot=FALSE,fit=FALS
             }else{
               1
             }
-  if(verbose)cat("L33;") #;browser()
+  if(verbose)cat("L37;") #;browser()
 
   Nfsh <- as.numeric(a[ifelse(version==1,3,4)])-1  #scan(filename, nlines=1, skip=ifelse(version==1,2,3)) - 1   # Determine the number of fisheries from file header
   Nskips <- as.numeric(a[ifelse(version==1,5,6)]) #scan(filename, nlines=1, skip=ifelse(version==1,4,5))   # Determine the number of lines in the matrix for each fishery, from file header
 #    size.pars <- scan(filename, nlines=1, skip=ifelse(version==1,1,2))  # Extract the parameters that determine the size bins - no. bins, first bin size, bin width
 #    sizebins <- seq(from=size.pars[2], by=size.pars[3], length.out=size.pars[1])   # Construct the size bins from the file header
   # Pointer to species for each fishery
-#  fishSpPtr <-if(version>=2){as.numeric(str_split(str_trim(a[8]),pattern=" +")[[1]])}else{NA}
   fishSpPtr <-if(version>=2){datfromstr(a[8])}else{NA}
   nbins <- as.numeric(unlist(strsplit(a[ifelse(version==1,2,3)],split="[[:blank:]]+")))[1]
   binfirst <- as.numeric(unlist(strsplit(a[ifelse(version==1,2,3)],split="[[:blank:]]+")))[2]

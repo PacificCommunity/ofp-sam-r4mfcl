@@ -1,12 +1,17 @@
- read.par <-
+#' by Simon Hoyle June 2008
+#' This is only partly built. Needs to be extended so it gets the whole par file into an object. Then do the same for write.par...
+#' Nick : added sections explicitly for # tag flags; # tag fish rep; # tag fish rep group flags; # tag_fish_rep active flags; # tag_fish_rep target; # tag_fish_rep penalty
+#' NMD 22/06/12 - allow instance of no tag flags or tag pars at all (e.g. striped marlin)
+#' YT : 27/02/17 : Upgraded for multi species/sex model
+#' YT : 10/06/2017 : made it compatible to para file version 1042
+#' @author Simon Hoyle
+#' @param par.file charactor file name of par file
+#' @param verbose if TRUE verbose outputs will be made
+#' @import magrittr
+#' @export
+read.par <-
 function(par.file,verbose=TRUE) {
-  # by Simon Hoyle June 2008
-  # This is only partly built. Needs to be extended so it gets the whole par file into an object. Then do the same for write.par...
-  # Nick : added sections explicitly for # tag flags; # tag fish rep; # tag fish rep group flags; # tag_fish_rep active flags; # tag_fish_rep target; # tag_fish_rep penalty
-  # NMD 22/06/12 - allow instance of no tag flags or tag pars at all (e.g. striped marlin)
-  # YT : 27/02/17 : Upgraded for multi species/sex model
-  # YT : 10/06/2017 : made it compatible to para file version 1042
-  require(magrittr)
+#  require(magrittr)
   datfromstr<-function (datstring)
   {
     out<-if(length(datstring)>1){
