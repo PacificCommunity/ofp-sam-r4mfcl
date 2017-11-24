@@ -4,10 +4,20 @@
 #' @param rep outputs of read.rep
 #' @param overall.composition.plot if TRUE make a plot of overall.composition.plot
 #' @param fit if TRUE and if overall.composition.plo is TRUE predicted fits will be overlayed to overall.composition.plot
+#' @param plot TRUE plot will be created on screen
 #' @param plot.ctl list of control param,aters for overall.composition.plot
-#' @import dplyr  
+#' @import dplyr 
+#' @import tidyr
+#' @import magrittr
+#' @import ggplot2
+#' @import scales 
  read.fit <-
-function(fit.file,verbose=FALSE,rep=NULL,overall.composition.plot=FALSE,fit=FALSE,plot=TRUE,
+function(fit.file,
+         verbose=FALSE,
+         rep=NULL,
+         overall.composition.plot=FALSE,
+         fit=FALSE,
+         plot=TRUE,
   plot.ctl=list(xlabel="Length(cm)",dir="h",line.wdth=0.5,Ncols=2,lincol="#FF3333",fillcol="#6699CC",nbrks=3)) {
   # Simon Hoyle March 2010
   # loads the observed and expected LF from the length.fit file by fishery and time period
@@ -15,11 +25,11 @@ function(fit.file,verbose=FALSE,rep=NULL,overall.composition.plot=FALSE,fit=FALS
   # YT June 2017 fixed for version 3 fit file with single species
 #  require(stringr)
   cat("Starting read.fit ;")
-  require(dplyr)
-  require(tidyr)
-  require(magrittr)
-  require(ggplot2)
-  require(scales)
+#  require(dplyr)
+#  require(tidyr)
+#  require(magrittr)
+#  require(ggplot2)
+#  require(scales)
   if(overall.composition.plot)theme_set(theme_bw())
   datfromstr<-function (datstring)
   {
