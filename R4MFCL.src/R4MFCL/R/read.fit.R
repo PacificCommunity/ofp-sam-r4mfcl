@@ -23,13 +23,7 @@ function(fit.file,
   # loads the observed and expected LF from the length.fit file by fishery and time period
   # YT March-April 2017 to catch up versions 2 and 3 fit file
   # YT June 2017 fixed for version 3 fit file with single species
-#  require(stringr)
   cat("Starting read.fit ;")
-#  require(dplyr)
-#  require(tidyr)
-#  require(magrittr)
-#  require(ggplot2)
-#  require(scales)
   if(overall.composition.plot)theme_set(theme_bw())
   datfromstr<-function (datstring)
   {
@@ -48,7 +42,7 @@ function(fit.file,
             }else{
               1
             }
-  if(verbose)cat("L37;") #;browser()
+  if(verbose)cat("L45;") #;browser()
 
   Nfsh <- as.numeric(a[ifelse(version==1,3,4)])-1  #scan(filename, nlines=1, skip=ifelse(version==1,2,3)) - 1   # Determine the number of fisheries from file header
   Nskips <- as.numeric(a[ifelse(version==1,5,6)]) #scan(filename, nlines=1, skip=ifelse(version==1,4,5))   # Determine the number of lines in the matrix for each fishery, from file header
@@ -78,7 +72,7 @@ function(fit.file,
   }
   # fishery locations
   fishlocs <- grep("^# fishery",a)   # f <- 1
-  if(verbose)cat("L64; ") #;browser()
+  if(verbose)cat("L75; ") #;browser()
   dates <- list(); obslf <- list(); predlf <- list();spPtr<-list();smplSz<-list()
   pos.offset<-ifelse(version<=2,0,2)
   for (f in 1:nfish) {
@@ -99,7 +93,7 @@ function(fit.file,
         }
         smplSz[[f]]<-as.numeric(a[spPtrloc+1])
       }
-      if(verbose)cat("L85 f=",f,";") #;browser()
+      if(verbose)cat("L96 f=",f,";") #;browser()
       obsloc <- seq(fishlocs[f]+4+pos.offset,by=7+pos.offset+nages,length.out=recsperfish[f])
       if(recsperfish[f]>1){
         obslf[[f]] <- data.frame(datfromstr(a[obsloc])) #data.frame(t(matrix(as.numeric(unlist(strsplit(str_trim(a[obsloc]),split="[[:blank:]]+"))),nrow=nbins)))
@@ -108,19 +102,19 @@ function(fit.file,
         obslf[[f]] <- data.frame(t(datfromstr(a[obsloc]))) #data.frame(t(matrix(as.numeric(unlist(strsplit(str_trim(a[obsloc]),split="[[:blank:]]+"))),nrow=nbins)))
         predlf[[f]] <- data.frame(t(datfromstr(a[obsloc+1]))) # data.frame(t(matrix(as.numeric(unlist(strsplit(str_trim(a[obsloc+1]),split="[[:blank:]]+"))),nrow=nbins)))
       }
-      if(verbose)cat("L94 ; ") # ;browser()
+      if(verbose)cat("L105 ; ") # ;browser()
  #     cat("f=",f,"; ",colnames(obslf[[f]]),", nbins=",nbins,"\n" )
       colnames(obslf[[f]])<-
         colnames(predlf[[f]])<-paste0("B",seq(from=binfirst,length.out=nbins,by=binwidth))
-      if(verbose)cat("L98;")#;browser()
+      if(verbose)cat("L109 ;")#;browser()
     }else{
       dates[[f]] <-NULL
     }
   }
-  if(verbose){cat("L103;")}
+  if(verbose){cat("L114 ;")}
 
   newdata.obs<-lapply((1:length(dates))[!sapply(dates,"is.null")],function(i){
-    if(verbose)cat("L106;i=",i,";")
+    if(verbose)cat("L117 ; i=",i,";")
     tmp<-if(version<=2){
       cbind(dates[[i]],obslf[[i]])
     }else{
@@ -145,11 +139,11 @@ function(fit.file,
     tmp$Set<-"Obs"
     return(tmp)
   })
-  if(verbose)cat("L131;") # ;browser()
+  if(verbose)cat("L142 ;") # ;browser()
   ############## for version >2 ############
 
   if(version>2 & nSp>1){
-    if(verbose)cat("L135\n") #;browser()
+    if(verbose)cat("L146 ;") #;browser()
     n<-length(newdata.obs)
     for(i in 1:(n/2)){
       fish<-as.numeric(unique(newdata.obs[[i]]$Fishery))
@@ -170,7 +164,7 @@ function(fit.file,
   }
 
   newdata.obs<-do.call("rbind",newdata.obs)
-  if(verbose)cat("L156;") # ;browser()
+  if(verbose)cat("L167;") # ;browser()
 
 ###################################################
   newdata.pred<-lapply((1:length(dates))[!sapply(dates,"is.null")],function(i){
@@ -198,7 +192,7 @@ function(fit.file,
     tmp$Set<-"Pred"
     return(tmp)
   })
-  if(verbose)cat("L184;") # ;browser()
+  if(verbose)cat("L195 ;") # ;browser()
   ####### for version>2 & nSp>1
   if(version>2 & nSp>1){
     if(is.null(rep))stop("rep is needed" )
@@ -215,7 +209,7 @@ function(fit.file,
     if(verbose)cat("length(pcatch1)=",length(pcatch1),"\n")
 
     for(i in 1:length(newdata.pred)){
-      if(verbose)cat("L201 i=",i,";")
+      if(verbose)cat("L212 i=",i,";")
 
       fish<-as.numeric(unique(newdata.pred[[i]]$Fishery))
 #       if(fish==12)browser()
@@ -226,14 +220,12 @@ function(fit.file,
 #      if(fish==12)browser()
     }
   }
-  if(verbose)cat("L212 ;") ;
-#  browser()
+  if(verbose)cat("L223 ;") 
   ####################################
   newdata.pred<-do.call("rbind",newdata.pred)
-  if(verbose)cat("L216 ;") #;
-#  browser()
+  if(verbose)cat("L226 ;") #;
   newdata<-rbind(newdata.obs,newdata.pred)
-  if(verbose)cat("L219 ;")
+  if(verbose)cat("L228 ;")
   if(version==1){
     colnames(newdata)[3+1:nbins]<-
         paste0(ifelse(fit.file=="length.fit","L","W"),seq(from=binfirst,length.out=nbins,by=binwidth))
@@ -246,7 +238,7 @@ function(fit.file,
         paste0(ifelse(fit.file=="length.fit","L","W"),seq(from=binfirst,length.out=nbins,by=binwidth))
     }
   }
-  if(verbose)cat("L228\n") #;browser()
+  if(verbose)cat("L241 ;") 
   colnames(newdata.pred)[1:3]<-colnames(newdata.obs)[1:3]<-colnames(newdata)[1:3]<-c("timeperiod","month","week")
   col.offset<-ifelse(version>2,3,1)
   if(version>2){
@@ -256,11 +248,11 @@ function(fit.file,
       colnames(newdata.pred)[4:5]<-colnames(newdata.obs)[4:5]<-colnames(newdata)[4:5]<-c("Both","nsmpl")
     }
   }
-  if(verbose)cat("L238;") #;browser()
+  if(verbose)cat("L251 ;") 
   colnames(newdata.pred)[col.offset+1+nSp+1:nbins]<-
   colnames(newdata.obs)[col.offset+1+nSp+1:nbins]<-paste0(binfirst+(0:(nbins-1))*binwidth)
 #  colnames(newdata)[col.offset+1+nSp+1:nbins]<-
-  if(verbose)cat("L242;")  #;
+  if(verbose)cat("L255 ;")  #;
 #  browser()
   tmp<-newdata %>% {
                     if(version==1)
@@ -277,7 +269,7 @@ function(fit.file,
                     else
                       stop("nSp=",nSp)
                    } %>% gather(key=bin,value=frq,-United)->tmp2
-  if(verbose)cat("L258; ") # ;browser()
+  if(verbose)cat("L272 ; ") # ;browser()
   longdata<-tmp2 %>% { if(version==1)
                         separate(.,col=United,into=c("timeperiod","month","week","Fishery","Set"),sep="_")
                       else if(version==2)
@@ -292,7 +284,7 @@ function(fit.file,
                         stop("nSp=",nSp)
                     }
   longdata$SizeBin<-as.numeric(substr(longdata$bin,start=2,stop=6))
-  if(verbose)cat("L273;") #;browser()
+  if(verbose)cat("L287 ;") 
 
   tmp.obs<-newdata.obs %>% {
                     if(version==1)
@@ -309,7 +301,7 @@ function(fit.file,
                     else
                       stop("nSp=",nSp)
                    } %>% gather(key=bin,value=frq,-United)->tmp2
-  if(verbose)cat("L290;") # ;browser()
+  if(verbose)cat("L304 ;") # ;browser()
   longdata.obs<-tmp2 %>% { if(version==1)
                         separate(.,col=United,into=c("timeperiod","month","week","Fishery","Set"),sep="_")
                       else if(version==2)
@@ -323,7 +315,7 @@ function(fit.file,
                       else
                         stop("nSp=",nSp)
                     }
-    if(verbose)cat("L304;")
+    if(verbose)cat("L318 ;")
 
     if(overall.composition.plot){
       if(nSp==1 || version<=2)stop("overall.composition.plot is only available for 2 sex and version 3 fit file")
@@ -332,13 +324,13 @@ function(fit.file,
         paste(if(nfish/2<10){
           plot.data$RealFishery}else{stringr::str_pad(paste(plot.data$RealFishery),width=2,pad="0")},
           plot.ctl$fleetlabs[as.numeric(paste(plot.data$RealFishery))],sep="_")
-      if(verbose){cat("L313\n");cat("colnames(plot.data):\n",colnames(plot.data),"\n")}
+      if(verbose){cat("L327 ;");cat("colnames(plot.data):\n",colnames(plot.data),"\n")}
       p<-plot.data %>% dplyr::filter(.,Set=="Obs") %>% ggplot(aes(x=SizeBin,y=n))+
         geom_bar(stat="identity", colour=plot.ctl$fillcol, fill=plot.ctl$fillcol)+
         facet_wrap(~Fishery,ncol=plot.ctl$Ncols,scales="free_y",dir=plot.ctl$dir)
       p<-p+xlab(plot.ctl$xlabel) + ylab("Samples")
       if(fit){
-        if(verbose){cat("L319\n");cat("colnames(plot.data):\n",colnames(plot.data),"\n")}
+        if(verbose){cat("L333 ; ");cat("colnames(plot.data):\n",colnames(plot.data),"\n")}
         p<-p+ plot.data %>% dplyr::filter(.,Set=="Pred") %>%
           geom_line(data=.,aes(x=SizeBin,y=n,group=Gender,color=Gender), size=plot.ctl$line.wdth,position="Stack")
       }
@@ -361,7 +353,7 @@ function(fit.file,
                     else
                       stop("nSp=",nSp)
                    } %>% gather(key=bin,value=frq,-United)->tmp2
-  if(verbose)cat("L342;") # ;browser()
+  if(verbose)cat("L356 ;") # ;browser()
   longdata.pred<-tmp2 %>% { if(version==1)
                         separate(.,col=United,into=c("timeperiod","month","week","Fishery","Set"),sep="_")
                       else if(version==2)
@@ -375,7 +367,7 @@ function(fit.file,
                       else
                         stop("nSp=",nSp)
                     }
-  if(verbose)cat("L356 finished read.fit\n") # ;browser()
+  if(verbose)cat("L370 finished read.fit\n") # ;browser()
   results<-list(dates=dates,
                         obslf=obslf,
                         predlf=predlf,
