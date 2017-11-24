@@ -200,7 +200,6 @@ function(fit.file,
     Year1<-rep$Year1
     Rlz.t.fsh<-rep$Rlz.t.fsh
     Rlz.t.fsh1<-Rlz.t.fsh-Year1+1
- #   tmp<-read.fit(filename)
     yq<-lapply(dates,function(x){x[,1]+(x[,2]%/%3+1)/4-0.125})
     pcatch1<-1:length(dates) %>% sapply(function(i){
                         tmp<-sapply(yq[[i]],function(x){which(Rlz.t.fsh1[i,]==x)});if(length(tmp)>0){pcatch[i,tmp]}else{NULL}
@@ -209,23 +208,21 @@ function(fit.file,
     if(verbose)cat("length(pcatch1)=",length(pcatch1),"\n")
 
     for(i in 1:length(newdata.pred)){
-      if(verbose)cat("L212 i=",i,";")
+      if(verbose)cat("L211 i=",i,";")
 
       fish<-as.numeric(unique(newdata.pred[[i]]$Fishery))
-#       if(fish==12)browser()
       prop<-pcatch1[[fish]]/if(fish<=nfish/2){
         pcatch1[[fish]]+pcatch1[[fish+nfish/2]]}else{pcatch1[[fish-nfish/2]]+pcatch1[[fish]]}
     #  newdata.pred[[i]]$smplSz*0.5*prop
       newdata.pred[[i]][5+1:nbins]<-newdata.pred[[i]][5+1:nbins]*prop*newdata.pred[[i]]$smplSz
-#      if(fish==12)browser()
     }
   }
-  if(verbose)cat("L223 ;") 
+  if(verbose)cat("L220 ;") 
   ####################################
   newdata.pred<-do.call("rbind",newdata.pred)
-  if(verbose)cat("L226 ;") #;
+  if(verbose)cat("L223 ;") #;
   newdata<-rbind(newdata.obs,newdata.pred)
-  if(verbose)cat("L228 ;")
+  if(verbose)cat("L225 ;")
   if(version==1){
     colnames(newdata)[3+1:nbins]<-
         paste0(ifelse(fit.file=="length.fit","L","W"),seq(from=binfirst,length.out=nbins,by=binwidth))
@@ -238,7 +235,7 @@ function(fit.file,
         paste0(ifelse(fit.file=="length.fit","L","W"),seq(from=binfirst,length.out=nbins,by=binwidth))
     }
   }
-  if(verbose)cat("L241 ;") 
+  if(verbose)cat("L238 ;") 
   colnames(newdata.pred)[1:3]<-colnames(newdata.obs)[1:3]<-colnames(newdata)[1:3]<-c("timeperiod","month","week")
   col.offset<-ifelse(version>2,3,1)
   if(version>2){
@@ -248,11 +245,11 @@ function(fit.file,
       colnames(newdata.pred)[4:5]<-colnames(newdata.obs)[4:5]<-colnames(newdata)[4:5]<-c("Both","nsmpl")
     }
   }
-  if(verbose)cat("L251 ;") 
+  if(verbose)cat("L248 ;") 
   colnames(newdata.pred)[col.offset+1+nSp+1:nbins]<-
   colnames(newdata.obs)[col.offset+1+nSp+1:nbins]<-paste0(binfirst+(0:(nbins-1))*binwidth)
 #  colnames(newdata)[col.offset+1+nSp+1:nbins]<-
-  if(verbose)cat("L255 ;")  #;
+  if(verbose)cat("L252 ;")  #;
 #  browser()
   tmp<-newdata %>% {
                     if(version==1)
@@ -269,7 +266,7 @@ function(fit.file,
                     else
                       stop("nSp=",nSp)
                    } %>% gather(key=bin,value=frq,-United)->tmp2
-  if(verbose)cat("L272 ; ") # ;browser()
+  if(verbose)cat("L269 ; ") # ;browser()
   longdata<-tmp2 %>% { if(version==1)
                         separate(.,col=United,into=c("timeperiod","month","week","Fishery","Set"),sep="_")
                       else if(version==2)
@@ -284,7 +281,7 @@ function(fit.file,
                         stop("nSp=",nSp)
                     }
   longdata$SizeBin<-as.numeric(substr(longdata$bin,start=2,stop=6))
-  if(verbose)cat("L287 ;") 
+  if(verbose)cat("L284 ;") 
 
   tmp.obs<-newdata.obs %>% {
                     if(version==1)
@@ -301,7 +298,7 @@ function(fit.file,
                     else
                       stop("nSp=",nSp)
                    } %>% gather(key=bin,value=frq,-United)->tmp2
-  if(verbose)cat("L304 ;") # ;browser()
+  if(verbose)cat("L301 ;") # ;browser()
   longdata.obs<-tmp2 %>% { if(version==1)
                         separate(.,col=United,into=c("timeperiod","month","week","Fishery","Set"),sep="_")
                       else if(version==2)
@@ -315,7 +312,7 @@ function(fit.file,
                       else
                         stop("nSp=",nSp)
                     }
-    if(verbose)cat("L318 ;")
+    if(verbose)cat("L315 ;")
 
     if(overall.composition.plot){
       if(nSp==1 || version<=2)stop("overall.composition.plot is only available for 2 sex and version 3 fit file")
@@ -353,7 +350,7 @@ function(fit.file,
                     else
                       stop("nSp=",nSp)
                    } %>% gather(key=bin,value=frq,-United)->tmp2
-  if(verbose)cat("L356 ;") # ;browser()
+  if(verbose)cat("L353 ;") # ;browser()
   longdata.pred<-tmp2 %>% { if(version==1)
                         separate(.,col=United,into=c("timeperiod","month","week","Fishery","Set"),sep="_")
                       else if(version==2)
@@ -367,7 +364,7 @@ function(fit.file,
                       else
                         stop("nSp=",nSp)
                     }
-  if(verbose)cat("L370 finished read.fit\n") # ;browser()
+  if(verbose)cat("L367 finished read.fit\n") # ;browser()
   results<-list(dates=dates,
                         obslf=obslf,
                         predlf=predlf,
