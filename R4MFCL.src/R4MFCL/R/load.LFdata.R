@@ -1,7 +1,8 @@
+#' @importFrom RODBC odbcDriverConnect sqlTables odbcGetInfo sqlQuery
  load.LFdata <-
 function(species="ALB",gear="L") {
   # By Simon D Hoyle 2008
-  library(RODBC)
+#  library(RODBC)
 #  channel <- odbcDriverConnect("DSN=Visual FoxPro Database;UID=;PWD=;SourceDB=G:\\Tuna_dbs\\LFreq_old\\dbf\\lfreq.DBC;SourceType=DBC;Exclusive=No;BackgroundFetch=Yes;Collate=Machine;Null=Yes;Deleted=Yes;")
   channel <- odbcDriverConnect("DSN=Visual FoxPro Database;UID=;PWD=;SourceDB=G:\\Tuna_dbs\\LWFreq\\dbf\\lfreq.DBC;SourceType=DBC;Exclusive=No;BackgroundFetch=Yes;Collate=Machine;Null=Yes;Deleted=Yes;")
   sqlTables(channel)

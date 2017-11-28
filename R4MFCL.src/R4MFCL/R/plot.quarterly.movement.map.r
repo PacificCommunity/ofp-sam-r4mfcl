@@ -1,12 +1,15 @@
+#' @importFrom ggplot2 ggplot geom_path geom_text geom_segment
+#' @importFrom ggmap get_map ggmap
+#' @importFrom grid pushViewport viewport
 plot.quarterly.movement.map = function(reg.keep = c('BR1','BR2','BR31','BR4','BR5','BR6','BR7','BR8','BR9'),
                                        mov.dat.path = 'L:/bet/2014/assessment/Results/Sam/MovementInfo.txt',
                                        repfile=baserep,parfile=basepar)
 {
 # SJDM 27/06/14 - plots quarterly movements on a map, currently not age-specific but can add that if we start allowing age-specific movement
 
-require(ggplot2)
-library(ggmap)
-require(grid)
+#require(ggplot2)
+#library(ggmap)
+#require(grid)
 
 setInternet2(TRUE)
 

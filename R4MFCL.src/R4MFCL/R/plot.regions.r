@@ -1,9 +1,11 @@
 #require(data.table)
+# ' @importFrom RColorBrewer
+#' @import mapdata 
 
 plot.regions <- function(col.map='wheat3', col.regions='lightyellow', col.labels='black'){
 
-require(RColorBrewer)
-require(mapdata)
+#require(RColorBrewer)
+#require(mapdata)
 
 add.continents.NDC <- function(..., lonlim=c(-180,360), latlim=c(-90,90), new.map=FALSE) {
 

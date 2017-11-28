@@ -4,7 +4,7 @@ plot.effdev.betyft.test <- function(plotrepfile=read.rep(baserep),frqfile=read.f
 ##-----------------------------------------------------------------------
 # SJH 08/07/09 - uses a read in rep file
 # SJDM 23/06/2014 - modified so that fisheries with standardised CPUE can be plotted seperately and various other minor shit
-  require(mgcv)
+#  require(mgcv)
 
   nfish <- plotrepfile$nFisheries
   year.tmp <- plotrepfile$Rlz.t.fsh

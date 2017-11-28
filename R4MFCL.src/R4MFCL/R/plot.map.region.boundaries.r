@@ -1,13 +1,17 @@
-# SJDM 20/06/2014
-# A function to map the stock assessment boundaries for BET/YFT and SKJ
-# The corners of all the subregions (as specified in mufdager) are listed below
-# and the function call determines which ones are displayed
+#' SJDM 20/06/2014
+#' A function to map the stock assessment boundaries for BET/YFT and SKJ
+#' The corners of all the subregions (as specified in mufdager) are listed below
+#' and the function call determines which ones are displayed
+#' @importFrom ggplot2 geom_polygon geom_path geom_text theme xlab ylab
+#' @importFrom ggmap get_map
+#'
+# ' @importFrom scales
 
 plot.map.region.boundaries = function(reg.keep, reg.highlight, linesize = c(2,6), cols = "white")
 {
-    require(scales)
-    require(ggplot2)
-    require(ggmap)
+#    require(scales)
+#    require(ggplot2)
+#   require(ggmap)
 
     setInternet2(TRUE)
 

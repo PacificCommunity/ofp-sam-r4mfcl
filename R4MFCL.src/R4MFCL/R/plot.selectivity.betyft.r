@@ -1,9 +1,11 @@
-# SJDM - Changed it to a ggplot as was easier to control and far less code
-
+#' SJDM - Changed it to a ggplot as was easier to control and far less code
+#' @importFrom ggplot2 ggplot
+#' @importFrom ggplot2 geom_bar facet_wrap xlab ylab
+#' @importFrom reshape2 melt
 plot.selectivity.betyft <- function(repfile=read.rep("final-rp.glm.rep"), fleetlabs=BET_fleet$fnames)
 {
-require(reshape2)
-require(ggplot2)
+#require(reshape2)
+#require(ggplot2)
 
     Ncols = ceiling(length(fleetlabs)/9)   # Seems to be best if 9 or less rows of fisheries
     sel <- repfile$SelAtAge                # Matrix of selectivities at age - one row per fishery

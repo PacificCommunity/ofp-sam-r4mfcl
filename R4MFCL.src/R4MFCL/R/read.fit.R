@@ -6,11 +6,13 @@
 #' @param fit if TRUE and if overall.composition.plo is TRUE predicted fits will be overlayed to overall.composition.plot
 #' @param plot TRUE plot will be created on screen
 #' @param plot.ctl list of control param,aters for overall.composition.plot
-#' @import dplyr 
-#' @import tidyr
-#' @import magrittr
-#' @import ggplot2
+#' @importFrom dplyr filter
+#' @importFrom tidyr gather unite separate
+#' @importFrom magrittr "%>%"
+#' @importFrom ggplot2 ggplot geom_bar geom_line xlab ylab theme_set theme_bw element_blank
 #' @import scales 
+#' @importFrom stringr str_pad
+#' @export
  read.fit <-
 function(fit.file,
          verbose=FALSE,
@@ -319,7 +321,7 @@ function(fit.file,
       plot.data <- longdata %>% group_by(RealFishery,Gender,Set,SizeBin) %>% summarize(n=sum(frq))
       plot.data$Fishery<-
         paste(if(nfish/2<10){
-          plot.data$RealFishery}else{stringr::str_pad(paste(plot.data$RealFishery),width=2,pad="0")},
+          plot.data$RealFishery}else{str_pad(paste(plot.data$RealFishery),width=2,pad="0")},
           plot.ctl$fleetlabs[as.numeric(paste(plot.data$RealFishery))],sep="_")
       if(verbose){cat("L327 ;");cat("colnames(plot.data):\n",colnames(plot.data),"\n")}
       p<-plot.data %>% dplyr::filter(.,Set=="Obs") %>% ggplot(aes(x=SizeBin,y=n))+

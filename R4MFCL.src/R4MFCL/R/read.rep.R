@@ -2,7 +2,7 @@
 #'Function to read plot.rep file
 #'@param rep.file CHARACTER file name of plot.rep file
 #'@param verbose LOGICAL if TRUE produce verbose outputs on screen
-#'@import magrittr
+#'@importFrom magrittr "%>%"
 #'@export
 read.rep <- function(rep.file,verbose=FALSE) {
   # Simon Hoyle June 2008
@@ -11,7 +11,7 @@ read.rep <- function(rep.file,verbose=FALSE) {
   # NMD November 2011 - small fix for input of NexpbyYrFsh
   # SDH September 2013 - added yrs and alltimes. Won't cover all options, but will save calculating each time they're needed.
   # YT  Feb./March 2017 Update for multi-species/sex model
-  require(magrittr)
+#  require(magrittr)
   datfromstr<-function (datstring)
   {
  #   print(datstring)
@@ -73,9 +73,6 @@ read.rep <- function(rep.file,verbose=FALSE) {
 
   pos1 <- grep("# Natural mortality at age",a) # ;
 
-#  MatAge <- if(nSp==1){as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])}else{
-#                                                            t(sapply(stringr::str_split(stringr::str_trim(a[pos1+1:nSp]),"[[:blank:]]+"),as.numeric))
-#                                                              }
   MatAge <- datfromstr(a[pos1+1:nSp])
   if(verbose)cat("L76 in read.rep.r ;\n")
 #  pos1 <- grep("# Selectivity by age class ",a) ; SelAtAge <- datfromstr(a[(pos1+1):(pos1+nFisheries)]) # t(sapply(a[(pos1+1):(pos1+nFisheries)],datfromstr,USE.NAMES =F))

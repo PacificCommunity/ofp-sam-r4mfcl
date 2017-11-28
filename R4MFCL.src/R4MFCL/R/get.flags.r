@@ -1,8 +1,8 @@
-
+#' @import RSQLite
 
 get.flags <- function(flags){
 
-  require(RSQLite)
+#  require(RSQLite)
 
   # connect to the sqlite database
   drv  <- dbDriver("SQLite")

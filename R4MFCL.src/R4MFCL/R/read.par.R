@@ -7,7 +7,7 @@
 #' @author Simon Hoyle
 #' @param par.file charactor file name of par file
 #' @param verbose if TRUE verbose outputs will be made
-#' @import magrittr
+#' @importFrom magrittr "%>%"
 #' @export
 read.par <-
 function(par.file,verbose=TRUE) {

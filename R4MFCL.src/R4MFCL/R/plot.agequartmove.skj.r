@@ -1,3 +1,4 @@
+#' @import mapdata
 plot.agequartmove.skj <- function(repfile=baserep,parfile=basepar)
 {
 ##plot movement with arrows of length proportional to percentage movement
@@ -12,9 +13,9 @@ plot.agequartmove.skj <- function(repfile=baserep,parfile=basepar)
 # 1>4 2>4 3>4 4>4
 # 1>5............................
 # 1>6............................
-require(mapdata)
-require(mapplots)
-require(mapproj)
+#require(mapdata)
+#require(mapplots)
+#require(mapproj)
 
 
 #by age class (40)
