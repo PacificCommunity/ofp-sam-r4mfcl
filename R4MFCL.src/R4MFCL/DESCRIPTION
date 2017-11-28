@@ -3,13 +3,23 @@ Title: R functions for MULTIFAN-CL
 Version: 0.4.0.2017.11.24
 Author: SPC, OFP.
 Description: Functions for automating the running and analysis of MULTIFAN-CL stock assessments. R4MFCL is a collection of utility functions for stock assessments using the model MULTIFAN-CL (Fournier et al 1998; www.multifan-cl.org). There are several groups of R4MFCL functions: 1) input and output functions, for reading MULTIFAN-CL files into R objects and writing them back out as text files in the form that MULTIFAN-CL accepts as input. 2) data manipulation functions, for editing and restructuring the input objects. 3) plotting functions, for producing plots and maps from the result objects. 4) information functions, for comparing objects and giving information about, for example, flag settings.
-Depends: lattice
+Depends: 
 Imports:
-	dplyr, ggplot2, scales, tidyr,magrittr
+	dplyr, 
+  ggplot2, 
+  scales, 
+  tidyr,
+  magrittr,
+  stringr,
+  RODBC,
+  ggmap,
+  RSQLite,
+  mapdata,
+  reshape2
 Maintainer: Robert Scott <roberts2@spc.int>; Simon Hoyle <simon.hoyle@gmail.com> ; Sam McKechnie <samm@spc.int> and Yukio Takeuchi <yukiot@spc.int>
 License: GPL-2
 Date: 2017-11-24
-Suggests: maps, mapdata, mapproj
+Suggests: maps,  mapproj
 LazyLoad: Yes
 LazyData: No
 RoxygenNote: 6.0.1
