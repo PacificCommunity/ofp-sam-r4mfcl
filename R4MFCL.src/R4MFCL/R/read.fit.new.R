@@ -13,7 +13,7 @@
 #' @import scales 
 #' @importFrom stringr str_pad
 #' @export
- read.fit <-
+ read.fit.new <-
 function(fit.file,
          verbose=FALSE,
          rep=NULL,
