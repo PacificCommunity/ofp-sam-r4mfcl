@@ -1,6 +1,7 @@
  setup.growth <-
 function(rungrp,VBopt) {
-  attach(VBopt)
+#  attach(VBopt);on.exit(detach(VBopt))
+  with(VBopt,{
   if(fixVB) {
     rungrp$doitall <- change.flag(rungrp$doitall,1,flagnum=14,newval=0)
   } else {
@@ -8,6 +9,7 @@ function(rungrp,VBopt) {
   }
   rungrp$ini$VBLmax <- c(startVB[2],90,130)
   rungrp$ini$VBK <- c(startVB[3],0.05,0.5)
-  detach(VBopt)
+#  detach(VBopt)
+  })
   return(rungrp)
 }

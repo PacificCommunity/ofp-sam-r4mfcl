@@ -1,3 +1,4 @@
+#' importFrom utils read.csv
 add.catch <- function(alb=read.csv("I:/assessments/bigeye/2011/working/CATCH_5X5_2000-2010.TXT",header=T),
 species="bet",groupvar="gear",COLS=c("forestgreen","firebrick3","dodgerblue2","yellow2"),RSCALE=0.01)
 {

@@ -1,6 +1,6 @@
  add.cpue.frq <-
 function(CPUE.file="P:/yft/2009/Data Preparation/CPUE/indices/yft_JPstd_R1.txt",
-data=out.data,fishery=1,add.cv="T")
+data,fishery=1,add.cv="T")
 {
 # Replaces the nominal effort in the original .FRQ file with stanadrdised effort
 # based on the CPUE index

@@ -29,7 +29,7 @@ add.continents.NDC <- function(..., lonlim=c(-180,360), latlim=c(-90,90), new.ma
                 "Venezuela","Bolivia","Paraguay","Dominica")
 
 
-  data(world2HiresMapEnv) # loads dataset with landlines
+  data(world2HiresMapEnv,envir = environment()) # loads dataset with landlines
   spc.region <- map('world2Hires', namesonly=T, ylim=c(-45,50), plot=F)
 
   # Keep SPC countries + Indonesia (to show with PNG)

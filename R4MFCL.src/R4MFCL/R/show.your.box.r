@@ -1,9 +1,13 @@
-# SJDM 8/7/2014 modifies Nicks swordfish code to be a (hopefully) relatively general way of ploting box and whiskers for grid summaries generated
-# by generate.grid.summaries.r
-# first factor is number of 1st character in current.grid.runs that indicates factor level
-# e.g. 001_H0W0M0T0C0 it would be 6, for X001_H0W0M0T0C0 it would be 7 etc.
-# See bottom of the script for examples of how to run from a stored file or an R object
-
+#' SJDM 8/7/2014 modifies Nicks swordfish code to be a (hopefully) relatively general way of ploting box and whiskers for grid summaries generated
+#' by generate.grid.summaries.r
+#' first factor is number of 1st character in current.grid.runs that indicates factor level
+#' e.g. 001_H0W0M0T0C0 it would be 6, for X001_H0W0M0T0C0 it would be 7 etc.
+#' See bottom of the script for examples of how to run from a stored file or an R object
+#'
+#' @importFrom utils write.table read.table
+#' @importFrom grDevices windows rainbow savePlot dev.off
+#' @importFrom graphics boxplot par axis
+#' @importFrom stats aggregate quantile
 show.your.box <- function(grid.summary.path="C:/Users/SamM/Desktop/grid.out.txt",
                           xaxs_nms=list(H=c("0.8", "0.65", "0.95"),
                                         W=c("20;100", "40;100"),

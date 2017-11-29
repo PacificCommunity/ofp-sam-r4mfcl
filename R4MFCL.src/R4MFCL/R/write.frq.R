@@ -1,3 +1,4 @@
+#' @importFrom utils write.table
 write.frq <- function(frqfile,frq.obj) {
 ##============================================================================
 ## by Simon Hoyle June 2008

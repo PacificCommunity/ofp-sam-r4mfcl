@@ -1,3 +1,4 @@
+#' @importFrom utils write.table
  write_nmd.frq <-
 function(new.frq,frq.obj) {
   # by Simon Hoyle June 2008

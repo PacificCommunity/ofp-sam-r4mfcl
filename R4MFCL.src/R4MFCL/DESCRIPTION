@@ -15,11 +15,12 @@ Imports:
   ggmap,
   RSQLite,
   mapdata,
-  reshape2
+  reshape2,
+  maps
 Maintainer: Robert Scott <roberts2@spc.int>; Simon Hoyle <simon.hoyle@gmail.com> ; Sam McKechnie <samm@spc.int> and Yukio Takeuchi <yukiot@spc.int>
 License: GPL-2
 Date: 2017-11-24
-Suggests: maps,  mapproj
+Suggests: mapproj
 LazyLoad: Yes
 LazyData: No
 RoxygenNote: 6.0.1

@@ -1,3 +1,5 @@
+#' @importFrom graphics plot polygon lines box mtext 
+#' @importFrom maps map
  plot.pacific.WCPFC <-
 function(plot_title="",lims=c(100,260,-45,45)) {
 # By Adam Langley 
@@ -6,6 +8,7 @@ function(plot_title="",lims=c(100,260,-45,45)) {
 #library(maps)
 #library(mapproj)
 #library(mapdata)
+  data(world2HiresMapEnv,envir = environment())
 eez <- read.table("I:/assessments/Pop dy modeling/MFCL/R functions/EZNEW2.TXT")
 plot(1,1, yaxt="n", xaxt="n", type="n", xlim=c(lims[1]+10,lims[2]-10), ylim=c(lims[3]+5,lims[4]-5), ylab="", xlab="", bg="lightblue")
 polygon(c(lims[1],lims[2],lims[2],lims[1]), c(lims[3],lims[3],lims[4],lims[4]), col="lightblue")

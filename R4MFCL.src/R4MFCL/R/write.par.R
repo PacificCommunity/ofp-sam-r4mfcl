@@ -1,3 +1,4 @@
+#' @importFrom utils write.table
  write.par <-
 function(par.file,par.obj) {
   # by Simon Hoyle June 2008

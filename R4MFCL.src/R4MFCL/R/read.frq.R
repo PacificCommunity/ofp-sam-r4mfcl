@@ -1,3 +1,4 @@
+#' @importFrom utils count.fields
 read.frq <-
 function(frq.file,frq.title="",ntop=0,fishdefs=NA) {
 ##===================================================================================
@@ -25,7 +26,7 @@ function(frq.file,frq.title="",ntop=0,fishdefs=NA) {
     if(te>=8){ # Multi species/sex model
       NtagGrpBySp<-a[10+1:nsp]
       first<-10+nsp+1;last<-10+nsp+nsp*nreg
-      spReg<-matrix(dat=a[first:last],nrow=nsp,ncol=nreg)
+      spReg<-matrix(data=a[first:last],nrow=nsp,ncol=nreg)
       first<-last+1
       last <- first+nreg-1
     }else{

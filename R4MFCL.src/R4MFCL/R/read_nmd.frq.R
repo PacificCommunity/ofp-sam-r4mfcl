@@ -1,3 +1,4 @@
+#' @importFrom utils count.fields
  read_nmd.frq <-
 function(frq.file,frq.title="",ntop=0,fishdefs=NA) {
   # by Simon Hoyle June 2008

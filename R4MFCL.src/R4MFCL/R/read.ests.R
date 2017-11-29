@@ -1,4 +1,5 @@
  #' @importFrom magrittr "%>%"
+ #' @export
  read.ests <- function(rep.obj,ests="C:/assessments/alb/2008/6_area/28.splitgr3/ests.rep",x=1,verbose=FALSE)
 {
 # Simon D Hoyle 24/6/09
