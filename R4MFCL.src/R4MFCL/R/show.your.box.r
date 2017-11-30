@@ -5,7 +5,7 @@
 #' See bottom of the script for examples of how to run from a stored file or an R object
 #'
 #' @importFrom utils write.table read.table
-#' @importFrom grDevices windows rainbow savePlot dev.off
+#' @importFrom grDevices dev.new rainbow savePlot dev.off
 #' @importFrom graphics boxplot par axis
 #' @importFrom stats aggregate quantile
 show.your.box <- function(grid.summary.path="C:/Users/SamM/Desktop/grid.out.txt",
@@ -20,7 +20,7 @@ show.your.box <- function(grid.summary.path="C:/Users/SamM/Desktop/grid.out.txt"
                                         T=c(rainbow(40)[24], NA),
                                         C=c(rainbow(40)[24], NA)),
                            xnams=c('Steepness', 'Size data weighting', 'Mortality',  'Tag mixing', 'CPUE'),
-                           winsize=c(10,10),first.factor=7,response.vars=c("Fcurr.Fmsy","SBcurr.SBmsy"),
+                           winsize=list(height=10,width=10),first.factor=7,response.vars=c("Fcurr.Fmsy","SBcurr.SBmsy"),
                            response.names=c("Fcurr/Fmsy", "SBcurr/SBmsy"),from.file="TRUE",grid.sum=grid.out,
                            fig.names=c("name1","name2"),plotlay=c(3,2))
 {
@@ -57,7 +57,8 @@ show.your.box <- function(grid.summary.path="C:/Users/SamM/Desktop/grid.out.txt"
         mgmt.out <- list(unlist(tmp.plot), run_type)
         names(mgmt.out)<- c(response.vars[i], "run_type")
 
-        windows(winsize)
+    #    windows(winsize)
+        dev.new(heght=winsize$heigt,width=winsize$width)
         par(mfrow=plotlay,mai=c(1,1,0.2,0.1))
 
               for(j in 1:N.axis){                  # Loop over factors
