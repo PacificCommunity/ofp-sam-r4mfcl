@@ -1,4 +1,5 @@
 #' @importFrom utils count.fields
+#' @export
 read.frq <-
 function(frq.file,frq.title="",ntop=0,fishdefs=NA) {
 ##===================================================================================

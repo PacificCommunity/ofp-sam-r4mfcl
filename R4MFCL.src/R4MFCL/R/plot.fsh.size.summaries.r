@@ -1,6 +1,3 @@
-#' @importFrom ggplot2 ggsave ggplot xlab ylab facet_wrap geom_bar
-#' @importFrom ggplot2 ggplot 
-#' @importFrom reshape2 melt
 #plot.fsh.size.summaries(filename="Q:/skj/2014/assessment/Model_runs/R4D/length.fit",
 #                                   xlabel="Length (cm)",remove.fsh="TRUE",
 #                                   fsh.labels=paste(letters[1:23],"1",sep=""), Ncols=4,
@@ -10,6 +7,9 @@
 #                                   xlabel="Weight (kg)",remove.fsh="TRUE",
 #                                   fsh.labels=c(letters,paste(letters[1:7],"1",sep="")), Ncols=4,
 #                                   plotname="SizeFit.png", plot.wdth=12, plot.hgt=10, line.wdth=1.2)
+#' @importFrom ggplot2 ggsave ggplot xlab ylab facet_wrap geom_bar
+#' @importFrom ggplot2 ggplot 
+# ' @importFrom reshape2 melt
 
 plot.fsh.size.summaries = function(filename,xlabel,remove.fsh,fsh.labels,Ncols,plotname,plot.wdth,plot.hgt,line.wdth)
 {

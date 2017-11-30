@@ -64,7 +64,8 @@ Fj <- aggregate(x, list(year), sum)[,-1]
 year <- sort(unique(year))
 
 #browser()
-    windows(7,4.5)
+#    windows(7,4.5)
+    dev.new(width=7,height=4.5)
 
     plot(year,Fm,type='l',ylim=range(0,Fm, Fj),ann=F,axes=F,lwd=2)
 if(COL)

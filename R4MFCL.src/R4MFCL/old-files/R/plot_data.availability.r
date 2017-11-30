@@ -1,4 +1,5 @@
-plot.data.availability = function(frqfile=read.frq(basefrq), spp='skj', timespan=c(1950,2012), gear=gearspecs, fleets=spp_fleets)
+#' @export
+plot_data.availability = function(frqfile=read.frq(basefrq), spp='skj', timespan=c(1950,2012), gear=gearspecs, fleets=spp_fleets)
 {
     Nfshry = frqfile$struct$nf
       plotcols = gear$cls[match(fleets$gear,gear$code)]

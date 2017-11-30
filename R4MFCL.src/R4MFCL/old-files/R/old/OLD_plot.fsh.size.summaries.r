@@ -10,7 +10,7 @@
 #                                   plotname="SizeFit.png", plot.wdth=12, plot.hgt=10, line.wdth=1.2)
 
 # SJDM 19/06/2014
-
+#' @importFrom reshape2 melt
 plot.fsh.size.summaries = function(filename,xlabel,remove.fsh,fsh.labels,plotname,plot.wdth,plot.hgt,line.wdth)
 {
     require(ggplot2)

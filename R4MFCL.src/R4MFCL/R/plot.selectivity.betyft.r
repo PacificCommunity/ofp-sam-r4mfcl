@@ -1,7 +1,7 @@
 #' SJDM - Changed it to a ggplot as was easier to control and far less code
 #' @importFrom ggplot2 ggplot
 #' @importFrom ggplot2 geom_bar facet_wrap xlab ylab
-#' @importFrom reshape2 melt
+#  ' @importFrom reshape2 melt
 plot.selectivity.betyft <- function(repfile=read.rep("final-rp.glm.rep"), fleetlabs=BET_fleet$fnames)
 {
 #require(reshape2)

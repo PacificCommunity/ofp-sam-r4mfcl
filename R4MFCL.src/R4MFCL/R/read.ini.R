@@ -1,3 +1,4 @@
+#' @export
 read.ini <- function(ini.file,nSp=2,nReg=2,mpy=4,incidence=c(1,1))
 ##============================================================================
 ## by Simon Hoyle June 2008
