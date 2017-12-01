@@ -1,6 +1,7 @@
 #' @importFrom ggplot2 geom_point geom_line facet_wrap theme element_blank theme_set theme_bw aes_string
 #' @importFrom magrittr "%<>%" "%>%"
-#' @importFrom dplyr filter_ mutate mutate_  summarise_
+#' @importFrom dplyr filter mutate summarise
+#' @importFrom rlang quo
 #' @importFrom stats setNames
 #' @export
 plot_cpue.with.cvs <- function(repfile=read.rep("ALB15/plot-12.par.rep"), frqfiles=read.frq("ALB15/alb.frq"),
@@ -21,31 +22,23 @@ theme_set(theme_bw())
 
     mat <- as.data.frame(frqfiles$mat)
     mat$se[mat$effort == -1] <- NA
-    mat$effort[mat$effort == -1] <- NA
-#    mat %<>% filter(fishery %in% nfish) %>% mutate(cpue = catch/effort, cvs = 1/sqrt(2*se), yrqtr = year + (qtr - 0.5)/12)
-    mat %<>% filter_("fishery %in% nfish") %>% 
-    					mutate_(.dot=list(setNames(quote(catch/effort),"cpue"), 
-    														setNames(quote(1/sqrt(2*se)),"cvs"), 
-    														setNames(quote(year + (qtr - 0.5)/12),"yrqtr")))
+    mat$effort[mat$effort == -1] <- NA  
+    mat %<>% filter('%in%'(!!quo(fishery), !!quo(nfish))) %>% mutate(cpue = !!quo(catch/effort), cvs = !!quo(1/sqrt(2*se)), yrqtr = !!quo(year + (qtr - 0.5)/12))
 
     fshmeans <- aggregate(mat$cpue, list(mat$fishery), mean, na.rm=TRUE)
     mat$cpue <- mat$cpue/fshmeans[match(mat$fishery, fshmeans[,1]),2]
 
- #   mat %<>% mutate(LL = exp(log(cpue) - 2*cvs), UL = exp(log(cpue) + 2*cvs))
-    mat %<>% mutate_(.dots=list(setNames(quote(exp(log(cpue) - 2*cvs)),"LL"), setNames(quote(exp(log(cpue) + 2*cvs)),"UL")))
-
+     mat %<>% mutate(LL = !!quo(exp(log(cpue) - 2*cvs)), UL = !!quo(exp(log(cpue) + 2*cvs)))
+ 
 
     pldat <- merge(mat, tmp, by=c("yrqtr","fishery"), all.y=TRUE)
     pldat$fishery <- factor(fleetlabs[pldat$fishery], levels = fac.levels)
     pldat$years <- floor(pldat$yrqtr)
-#    cat("L27\n");browser()
+
     if(plot.annual){
-    #    pldat %<>% group_by(!!"fishery, years") %>% summarise(cpue = mean(cpue, na.rm=TRUE),
-    #                                                      LL = mean(LL, na.rm=TRUE),
-    #                                                      UL = mean(UL, na.rm=TRUE))
-        pldat %<>% group_by(!!"fishery, years") %>% summarise_(.dot=list(setNames(quote(mean(cpue, na.rm=TRUE)),"cpue"),
-                                                          setNames(quote(mean(LL, na.rm=TRUE)),"LL"),
-                                                          setNames(quote(mean(UL, na.rm=TRUE)),"UL")))
+    pldat %<>% group_by(!!quo(fishery), !!quo(years)) %>% summarise(cpue = !!quo(mean(cpue, na.rm=TRUE)),
+                                                          LL = !!quo(mean(LL, na.rm=TRUE)),
+                                                          UL = !!quo(mean(UL, na.rm=TRUE)))
         pldat$yrqtr <- pldat$years
     }
 
