@@ -18,7 +18,8 @@ Imports:
   reshape2,
   maps,
   rlang,
-  data.table
+  data.table,
+  gridExtra
 Maintainer: Robert Scott <roberts2@spc.int>; Simon Hoyle <simon.hoyle@gmail.com> ; Sam McKechnie <samm@spc.int> and Yukio Takeuchi <yukiot@spc.int>
 License: GPL-2
 Date: 2017-11-24
