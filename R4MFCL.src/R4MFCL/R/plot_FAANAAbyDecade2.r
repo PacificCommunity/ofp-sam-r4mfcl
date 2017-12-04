@@ -5,6 +5,7 @@
 # ' @importFrom scales 
 #' @importFrom gridExtra grid.arrange
 #' @importFrom magrittr "%>%" 
+#' @export
 #'
 plot_FAANAAbyDecade2<-function(rep,plot=TRUE,verbose=TRUE,Year=1952:2015,col=heat.colors(7),
 YLAB="average N@A by decade"){

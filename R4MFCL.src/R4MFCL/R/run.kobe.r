@@ -1,3 +1,6 @@
+#' 
+#'
+#' @export
 run.kobe <- function(
 rootdir=  "C:/bet/2014/assessment/Setup",
 basedir="C:/bet/2014/assessment/Model_runs/2014s/Run238",

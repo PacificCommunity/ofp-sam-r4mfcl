@@ -5,6 +5,7 @@
 # ' @importFrom scales 
 #' @importFrom gridExtra grid.arrange
 #' @importFrom magrittr "%>%" 
+#' @export
 #'
 plot_FAA<-function(rep,plot=TRUE,verbose=TRUE,Year=1952:2015,YLAB="Fishing mortality/year",onlyTotal=FALSE){
 #library(dplyr)
