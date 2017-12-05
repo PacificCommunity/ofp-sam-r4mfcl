@@ -6,11 +6,12 @@
 #' @param fit if TRUE and if overall.composition.plo is TRUE predicted fits will be overlayed to overall.composition.plot
 #' @param plot TRUE plot will be created on screen
 #' @param plot.ctl list of control param,aters for overall.composition.plot
-#' @importFrom dplyr filter select_
+#' @importFrom dplyr filter select_ summarize select
 #' @importFrom tidyr gather unite separate unite_ gather_
 #' @importFrom magrittr "%>%"
-#' @importFrom ggplot2 ggplot geom_bar geom_line xlab ylab theme_set theme_bw element_blank
-#' @import scales 
+#' @importFrom ggplot2 ggplot geom_bar geom_line xlab ylab theme_set theme_bw element_blank aes_string
+#' @importFrom rlang quo
+# ' @import scales 
 #' @importFrom stringr str_pad
 #' @export
  read.fit.new <-
@@ -277,8 +278,8 @@ function(fit.file,
                     #      nsmpl,RealFishery,Sp,Gender,Set,remove=TRUE,sep="_")
                     else
                       stop("nSp=",nSp)
-                    } %>% gather_(key_col="bin",value_col="frq",gather_cols="-United")->tmp2
-              #     } %>% gather(key=bin,value=frq,-United)->tmp2
+              #      } %>% gather_(key_col="bin",value_col="frq",gather_cols="-United")->tmp2
+                   } %>% gather(key=!!quo(bin),value=!!quo(frq),-!!quo(United))->tmp2
   if(verbose)cat("L269 ; ") # ;browser()
   longdata<-tmp2 %>% { if(version==1)
                         separate(.,col=United,into=c("timeperiod","month","week","Fishery","Set"),sep="_")
@@ -298,16 +299,18 @@ function(fit.file,
 
   newdata.obs %>% {
                     if(version==1)
-                      unite(.,United,timeperiod,month,week,Fishery,Set,remove=TRUE,sep="_")
+                      unite(.,!!quo(United),!!quo(timeperiod),!!quo(month),!!quo(week),!!quo(Fishery),!!quo(Set),remove=TRUE,sep="_")
                     else if(version==2)
-                      select(.,-Fishery) %>%unite(United,timeperiod,month,week,RealFishery,Sp,Set,remove=TRUE,sep="_")
+                      select(.,-!!quo(Fishery)) %>%unite(!!quo(United),!!quo(timeperiod),
+                        !!quo(month),!!quo(week),!!quo(RealFishery),!!quo(Sp),!!quo(Set),remove=TRUE,sep="_")
                     else if(nSp==1)
-                      select(.,-Fishery) %>%
-                        unite(United,timeperiod,month,week,Both,nsmpl,RealFishery,Sp,Gender,Set,remove=TRUE,sep="_")
+                      select(.,-!!quo(Fishery)) %>%
+                        unite(!!quo(United),!!quo(timeperiod),!!quo(month),!!quo(week),
+                          !!quo(Both),!!quo(nsmpl),!!quo(RealFishery),!!quo(Sp),!!quo(Gender),!!quo(Set),remove=TRUE,sep="_")
                     else if(nSp==2)
                       select(.,-Fishery) %>%
-                        unite(United,timeperiod,month,week,Male,Female,
-                          nsmpl,RealFishery,Sp,Gender,Set,remove=TRUE,sep="_")
+                        unite(!!quo(United),!!quo(timeperiod),!!quo(month),!!quo(week),!!quo(Male),!!quo(Female),
+                          !!quo(nsmpl),!!quo(RealFishery),!!quo(Sp),!!quo(Gender),!!quo(Set),remove=TRUE,sep="_")
                     else
                       stop("nSp=",nSp)
                    } %>% gather(key=bin,value=frq,-United)->tmp2
@@ -329,20 +332,20 @@ function(fit.file,
 
     if(overall.composition.plot){
       if(nSp==1 || version<=2)stop("overall.composition.plot is only available for 2 sex and version 3 fit file")
-      plot.data <- longdata %>% group_by(RealFishery,Gender,Set,SizeBin) %>% summarize(n=sum(frq))
+      plot.data <- longdata %>% group_by(!!quo(RealFishery),!!quo(Gender),!!quo(Set),!!quo(SizeBin)) %>% summarize(n=!!quo(sum(frq)))
       plot.data$Fishery<-
         paste(if(nfish/2<10){
           plot.data$RealFishery}else{str_pad(paste(plot.data$RealFishery),width=2,pad="0")},
           plot.ctl$fleetlabs[as.numeric(paste(plot.data$RealFishery))],sep="_")
       if(verbose){cat("L327 ;");cat("colnames(plot.data):\n",colnames(plot.data),"\n")}
-      p<-plot.data %>% dplyr::filter(.,Set=="Obs") %>% ggplot(aes(x=SizeBin,y=n))+
+      p<-plot.data %>% dplyr::filter(.,Set=="Obs") %>% ggplot(aes_string(x="SizeBin",y="n"))+
         geom_bar(stat="identity", colour=plot.ctl$fillcol, fill=plot.ctl$fillcol)+
         facet_wrap(~Fishery,ncol=plot.ctl$Ncols,scales="free_y",dir=plot.ctl$dir)
       p<-p+xlab(plot.ctl$xlabel) + ylab("Samples")
       if(fit){
         if(verbose){cat("L333 ; ");cat("colnames(plot.data):\n",colnames(plot.data),"\n")}
         p<-p+ plot.data %>% dplyr::filter(.,Set=="Pred") %>%
-          geom_line(data=.,aes(x=SizeBin,y=n,group=Gender,color=Gender), size=plot.ctl$line.wdth,position="Stack")
+          geom_line(data=.,aes_string(x="SizeBin",y="n",group="Gender",color="Gender"), size=plot.ctl$line.wdth,position="Stack")
       }
       p<-p+scale_y_continuous(breaks=pretty_breaks(n=plot.ctl$nbrks)) +
                 theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
@@ -352,27 +355,27 @@ function(fit.file,
                     if(version==1)
                       unite(.,United,timeperiod,month,week,Fishery,Set,remove=TRUE,sep="_")
                     else if(version==2)
-                      select(.,-Fishery) %>%unite(United,timeperiod,month,week,RealFishery,Sp,Set,remove=TRUE,sep="_")
+                      select(.,-Fishery) %>%unite(United,timeperiod,month,week,!!quo(RealFishery),Sp,Set,remove=TRUE,sep="_")
                     else if(nSp==1)
                       select(.,-Fishery) %>%
-                        unite(United,timeperiod,month,week,Both,nsmpl,RealFishery,Sp,Gender,Set,remove=TRUE,sep="_")
+                        unite(United,timeperiod,month,week,Both,nsmpl,!!quo(RealFishery),Sp,Gender,Set,remove=TRUE,sep="_")
                     else if(nSp==2)
                       select(.,-Fishery) %>%
                         unite(United,timeperiod,month,week,Male,Female,
-                          nsmpl,RealFishery,Sp,Gender,Set,remove=TRUE,sep="_")
+                          nsmpl,!!quo(RealFishery),Sp,Gender,Set,remove=TRUE,sep="_")
                     else
                       stop("nSp=",nSp)
                    } %>% gather(key=bin,value=frq,-United)->tmp2
   if(verbose)cat("L353 ;") # ;browser()
   longdata.pred<-tmp2 %>% { if(version==1)
-                        separate(.,col=United,into=c("timeperiod","month","week","Fishery","Set"),sep="_")
+                        separate(.,col=!!quo(United),into=c("timeperiod","month","week","Fishery","Set"),sep="_")
                       else if(version==2)
-                        separate(.,col=United,into=c("timeperiod","month","week","RealFishery","Sp","Set"),sep="_")
+                        separate(.,col=!!quo(United),into=c("timeperiod","month","week","RealFishery","Sp","Set"),sep="_")
                       else  if(nSp==2)
-                        separate(.,col=United,into=c("timeperiod","month","week","Male",
+                        separate(.,col=!!quo(United),into=c("timeperiod","month","week","Male",
                           "Female","nsmpl","RealFishery","Sp","Gender","Set"),sep="_")
                       else if(nSp==1)
-                        separate(.,col=United,into=c("timeperiod","month","week","Both","nsmpl",
+                        separate(.,col=!!quo(United),into=c("timeperiod","month","week","Both","nsmpl",
                           "RealFishery","Sp","Gender","Set"),sep="_")
                       else
                         stop("nSp=",nSp)
