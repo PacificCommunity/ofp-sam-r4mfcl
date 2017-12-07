@@ -10,7 +10,7 @@
 #' @importFrom tidyr gather unite separate unite_ gather_
 #' @importFrom magrittr "%>%"
 #' @importFrom ggplot2 ggplot geom_bar geom_line xlab ylab theme_set theme_bw element_blank aes_string
-#' @importFrom rlang quo
+#' @importFrom rlang quo sym syms ":="
 # ' @import scales 
 #' @importFrom stringr str_pad
 #' @export
@@ -151,34 +151,6 @@ function(fit.file,
   return(newdata.tmp)
   }
 
-  if(0){
-  newdata.obs<-lapply((1:length(dates))[!sapply(dates,"is.null")],function(i){
-    if(verbose)cat("L122 ; i=",i,";")
-    tmp<-if(version<=2){
-      cbind(dates[[i]],obslf[[i]])
-    }else{
-      if(dim(dates[[i]])[1]>1){
-        cbind(dates[[i]],spPtr[[i]],smplSz[[i]],obslf[[i]])
-      }else{
-        cbind(dates[[i]],t(spPtr[[i]]),smplSz[[i]],obslf[[i]])
-      }
-    }
-    tmp$Fishery<-i
-    tmp$Sp<-if(version>2){
-      fishSpPtr[i]
-    }else if(version==2){
-      ifelse(i<=(nfish/nSp),1,2) 
-    }else{
-      NA
-    }
-    if(version>2)tmp$Gender<-ifelse(fishSpPtr[i]==1,1,2)
-    if(version>=2)tmp$RealFishery<-ifelse(i<=nfish/nSp,i,i-nfish/nSp)
-    colnames(tmp)[1:3]<-c("Year","Month","Week")
-    if(version>2)colnames(tmp)[4:5]<-c("Sp1","Sp2")
-    tmp$Set<-"Obs"
-    return(tmp)
-  })
-  }
   newdata.obs<-makeNewdata(obslf)
   if(verbose)cat("L142 ;") 
   ############## for version >2 ############
@@ -186,7 +158,7 @@ function(fit.file,
   if(version>2 & nSp>1){
     if(verbose)cat("L151 ;") 
     n<-length(newdata.obs)
-    for(i in 1:(n/2)){
+    for(i in 1:(n/nSp)){
       fish<-as.numeric(unique(newdata.obs[[i]]$Fishery))
       if(!is.null(spPtr[[fish]]) & any(spPtr[[fish]]==spPtr[[fish+nfish/nSp]]) &
         any(spPtr[[fish]][,1]==spPtr[[fish+nfish/2]][,2]) ){
@@ -207,33 +179,7 @@ function(fit.file,
   if(verbose)cat("L171;") 
 
 ###################################################
-  if(0){
-  newdata.pred<-lapply((1:length(dates))[!sapply(dates,"is.null")],function(i){
-    tmp<-if(version<=2){
-      cbind(dates[[i]],predlf[[i]])
-    }else{
-      if(dim(dates[[i]])[1]>1){
-        cbind(dates[[i]],spPtr[[i]],smplSz[[i]],predlf[[i]])
-      }else{
-        cbind(dates[[i]],t(spPtr[[i]]),smplSz[[i]],predlf[[i]])
-      }
-    }
-    tmp$Fishery<-i
-    tmp$Sp<-if(version==1){
-      NA
-    }else if(version==2){
-      ifelse(i<=(nfish/nSp),1,2) # This may need to be changed to ifelse(i<=(nfish/2),1,2)
-    }else{
-      fishSpPtr[i]
-    }
-    if(version>2)tmp$Gender<-ifelse(fishSpPtr[i]==1,"Male","Female")
-    if(version>=2)tmp$RealFishery<-ifelse(i<=nfish/nSp,i,i-nfish/nSp)
-        colnames(tmp)[1:3]<-c("Year","Month","Week")
-    if(version>2)colnames(tmp)[4:5]<-c("Sp1","Sp2")
-    tmp$Set<-"Pred"
-    return(tmp)
-  })
-  }
+ 
   newdata.pred<-makeNewdata(predlf)
   if(verbose)cat("L199 ;") 
   ####### for version>2 & nSp>1
@@ -247,80 +193,84 @@ function(fit.file,
     pcatch1<-1:length(dates) %>% sapply(function(i){
                         tmp<-sapply(yq[[i]],function(x){which(Rlz.t.fsh1[i,]==x)});if(length(tmp)>0){pcatch[i,tmp]}else{NULL}
                     })
-    if(verbose)cat("length(pcatch)=",length(pcatch),"\n")
-    if(verbose)cat("length(pcatch1)=",length(pcatch1),"\n")
+    if(verbose)cat("length(pcatch)=",length(pcatch),"\n","length(pcatch1)=",length(pcatch1),"\n")
 
     for(i in 1:length(newdata.pred)){
-      if(verbose)cat("L215 i=",i,";")
+      if(verbose)cat("L199 i=",i,";")
       fish<-as.numeric(unique(newdata.pred[[i]]$Fishery))
       prop<-pcatch1[[fish]]/if(fish<=nfish/nSp){
         pcatch1[[fish]]+pcatch1[[fish+nfish/nSp]]}else{pcatch1[[fish-nfish/nSp]]+pcatch1[[fish]]}
       newdata.pred[[i]][5+1:nbins]<-newdata.pred[[i]][5+1:nbins]*prop*newdata.pred[[i]]$smplSz
     }
   }
-  if(verbose)cat("L222 ;") 
+  if(verbose)cat("L206 ;") 
   ####################################
   newdata.pred<-do.call("rbind",newdata.pred)
-  if(verbose)cat("L225 ;") #;
+  if(verbose)cat("L209 ;") #;
   newdata<-rbind(newdata.obs,newdata.pred)
   #########################################
-  if(version==1){
-    colnames(newdata)[3+1:nbins]<-
-        paste0(ifelse(fit.file=="length.fit","L","W"),seq(from=binfirst,length.out=nbins,by=binwidth))
+  col.offset<-if(version==1){
+    3
   }else{
-    if(nSp>1){
-      colnames(newdata)[6+1:nbins]<-
-        paste0(ifelse(fit.file=="length.fit","L","W"),seq(from=binfirst,length.out=nbins,by=binwidth))
-    }else{
-      colnames(newdata)[5+1:nbins]<-
-        paste0(ifelse(fit.file=="length.fit","L","W"),seq(from=binfirst,length.out=nbins,by=binwidth))
-    }
+    ifelse(nSp==1,5,6)
   }
-  if(verbose)cat("L240 ;") 
+  colnames(newdata)[col.offset+1:nbins]<-
+        paste0(ifelse(fit.file=="length.fit","L","W"),seq(from=binfirst,length.out=nbins,by=binwidth))
+
+  if(verbose)cat("L220 ;") 
   colnames(newdata.pred)[1:3]<-colnames(newdata.obs)[1:3]<-colnames(newdata)[1:3]<-c("timeperiod","month","week")
   col.offset<-ifelse(version>2,3,1)
   if(version>2){
     colnames(newdata.pred)[4:(4+nSp)]<-colnames(newdata.obs)[4:(4+nSp)]<-colnames(newdata)[4:(4+nSp)]<-
                     if(nSp==1){c("Both","nsmpl")}else{c("Male","Female","nsmpl")}
   }
-  if(verbose)cat("L248 ;") 
+  if(verbose)cat("L227 ;") 
   colnames(newdata.pred)[col.offset+1+nSp+1:nbins]<-
   colnames(newdata.obs)[col.offset+1+nSp+1:nbins]<-paste0(binfirst+(0:(nbins-1))*binwidth)
-  
-  if(verbose)cat("L251 ;")  
+  if(0){
+  if(verbose)cat("L231 ;")  
+  from.nm<-if(version==1){
+    c("timeperiod","month","week","Fishery","Set")
+  }else if(version==2){
+    c("timeperiod","month","week","RealFishery","Sp","Set")
+  }else if(version>2 & nSp==1){
+    c("timeperiod","month","week","Both","nsmpl","RealFishery","Sp","Gender","Set")
+  }else if(version>2 &  nSp==2){
+    c("timeperiod","month","week","Male","Female","nsmpl","RealFishery","Sp","Gender","Set")
+  }
+  }
   newdata %>% {
+                if(1){
                     if(version==1)
-                 #     unite(.,United,timeperiod,month,week,Fishery,Set,remove=TRUE,sep="_")
-                      unite_(.,col="United",from=c("timeperiod","month","week","Fishery","Set"),remove=TRUE,sep="_")
+                      unite(.,col="United",from=!!!syms(c("timeperiod","month","week","Fishery","Set")),remove=TRUE,sep="_")
                     else if(version==2)
-                      select_(.,"-Fishery") %>%unite_(col="United",from=c("timeperiod","month","week","RealFishery","Sp","Set"),remove=TRUE,sep="_")
-                  #    select(.,-Fishery) %>%unite(United,timeperiod,month,week,RealFishery,Sp,Set,remove=TRUE,sep="_")
+                      select_(.,!!sym("-Fishery")) %>%unite(col="United",from=!!!syms(c("timeperiod","month","week","RealFishery","Sp","Set")),remove=TRUE,sep="_")
                     else if(version>2 & nSp==1)
-                      select_(.,"-Fishery") %>%
-                         unite_(.,col="United",from=c("timeperiod","month","week","Both","nsmpl","RealFishery","Sp","Gender","Set"),remove=TRUE,sep="_")
-                   # select(.,-Fishery) %>%
-                   #     unite(United,timeperiod,month,week,Both,nsmpl,RealFishery,Sp,Gender,Set,remove=TRUE,sep="_")
+                    select(.,-!!sym("Fishery")) %>%
+                         unite(col="United",!!!syms(c("timeperiod","month","week","Both","nsmpl","RealFishery","Sp","Gender","Set")),remove=TRUE,sep="_")
                     else if(version>2 &  nSp==2)
-                      select_(.,"-Fishery") %>%
-                        unite_(col="United",from=c("timeperiod","month","week","Male","Female",
-                          "nsmpl","RealFishery","Sp","Gender","Set"),remove=TRUE,sep="_")
-                    # select(.,-Fishery) %>%    
-                    #    unite(United,timeperiod,month,week,Male,Female,
-                    #      nsmpl,RealFishery,Sp,Gender,Set,remove=TRUE,sep="_")
+                      select(.,-!!sym("Fishery")) %>%
+                        unite_(col="United",!!!syms(c("timeperiod","month","week","Male","Female",
+                          "nsmpl","RealFishery","Sp","Gender","Set")),remove=TRUE,sep="_")
                     else
                       stop("nSp=",nSp)
+                }
+         #       if(version==1)
+         #         unite(.,col="United",from=!!!from.nm)
+         #       else if(version==2)
+         #         select(.,-!!"Fishery")
               #      } %>% gather_(key_col="bin",value_col="frq",gather_cols="United")->tmp2
-                   } %>% gather(key=!!quo(bin),value=!!quo(frq),-!!quo(United))->tmp2
-  if(verbose)cat("L275 ; ") # ;browser()
+                   } %>% gather(key=!!sym("bin"),value=!!sym("frq"),-!!sym("United"))->tmp2
+  if(verbose)cat("L272 ; ")  #;browser()
   longdata<-tmp2 %>% { if(version==1)
-                        separate(.,col=!!quo(United),into=c("timeperiod","month","week","Fishery","Set"),sep="_")
+                        separate(.,col=!!sym("United"),into=c("timeperiod","month","week","Fishery","Set"),sep="_")
                       else if(version==2)
-                        separate(.,col=!!quo(United),into=c("timeperiod","month","week","RealFishery","Sp","Set"),sep="_")
+                        separate(.,col=!!sym("United"),into=c("timeperiod","month","week","RealFishery","Sp","Set"),sep="_")
                       else  if(version>2 & nSp==2)
-                        separate(.,col=!!quo(United),into=c("timeperiod","month","week","Male",
+                        separate(.,col=!!sym("United"),into=c("timeperiod","month","week","Male",
                           "Female","nsmpl","RealFishery","Sp","Gender","Set"),sep="_")
                       else if(version>2 & nSp==1)
-                        separate(.,col=!!quo(United),into=c("timeperiod","month","week","Both","nsmpl",
+                        separate(.,col=!!sym("United"),into=c("timeperiod","month","week","Both","nsmpl",
                           "RealFishery","Sp","Gender","Set"),sep="_")
                       else
                         stop("nSp=",nSp)
@@ -330,31 +280,32 @@ function(fit.file,
 
   newdata.obs %>% {
                     if(version==1)
-                      unite(.,!!quo(United),!!quo(timeperiod),!!quo(month),!!quo(week),!!quo(Fishery),!!quo(Set),remove=TRUE,sep="_")
+              #        unite(.,col="United",!!quo(timeperiod),!!quo(month),!!quo(week),!!quo(Fishery),!!quo(Set),remove=TRUE,sep="_")
+                      unite(.,col="United",!!!syms(c("timeperiod","month","week","Fishery","Set")),remove=TRUE,sep="_")
                     else if(version==2)
-                      select(.,-!!quo(Fishery)) %>%unite(!!quo(United),!!quo(timeperiod),
-                        !!quo(month),!!quo(week),!!quo(RealFishery),!!quo(Sp),!!quo(Set),remove=TRUE,sep="_")
+                      select(.,-!!sym("Fishery")) %>%
+                        unite(col="United",!!!syms(c("timeperiod","month","week","RealFishery","Sp","Set")),remove=TRUE,sep="_")
                     else if(nSp==1)
-                      select(.,-!!quo(Fishery)) %>%
-                        unite(!!quo(United),!!quo(timeperiod),!!quo(month),!!quo(week),
-                          !!quo(Both),!!quo(nsmpl),!!quo(RealFishery),!!quo(Sp),!!quo(Gender),!!quo(Set),remove=TRUE,sep="_")
+                      select(.,-!!sym("Fishery")) %>%
+                        unite(col="United",!!!syms(c("timeperiod","month","week","Both","nsmpl","RealFishery","Sp","Gender","Set")),
+                          remove=TRUE,sep="_")
                     else if(nSp==2)
-                      select(.,-Fishery) %>%
-                        unite(!!quo(United),!!quo(timeperiod),!!quo(month),!!quo(week),!!quo(Male),!!quo(Female),
-                          !!quo(nsmpl),!!quo(RealFishery),!!quo(Sp),!!quo(Gender),!!quo(Set),remove=TRUE,sep="_")
+                      select(.,-!!sym("Fishery")) %>%
+                        unite(col="United",!!!syms(c("timeperiod","month","week","Male","Female",
+                          "nsmpl","RealFishery","Sp","Gender","Set")),remove=TRUE,sep="_")
                     else
                       stop("nSp=",nSp)
-                   } %>% gather(key=bin,value=!!quo(frq),-!!quo(United))->tmp2
+                   } %>% gather(key=bin,value=!!sym("frq"),-!!sym("United"))->tmp2
   if(verbose)cat("L301 ;") # ;browser()
   longdata.obs<-tmp2 %>% { if(version==1)
-                        separate(.,col=!!quo(United),into=c("timeperiod","month","week","Fishery","Set"),sep="_")
+                        separate(.,col=!!sym("United"),into=c("timeperiod","month","week","Fishery","Set"),sep="_")
                       else if(version==2)
-                        separate(.,col=!!quo(United),into=c("timeperiod","month","week","RealFishery","Sp","Set"),sep="_")
+                        separate(.,col=!!sym("United"),into=c("timeperiod","month","week","RealFishery","Sp","Set"),sep="_")
                       else  if(nSp==2)
-                        separate(.,col=!!quo(United),into=c("timeperiod","month","week","Male",
+                        separate(.,col=!!sym("United"),into=c("timeperiod","month","week","Male",
                           "Female","nsmpl","RealFishery","Sp","Gender","Set"),sep="_")
                       else if(nSp==1)
-                        separate(.,col=!!quo(United),into=c("timeperiod","month","week","Both","nsmpl",
+                        separate(.,col=!!sym("United"),into=c("timeperiod","month","week","Both","nsmpl",
                           "RealFishery","Sp","Gender","Set"),sep="_")
                       else
                         stop("nSp=",nSp)
@@ -363,7 +314,7 @@ function(fit.file,
 
     if(overall.composition.plot){
       if(nSp==1 || version<=2)stop("overall.composition.plot is only available for 2 sex and version 3 fit file")
-      plot.data <- longdata %>% group_by(!!quo(RealFishery),!!quo(Gender),!!quo(Set),!!quo(SizeBin)) %>% summarize(n=!!quo(sum(frq)))
+      plot.data <- longdata %>% group_by(!!!syms(c("RealFishery","Gender","Set","SizeBin"))) %>% summarize(!!"n":=sum(sym("frq")))
       plot.data$Fishery<-
         paste(if(nfish/nSp<10){
           plot.data$RealFishery}else{str_pad(paste(plot.data$RealFishery),width=2,pad="0")},
@@ -384,29 +335,29 @@ function(fit.file,
     }
    newdata.pred %>% {
                     if(version==1)
-                      unite(.,!!quo(United),timeperiod,month,week,Fishery,Set,remove=TRUE,sep="_")
+                      unite(.,col="United",timeperiod,month,week,Fishery,Set,remove=TRUE,sep="_")
                     else if(version==2)
-                      select(.,-!!quo(Fishery)) %>%unite(United,timeperiod,month,week,!!quo(RealFishery),Sp,Set,remove=TRUE,sep="_")
+                      select(.,-!!quo(Fishery)) %>%unite(col="United",timeperiod,month,week,!!quo(RealFishery),Sp,Set,remove=TRUE,sep="_")
                     else if(nSp==1)
                       select(.,-!!quo(Fishery)) %>%
-                        unite(United,timeperiod,month,week,Both,nsmpl,!!quo(RealFishery),Sp,Gender,Set,remove=TRUE,sep="_")
+                        unite(col="United",timeperiod,month,week,Both,nsmpl,!!quo(RealFishery),Sp,Gender,Set,remove=TRUE,sep="_")
                     else if(nSp==2)
                       select(.,-quo(Fishery)) %>%
-                        unite(!!quo(United),!!quo(timeperiod),month,week,Male,Female,
+                        unite(col="United",!!quo(timeperiod),month,week,Male,Female,
                           nsmpl,!!quo(RealFishery),Sp,Gender,Set,remove=TRUE,sep="_")
                     else
                       stop("nSp=",nSp)
-                   } %>% gather(key=!!quo(bin),value=!!quo(frq),-!!quo(United))->tmp2
+                   } %>% gather(key=!!quo(bin),value=!!sym("frq"),-!!sym("United"))->tmp2
   if(verbose)cat("L361 ;") # ;browser()
   longdata.pred<-tmp2 %>% { if(version==1)
-                        separate(.,col=!!quo(United),into=c("timeperiod","month","week","Fishery","Set"),sep="_")
+                        separate(.,col=!!sym("United"),into=c("timeperiod","month","week","Fishery","Set"),sep="_")
                       else if(version==2)
-                        separate(.,col=!!quo(United),into=c("timeperiod","month","week","RealFishery","Sp","Set"),sep="_")
+                        separate(.,col=!!sym("United"),into=c("timeperiod","month","week","RealFishery","Sp","Set"),sep="_")
                       else  if(nSp==2)
-                        separate(.,col=!!quo(United),into=c("timeperiod","month","week","Male",
+                        separate(.,col=!!sym("United"),into=c("timeperiod","month","week","Male",
                           "Female","nsmpl","RealFishery","Sp","Gender","Set"),sep="_")
                       else if(nSp==1)
-                        separate(.,col=!!quo(United),into=c("timeperiod","month","week","Both","nsmpl",
+                        separate(.,col=!!sym("United"),into=c("timeperiod","month","week","Both","nsmpl",
                           "RealFishery","Sp","Gender","Set"),sep="_")
                       else
                         stop("nSp=",nSp)
