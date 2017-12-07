@@ -337,12 +337,12 @@ function(fit.file,
                     if(version==1)
                       unite(.,col="United",timeperiod,month,week,Fishery,Set,remove=TRUE,sep="_")
                     else if(version==2)
-                      select(.,-!!quo(Fishery)) %>%unite(col="United",timeperiod,month,week,!!quo(RealFishery),Sp,Set,remove=TRUE,sep="_")
+                      select(.,-!!sym("Fishery")) %>%unite(col="United",timeperiod,month,week,!!quo(RealFishery),Sp,Set,remove=TRUE,sep="_")
                     else if(nSp==1)
-                      select(.,-!!quo(Fishery)) %>%
+                      select(.,-!!sym("Fishery")) %>%
                         unite(col="United",timeperiod,month,week,Both,nsmpl,!!quo(RealFishery),Sp,Gender,Set,remove=TRUE,sep="_")
                     else if(nSp==2)
-                      select(.,-quo(Fishery)) %>%
+                      select(.,-!!sym("Fishery")) %>%
                         unite(col="United",!!quo(timeperiod),month,week,Male,Female,
                           nsmpl,!!quo(RealFishery),Sp,Gender,Set,remove=TRUE,sep="_")
                     else
@@ -350,14 +350,14 @@ function(fit.file,
                    } %>% gather(key=!!quo(bin),value=!!sym("frq"),-!!sym("United"))->tmp2
   if(verbose)cat("L361 ;") # ;browser()
   longdata.pred<-tmp2 %>% { if(version==1)
-                        separate(.,col=!!sym("United"),into=c("timeperiod","month","week","Fishery","Set"),sep="_")
+                        separate(.,col="United",into=c("timeperiod","month","week","Fishery","Set"),sep="_")
                       else if(version==2)
                         separate(.,col=!!sym("United"),into=c("timeperiod","month","week","RealFishery","Sp","Set"),sep="_")
                       else  if(nSp==2)
-                        separate(.,col=!!sym("United"),into=c("timeperiod","month","week","Male",
+                        separate(.,col="United",into=c("timeperiod","month","week","Male",
                           "Female","nsmpl","RealFishery","Sp","Gender","Set"),sep="_")
                       else if(nSp==1)
-                        separate(.,col=!!sym("United"),into=c("timeperiod","month","week","Both","nsmpl",
+                        separate(.,col="United",into=c("timeperiod","month","week","Both","nsmpl",
                           "RealFishery","Sp","Gender","Set"),sep="_")
                       else
                         stop("nSp=",nSp)
@@ -377,7 +377,10 @@ function(fit.file,
                                     nSp=nSp),
                         longdata=longdata,
                         longdata.obs=longdata.obs,
-                        longdata.pred=longdata.pred)
+                        longdata.pred=longdata.pred,
+                        newdata=newdata,
+                        newdata.obs=newdata.obs,
+                        newdata.pred=newdata.pred)
   if(overall.composition.plot){
     results$p<-p
     results$plot.data<-plot.data
