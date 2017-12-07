@@ -27,7 +27,8 @@ function(fit.file,
   # YT June 2017 fixed for version 3 fit file with single species
   # 
   # Quick solution to avoid "R CMD check and no visible binding for global variable '.'"
-  if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "n"))
+  #if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "n"),add=TRUE)
+  .<-"XXXXXX"
   cat("Starting read.fit ;")
   if(overall.composition.plot)theme_set(theme_bw())
   datfromstr<-function (datstring)
@@ -259,27 +260,27 @@ function(fit.file,
   newdata %>% {
                     if(version==1)
                  #     unite(.,United,timeperiod,month,week,Fishery,Set,remove=TRUE,sep="_")
-                      unite_(.,col=c("United","timeperiod","month","week","Fishery","Set"),remove=TRUE,sep="_")
+                      unite_(.,col="United",from=c("timeperiod","month","week","Fishery","Set"),remove=TRUE,sep="_")
                     else if(version==2)
-                      select_(.,"-Fishery") %>%unite_(c("United","timeperiod","month","week","RealFishery","Sp","Set"),remove=TRUE,sep="_")
+                      select_(.,"-Fishery") %>% unite_(col="United",from=c("timeperiod","month","week","RealFishery","Sp","Set"),remove=TRUE,sep="_")
                   #    select(.,-Fishery) %>%unite(United,timeperiod,month,week,RealFishery,Sp,Set,remove=TRUE,sep="_")
                     else if(nSp==1)
                       select_(.,"-Fishery") %>%
-                         unite_(.,col=c("United","timeperiod","month","week","both","nsmpl","RealFishery","Sp","Gender","Set"),remove=TRUE,sep="_")
+                         unite_(.,col="United",from=c("timeperiod","month","week","Both","nsmpl","RealFishery","Sp","Gender","Set"),remove=TRUE,sep="_")
                    # select(.,-Fishery) %>%
                    #     unite(United,timeperiod,month,week,Both,nsmpl,RealFishery,Sp,Gender,Set,remove=TRUE,sep="_")
                     else if(nSp==2)
                       select_(.,"-Fishery") %>%
-                        unite_(col=c("United","timeperiod","month","week","Male","Female",
+                        unite_(col="United",from=c("timeperiod","month","week","Male","Female",
                           "nsmpl","RealFishery","Sp","Gender","Set"),remove=TRUE,sep="_")
                     # select(.,-Fishery) %>%    
                     #    unite(United,timeperiod,month,week,Male,Female,
                     #      nsmpl,RealFishery,Sp,Gender,Set,remove=TRUE,sep="_")
                     else
                       stop("nSp=",nSp)
-                    } %>% gather_(key_col="bin",value_col="frq",gather_cols="-United")->tmp2
-              #     } %>% gather(key=bin,value=frq,-United)->tmp2
-  if(verbose)cat("L269 ; ") # ;browser()
+              #      } %>%  select_(.,"-United") %>% gather_(key_col="bin",value_col="frq")->tmp2
+                   } %>% gather(key=!!quo(bin),value=!!quo(frq),-!!quo(United))->tmp2
+  if(verbose)cat("L283 ; ") 
   longdata<-tmp2 %>% { if(version==1)
                         separate(.,col=United,into=c("timeperiod","month","week","Fishery","Set"),sep="_")
                       else if(version==2)

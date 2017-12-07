@@ -28,7 +28,8 @@ function(fit.file,
   # YT June 2017 fixed for version 3 fit file with single species
   # 
   # Quick solution to avoid "R CMD check and no visible binding for global variable '.'"
-  if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "n"))
+  #if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "n"),add=TRUE)
+  .<-"XXXXXX"
   cat("Starting read.fit ;")
   if(overall.composition.plot)theme_set(theme_bw())
   datfromstr<-function (datstring)
@@ -118,6 +119,39 @@ function(fit.file,
   }
   if(verbose){cat("L119 ;")}
 
+  makeNewdata<-function(lf){
+    if(verbose)cat("starting makeNewdata\n")
+    newdata.tmp<-lapply((1:length(dates))[!sapply(dates,"is.null")],function(i){
+    if(verbose)cat("L124 ; i=",i,";")
+    tmp<-if(version<=2){
+      cbind(dates[[i]],lf[[i]])
+    }else{
+      if(dim(dates[[i]])[1]>1){
+        cbind(dates[[i]],spPtr[[i]],smplSz[[i]],lf[[i]])
+      }else{
+        cbind(dates[[i]],t(spPtr[[i]]),smplSz[[i]],lf[[i]])
+      }
+    }
+################################################
+    tmp$Fishery<-i
+    tmp$Sp<-if(version>2){
+      fishSpPtr[i]
+    }else if(version==2){
+      ifelse(i<=(nfish/nSp),1,2) 
+    }else{
+      NA
+    }
+    if(version>2)tmp$Gender<-ifelse(fishSpPtr[i]==1,1,2)
+    if(version>=2)tmp$RealFishery<-ifelse(i<=nfish/nSp,i,i-nfish/nSp)
+    colnames(tmp)[1:3]<-c("Year","Month","Week")
+    if(version>2)colnames(tmp)[4:5]<-c("Sp1","Sp2")
+    tmp$Set<-ifelse(quote(lf)=="obslf","Obs","Pred")
+    return(tmp)
+  })
+  return(newdata.tmp)
+  }
+
+  if(0){
   newdata.obs<-lapply((1:length(dates))[!sapply(dates,"is.null")],function(i){
     if(verbose)cat("L122 ; i=",i,";")
     tmp<-if(version<=2){
@@ -144,6 +178,8 @@ function(fit.file,
     tmp$Set<-"Obs"
     return(tmp)
   })
+  }
+  newdata.obs<-makeNewdata(obslf)
   if(verbose)cat("L142 ;") 
   ############## for version >2 ############
 
@@ -171,6 +207,7 @@ function(fit.file,
   if(verbose)cat("L171;") 
 
 ###################################################
+  if(0){
   newdata.pred<-lapply((1:length(dates))[!sapply(dates,"is.null")],function(i){
     tmp<-if(version<=2){
       cbind(dates[[i]],predlf[[i]])
@@ -196,6 +233,8 @@ function(fit.file,
     tmp$Set<-"Pred"
     return(tmp)
   })
+  }
+  newdata.pred<-makeNewdata(predlf)
   if(verbose)cat("L199 ;") 
   ####### for version>2 & nSp>1
   if(version>2 & nSp>1){
@@ -247,30 +286,30 @@ function(fit.file,
   if(verbose)cat("L248 ;") 
   colnames(newdata.pred)[col.offset+1+nSp+1:nbins]<-
   colnames(newdata.obs)[col.offset+1+nSp+1:nbins]<-paste0(binfirst+(0:(nbins-1))*binwidth)
-
-  if(verbose)cat("L251 ;")  #;
+  
+  if(verbose)cat("L251 ;")  
   newdata %>% {
                     if(version==1)
                  #     unite(.,United,timeperiod,month,week,Fishery,Set,remove=TRUE,sep="_")
-                      unite_(.,col=c("United","timeperiod","month","week","Fishery","Set"),remove=TRUE,sep="_")
+                      unite_(.,col="United",from=c("timeperiod","month","week","Fishery","Set"),remove=TRUE,sep="_")
                     else if(version==2)
-                      select_(.,"-Fishery") %>%unite_(c("United","timeperiod","month","week","RealFishery","Sp","Set"),remove=TRUE,sep="_")
+                      select_(.,"-Fishery") %>%unite_(col="United",from=c("timeperiod","month","week","RealFishery","Sp","Set"),remove=TRUE,sep="_")
                   #    select(.,-Fishery) %>%unite(United,timeperiod,month,week,RealFishery,Sp,Set,remove=TRUE,sep="_")
                     else if(version>2 & nSp==1)
                       select_(.,"-Fishery") %>%
-                         unite_(.,col=c("United","timeperiod","month","week","both","nsmpl","RealFishery","Sp","Gender","Set"),remove=TRUE,sep="_")
+                         unite_(.,col="United",from=c("timeperiod","month","week","Both","nsmpl","RealFishery","Sp","Gender","Set"),remove=TRUE,sep="_")
                    # select(.,-Fishery) %>%
                    #     unite(United,timeperiod,month,week,Both,nsmpl,RealFishery,Sp,Gender,Set,remove=TRUE,sep="_")
                     else if(version>2 &  nSp==2)
                       select_(.,"-Fishery") %>%
-                        unite_(col=c("United","timeperiod","month","week","Male","Female",
+                        unite_(col="United",from=c("timeperiod","month","week","Male","Female",
                           "nsmpl","RealFishery","Sp","Gender","Set"),remove=TRUE,sep="_")
                     # select(.,-Fishery) %>%    
                     #    unite(United,timeperiod,month,week,Male,Female,
                     #      nsmpl,RealFishery,Sp,Gender,Set,remove=TRUE,sep="_")
                     else
                       stop("nSp=",nSp)
-              #      } %>% gather_(key_col="bin",value_col="frq",gather_cols="-United")->tmp2
+              #      } %>% gather_(key_col="bin",value_col="frq",gather_cols="United")->tmp2
                    } %>% gather(key=!!quo(bin),value=!!quo(frq),-!!quo(United))->tmp2
   if(verbose)cat("L275 ; ") # ;browser()
   longdata<-tmp2 %>% { if(version==1)
