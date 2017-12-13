@@ -1,16 +1,35 @@
+#' Making plots of catchability deviations
+#' @param parfile outputs from read.par
+#' @param plotrepfile outputs of read.rep
+#' @param fleetlabs vector of strings, names of fishery
+#' @param line.col color of lines to be plotted, either name of color or rgb
+#' @param ncol number of columns of plot
+#' @param lnsize line size of lines
+#' @param nbrks number of breaks in Y-axis
+#' @param annual logical if annual average be plotted
 #' @importFrom dplyr group_by summarise
 #' @importFrom magrittr "%>%"
 #' @importFrom ggplot2 ggplot geom_line aes_string xlab ylab
 #' @importFrom ggplot2 scale_y_continuous element_blank facet_wrap theme
 #' @importFrom scales pretty_breaks
+#' @importFrom rlang sym syms
 #' @export
 #'
 #'
-plot_q <- function(parfile=read.par(basepar), plotrepfile=read.rep(baserep), fleetlabs=spp_fleets$fnames, line.col=alpha("red", 0.6),
-                   n.col=4, lnsize=1, nbrks=4, annual=TRUE){
+#plot_q <- function(parfile=read.par(basepar), plotrepfile=read.rep(baserep), fleetlabs=spp_fleets$fnames, line.col=alpha("red", 0.6),
+#                   n.col=4, lnsize=1, nbrks=4, annual=TRUE){
+plot_q <- function(parfile, 
+                   plotrepfile, 
+                   fleetlabs, 
+                   line.col=alpha("red", 0.6),
+                   n.col=4, 
+                   lnsize=1, 
+                   nbrks=4, 
+                   annual=TRUE){
 
-  require(scales)
-  require(magrittr)
+
+#  require(scales)
+#  require(magrittr)
   
   theme_set(theme_bw())
   
@@ -36,11 +55,11 @@ plot_q <- function(parfile=read.par(basepar), plotrepfile=read.rep(baserep), fle
   if(annual)
   {
     plt.dat$Year <- floor(plt.dat$Year)
-    plt.dat %<>% group_by(Year, Fsh) %>% summarise(co = mean(co))
+    plt.dat %<>% group_by(!!!syms(c("Year", "Fsh"))) %>% summarise(co = !!sym("mean(co)"))
   }
   
-  pl <- ggplot(plt.dat, aes(x = Year, y = co)) + geom_line(colour = line.col, size = lnsize) +
-               facet_wrap(~ Fsh, ncol = n.col, scales="free_y") +
+  pl <- ggplot(plt.dat, aes_string(x = "Year", y = "co")) + geom_line(colour = line.col, size = lnsize) +
+               facet_wrap(~ !!sym("Fsh"), ncol = n.col, scales="free_y") +
                xlab("") + ylab("Catchability coefficient (q)") + 
                scale_y_continuous(breaks=pretty_breaks(n=nbrks)) +
                theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())

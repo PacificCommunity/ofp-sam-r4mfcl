@@ -3,15 +3,21 @@
 #' @importFrom tidyr gather separate unite
 #' @importFrom dplyr mutate
 #' @importFrom magrittr '%>%'
-#' @importFrom stringr str_split
+#' @importFrom stringr str_split str_trim
 #' @importFrom data.table as.data.table
+#' @importFrom rlang sym syms
 #' @export
 #'
-plot_selectivity.atAge<-function(filename="selectivity-multi-sex",fishlab=fishlab.swo,
-                          ncol=NULL,
-                          dir="h",
-                          rep=read.rep("plot-09.par.rep"),use.selex.multi.sex=FALSE,plot=TRUE,
-                          verbose=TRUE
+plot_selectivity.atAge<-function(filename="selectivity-multi-sex",
+                                 fishlab,
+                                 xlab="Age",
+                                 ylab="Selectivity",
+                                 ncol=NULL,
+                                 dir="h",
+                                 rep=read.rep("plot-09.par.rep"),
+                                 use.selex.multi.sex=FALSE,
+                                 plot=TRUE,
+                                 verbose=TRUE
                           ){
   if(verbose)cat("Starting plot_selectivityatAge\n")
 #  require(ggplot2)
@@ -35,7 +41,7 @@ plot_selectivity.atAge<-function(filename="selectivity-multi-sex",fishlab=fishla
     yy.dt2<-as.data.table(t(yy))
     yy.dt2$Gender<-rep(c("Male","Female"),nfish)
   }else{
-    if(verbose)cat("L32;") #;browser()
+    if(verbose)cat("L41;") #;browser()
     if(all(rep$SelexTblocks==1)){
       nfish<- dim(rep$SelAtAge)[1]/rep$nSp
       tblocks<-FALSE
@@ -63,7 +69,7 @@ plot_selectivity.atAge<-function(filename="selectivity-multi-sex",fishlab=fishla
     yy.dt2$Gender<-if(nSp>1){c(rep("Male",nfishWTblocks),rep("Female",nfishWTblocks))
     }else{rep("Both",nfishWTblocks)}
   }
-  if(verbose)cat("L64;")
+  if(verbose)cat("L69;")
   fishlab<-if(use.selex.multi.sex & filename=="selectivity-multi-sex" & file.exists(filename) & file.size(filename)>0){
     if(is.null(fishlab)){
       paste(rep(FL0,each=2),paste0("FL",rep(FL0,each=2)),sep="_")
@@ -80,12 +86,13 @@ plot_selectivity.atAge<-function(filename="selectivity-multi-sex",fishlab=fishla
   #######
   if(verbose)cat("L79;")#;browser()
   yy.dt2$Fishery<-fishlab[1:(nfishWTblocks*nSp)]
-  yy.dt2 %>% unite(Fishery_Gender,Fishery,Gender,sep="-") %>%
-      gather(key="AgeClass",value=selex,remove=-Fishery_Gender) %>%
+  yy.dt2 %>% unite(col="Fishery_Gender",!!!syms(c("Fishery","Gender")),sep="-") %>%
+      gather(key="AgeClass",value="selex",remove=-!!sym("Fishery_Gender")) %>%
       separate(col="Fishery_Gender",into=c("Fishery","Gender"),sep="-") %>%
-      mutate(Age=as.numeric(AgeClass),Fish=Fishery)-> yy.dt3
+      mutate(Age=!!sym("as.numeric(AgeClass)"),Fish=!!sym("Fishery"))-> yy.dt3
   p<-yy.dt3 %>% ggplot(aes_string(x="Age",y="selex"))
-  p<-p+geom_line(aes_string(color="Gender"))+geom_point(aes_string(color="Gender"),size=1)+facet_wrap(~Fish,ncol=ncol,dir=dir)+ylab("")
+  p<-p+xlab(xlab)+ylab(ylab)
+  p<-p+geom_line(aes_string(color="Gender"))+geom_point(aes_string(color="Gender"),size=1)+facet_wrap(~Fish,ncol=ncol,dir=dir)+ylab(ylab)
   if(nSp==1)p<-p+labs(colour="")+guides(color=FALSE)    #+guide_legend(label=FALSE)
 #  browser()
   if(plot)print(p)

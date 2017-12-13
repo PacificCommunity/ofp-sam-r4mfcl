@@ -1,5 +1,17 @@
+#' Making summary of temporal trends of catch time series by fishery
+#' @param frq character, file name of frq file 
+#' @param tmp.rep outputs of read.rep
+#' @param ini outputs of read.ini
+#' @param fleetlabs character vector, names of fisheries
+#' @param YLIM numerical vector of length=2, ylim of plot
+#' @param Nrows number of rows of plot
+#' @param Ncols number of columns of plot
+#' @param annual TRUE if plot is summarized by year
+#' @param fish.selblock Currently not used
+#' @importFrom stats aggregate.data.frame rnorm median
+#' @importFrom graphics points segments
 #' @export
-plot_weight.temporal <- function(frq=basefrq, tmp.rep=read.rep(baserep), ini=baseini, fleetlabs=spp_fleets$fnames, YLIM=c(0,200),
+plot_weight.temporal <- function(frq, tmp.rep, ini, fleetlabs, YLIM=c(0,200),
                                 Nrows=5, Ncols=3, annual=FALSE,fish.selblock=4)
 {
   line1 <- grep("# Datasets ", readLines(frq))

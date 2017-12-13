@@ -1,4 +1,4 @@
-#'
+#' @importFrom magrittr "%>%"
 #' @export
 plot_depletion.regional <- function(plotrep=read.rep(baserep),type="SSB", plot.layout=c(5,2), legpos="bottomleft", mainleg="topleft", legplot=5,
                                             windows=c(11,1),ylab="text")
@@ -41,7 +41,7 @@ else
   #year <- B[,1]
   #B <- B[,-1]
   Bnof0<-Bnof <- aggregate(Bnof,list(year),mean)
-  require(magrittr)
+#  require(magrittr)
   SBf0<-Bnof[(nyr-windows[1]):(nyr-windows[2]+1),]%>% colMeans()
 #  cat("L43\n");browser()
 

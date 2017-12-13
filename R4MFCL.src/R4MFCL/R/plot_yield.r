@@ -1,5 +1,9 @@
+#' Making plot of yield curve
+#' @param repfile outputs of read.rep
+#' @param xlimits ranges of F-multiplier
+#' @importFrom graphics title
 #' @export
-plot_yield <- function(repfile=read.rep(baserep), xlimits = c(0,5)){
+plot_yield <- function(repfile, xlimits = c(0,5)){
 
   a <- repfile$Effmult
   y <- repfile$Eq.yield*repfile$nRecs.yr

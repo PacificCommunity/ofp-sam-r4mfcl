@@ -8,7 +8,7 @@ get.multiple.outcomes = function(direcs=c("SKJ14/","SKJ14/"), repnm="plot-12.par
                                  tab.header=c("Quantity","1","2"), calc.quants=c(0.5,0.05,0.95), size.out=NULL, size.per=NULL)
 {
 
-require(xtable)  
+#require(xtable)  
     
     if(length(repnm == 1)) repnm = rep(repnm, length(direcs))
     if(length(parnm == 1)) parnm = rep(parnm, length(direcs))

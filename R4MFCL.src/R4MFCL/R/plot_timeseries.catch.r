@@ -39,15 +39,15 @@ plot_timeseries.catch = function(catdat = "ALB15/catch.rep", repfile = read.rep(
   dat$year <- floor(dat$yrqtr)
   
   if(all.regions){
-      dat %<>% group_by(!!!syms(c("year","gear"))) %>% summarise(tcatch = !!quo(sum(catch)))
+      dat %<>% group_by(!!!syms(c("year","gear"))) %>% summarise(tcatch = !!sym("sum(catch)"))
   } else {
-      dat %<>% group_by(!!!syms(c("year","region","gear"))) %>% summarise(tcatch = !!quo(sum(catch)))  
+      dat %<>% group_by(!!!syms(c("year","region","gear"))) %>% summarise(tcatch = !!sym("sum(catch)"))  
   }
   
   pl <- ggplot(dat, aes_string(x = "year", y = "tcatch/1000", fill = "gear")) + geom_bar(stat="identity", width=brwidth) +
                geom_bar(stat="identity", width=brwidth, colour="black", show_guide=FALSE) + 
-            #   scale_fill_manual(name = "gear", values = collist) +# scale_colour_manual(name = "gear", values = collist) +
-               scale_fill_hue()+
+               scale_fill_manual(name = "gear", values = collist) +# scale_colour_manual(name = "gear", values = collist) +
+            #   scale_fill_hue()+
             #   scale_fill_grey(start=0,end=0.9)+
                xlab('Year') + scale_y_continuous(expand = c(0.01,0), name = "Catch (1,000's mt)") +
                theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),

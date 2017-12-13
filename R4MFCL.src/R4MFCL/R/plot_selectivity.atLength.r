@@ -4,16 +4,21 @@
 #' @importFrom dplyr mutate
 #' @importFrom magrittr '%>%'
 #' @importFrom data.table as.data.table
+#' @importFrom rlang sym syms
 #  ' @importFrom stringr str_split
 #' @export
 #'
 plot_selectivity.atLength<-function(filename="selectivity-multi-sex",
-                                  fishlab=fishlab.swo,
-                                  par=read.par("09.par"),
-                                  rep=read.rep("plot-09.par.rep"),
-                                  xlab="cm",ylab="Selectivity",
-                                  ncol=NULL,dir="h",use.selex.multi.sex=FALSE,plot=TRUE,
-                                  verbose=TRUE){
+                                    fishlab,
+         #                           par=read.par("09.par"),
+                                    rep=read.rep("plot-09.par.rep"),
+                                    xlab="cm",
+                                    ylab="Selectivity",
+                                    ncol=NULL,
+                                    dir="h",
+                                    use.selex.multi.sex=FALSE,
+                                    plot=TRUE,
+                                    verbose=TRUE){
   if(verbose)cat("Starting plot_selectivityatLength\n")
 #  require(R4MFCL)
 #  require(ggplot2)
@@ -24,14 +29,7 @@ plot_selectivity.atLength<-function(filename="selectivity-multi-sex",
 #  require(dplyr)
 #  require(tidyr)
   theme_set(theme_bw())
- if(0){ ## str_pad function taken from package::stringr
-  str_pad<-function (string, width, side = c("left", "right", "both"), pad = " ")
-  {
-    side <- match.arg(side)
-    switch(side, left = stri_pad_left(string, width, pad = pad),
-        right = stri_pad_right(string, width, pad = pad), both = stri_pad_both(string,
-            width, pad = pad))
-  }}
+ 
   if(all(rep$SelexTblocks==1) & use.selex.multi.sex & filename=="selectivity-multi-sex" & file.exists(filename) & file.size(filename)>0){
     xx<-readLines(filename)
      nfishWTblocks<-nfish<-length(grep(xx,pattern="^# fishery"))
@@ -100,10 +98,10 @@ plot_selectivity.atLength<-function(filename="selectivity-multi-sex",
 #  browser()
   if(verbose)cat("L92;")#;browser()
   yy.dt2$Fishery<-fishlab[1:(nfishWTblocks*nSp)]
-  yy.dt2 %>% unite(Fishery_Gender,Fishery,Gender,sep="-") %>%
-    gather(key="AgeClass",value=selex,remove=-Fishery_Gender) %>%
+  yy.dt2 %>% unite(col="Fishery_Gender",!!!syms(c("Fishery","Gender")),sep="-") %>%
+    gather(key="AgeClass",value="selex",remove=-!!sym("Fishery_Gender")) %>%
     separate(col="Fishery_Gender",into=c("Fishery","Gender"),sep="-") %>%
-    mutate(Age=as.numeric(AgeClass),Fish=Fishery)-> yy.dt3
+    mutate(Age=!!sym("as.numeric(AgeClass)"),Fish=!!sym("Fishery"))-> yy.dt3
   if(verbose)cat("L98;") #;  browser()
   yy.dt3$meanL<-1:dim(yy.dt3)[1]
   for(i in 1:dim(yy.dt3)[1]){
@@ -121,9 +119,9 @@ plot_selectivity.atLength<-function(filename="selectivity-multi-sex",
    yy.dt3[i,"meanL"]<-meanL
   }
   if(verbose)cat("L114;") #;browser()
-  p<-yy.dt3 %>% ggplot(aes(x=meanL,y=selex))
+  p<-yy.dt3 %>% ggplot(aes_string(x="meanL",y="selex"))
   p<-p+xlab(xlab)+ylab(ylab)
-   p<-p+geom_line(aes(color=Gender))+geom_point(aes(color=Gender),size=1)+facet_wrap(~Fish,ncol=ncol,dir=dir)
+   p<-p+geom_line(aes_string(color="Gender"))+geom_point(aes_string(color="Gender"),size=1)+facet_wrap(~Fish,ncol=ncol,dir=dir)
   print(p)
 #  browser()
   return(invisible(p))
