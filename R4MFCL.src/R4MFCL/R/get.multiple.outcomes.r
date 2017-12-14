@@ -1,4 +1,16 @@
-#' 
+#' Obtain benchmarks from multiple model runs
+#'
+#' @param direcs vector of string of name of directories to read plot.rep files
+#' @param repnm name(s) of plot.rep file(s) if length(repnm) is 1, same name of rep file will be used
+#' @param parnm name(s) of par file(s)
+#' @param nofsh nofsh
+#' @param nofshp nofshp
+#' @param ltyr latest year
+#' @param vers vers
+#' @param keep.vector vector of string, which benchmarks to be retained
+#' @param rnd.cutoff rnd.cutoff
+#' @param output.tab 
+#'
 #' @importFrom xtable xtable print.xtable
 #' @export
 #'
