@@ -1,10 +1,18 @@
-#'
+#' Making SRR plot 
+#' 
+#' @param repfile outputs of read.rep
+#' @param annual LOGICAL if SRR is annualized
+#' @param xlabel string, caption to x-axis
+#' @param plot LOGICAL if plot be produced to graphic device
+#' @param LEGEN LOGICAL if legend be made
 #' @importFrom ggplot2 ggplot geom_line xlim geom_point ylim xlab ylab theme scale_color_gradient aes_string labs theme_set theme_bw
 #'
 #' @export
 #'
-plot_SRR.gg <- function(repfile=read.rep(baserep), legopt=list(locy=22,locx1=150,xincr=1,yincr=0.5), annual=FALSE,
-                     xlabel="Spawning biomass", l.overide=NULL,plot=TRUE,LEGEND=TRUE){
+plot_SRR.gg <- function(repfile,  annual=FALSE,
+                     xlabel="Spawning biomass",  # l.overide=NULL,
+                     plot=TRUE,
+                     LEGEND=TRUE){
   # default colors is black,red,green3,cyan,magenda,yellow,gray,
 #  require(ggplot2)
   theme_set(theme_bw())

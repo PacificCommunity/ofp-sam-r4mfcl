@@ -1,9 +1,11 @@
-#'
+#' Making plot of maturity at age
 #' 
-#'
+#' @param inifiles string or vector of string of filename(s) of ini file 
+#' @param modlab string or vector of string of model name(s) to be used in legend
+#' @importFrom graphics legend
 #' @export
-plot_maturity.function <- function(inifiles=c(baseini,
-baseini),modlab = c("Base","Base"))
+plot_maturity.function <- function(inifiles,
+                                    modlab = c("Base","Base"))
 {
 # Plot Mat-at-age from some different runs
 # Plots basecase last

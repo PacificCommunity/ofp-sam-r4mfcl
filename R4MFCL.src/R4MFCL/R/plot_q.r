@@ -3,7 +3,7 @@
 #' @param plotrepfile outputs of read.rep
 #' @param fleetlabs vector of strings, names of fishery
 #' @param line.col color of lines to be plotted, either name of color or rgb
-#' @param ncol number of columns of plot
+#' @param n.col number of columns of plot
 #' @param lnsize line size of lines
 #' @param nbrks number of breaks in Y-axis
 #' @param annual logical if annual average be plotted

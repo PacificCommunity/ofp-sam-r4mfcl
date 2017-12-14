@@ -1,7 +1,10 @@
-#'
+#' Making plot of natural mortality
+#' @param repfiles list of outputs of read.rep
+#' @param modlab vector of stringof labels to be used in legend 
+#' @importFrom graphics matplot legend matlines
 #' @export
-plot_natural.mortality.function <- function(repfiles=list(read.rep(baserep),
-read.rep(baserep)),modlab = c("Base","Base"))
+plot_natural.mortality.function <- function(repfiles,
+                                            modlab = c("Base","Base"))
 {
 # Plot M-at-age from some different runs
 # Plots basecase last

@@ -1,21 +1,52 @@
 #fishlab.swo<-c("DW_1N","DW_1C","DW_1S","AU_1","SP_1","Otrher_1","DW_2N","DW_2C_pre","DW_2C_post","DW_2S",
 #    "NZ_2","SP_2","Other_2N","Other_2C")
+#' Making plot of fit of agrreagted size composition data by fishery
 #' 
-#'
-#'
+#' @param filename string file name of **.fit file, either length.fit or weight.fit
+#' @param xlabel string, caption of x-axis
+#' @param remove.fsh logical or string if TRUE or "TRUE", only fishery with data be plotted
+#' @param VecFsh vector of fishery number, probably not used
+#' @param Ncols number of columns of plot in one page
+#' @param line.wdth width of lines 
+#' @param fleetlabs vector of string, names of fishery
+#' @param lincol color of line
+#' @param filcol color of aread filled with color
+#' @param ngrks number of greaks 
+#' @param nSp number of species
+#' @param aggregate LOGICAL  
+#' @param dir character either "h" or "v" if "h" plot be made horizontal order 
+#' @param plot LOGICAL if plot be made to grap
+#' @param verbose LOGICAL if making verbose outputs
+#' @param fit LOGICAL if making overlaying plot of fit or not
+#' @param rep outputs of report.rep, only needed if nSp>1 and fit==T
 #' @importFrom ggplot2 ggplot theme_set theme_bw geom_line aes_string geom_point facet_wrap guides labs ylab
 #' @importFrom ggplot2 geom_bar scale_y_continuous xlab ylab
 #' @importFrom tidyr unite
-#' @importFrom dplyr mutate rename
+#' @importFrom dplyr mutate rename if_else
 #' @importFrom magrittr '%>%'
 # ' @importFrom stringr str_split
 #' @importFrom data.table as.data.table
+#' @importFrom stats na.omit
+#' @importFrom rlang sym syms
 #' @export
 #' 
-plot_overall.composition.fit = function(filename="length.fit", xlabel="Length (cm)", remove.fsh=TRUE,
-                                   VecFsh=1:14, Ncols=4, line.wdth=1.2, fleetlabs=fishlab.swo, lincol="#FF3333",
-                                   fillcol="#6699CC", nbrks=3,nSp=1,aggregate=FALSE,dir="h",
-                                   plot=TRUE,verbose=TRUE,fit=TRUE,rep=NULL)
+plot_overall.composition.fit = function(filename="length.fit", 
+                                        xlabel="Length (cm)", 
+                                        remove.fsh=TRUE,
+                                        VecFsh=1:14, 
+                                        Ncols=4, 
+                                        line.wdth=1.2, 
+                                        fleetlabs, 
+                                        lincol="#FF3333",
+                                        fillcol="#6699CC", 
+                                        nbrks=3,
+                                        nSp=1,
+                                        aggregate=FALSE,
+                                        dir="h",
+                                        plot=TRUE,
+                                        verbose=TRUE,
+                                        fit=TRUE,
+                                        rep=NULL)
 {
 #    require(R4MFCL)
 #    require(ggplot2)
@@ -105,23 +136,23 @@ plot_overall.composition.fit = function(filename="length.fit", xlabel="Length (c
     }
 
     plot.dat <- melt(dat.full, id=c("set","sizebin"))
-#    cat("L70\n");browser()
+
     names(plot.dat)[3:4] <- c("Fishery","freq")   # Format data into the shape required for ggplot
-#    cat("L72\n");browser()
     if(nSp==1){
         plot.dat$Fishery <- factor(fleetlabs[as.numeric(paste(plot.dat$Fishery))], levels = fleetlabs)
     }else{
-      plot.dat %>% mutate(Sp=fishSpPtr[as.numeric(as.character(Fishery))]) %>% mutate(Gender=if_else(Sp==1,"Male","Female")) %>%
-        mutate(Fishery.num=as.numeric(as.character(Fishery))) %>%
-        mutate(tmp=if_else(Fishery.num<=Nfsh/2,Fishery.num,Fishery.num-Nfsh/2)) %>%
-        mutate(Fishery.tmp=if(Nfsh/2<10){tmp}else{str_pad(tmp,width=2,pad="0")}) %>% select(-tmp) %>%
-        mutate(Fishery2=fleetlabs[ifelse(Gender=="Male",Fishery.num,Fishery.num-Nfsh/2)]) %>%
-        unite(Fishery3,Fishery.tmp,Fishery2,remove=TRUE) %>% select(-Fishery)  %>%
-        rename(Fishery=Fishery3) %>% select(-Sp) %>% select(-Fishery.num)->plot.dat
+      plot.dat %>% mutate(Sp=fishSpPtr[as.numeric(as.character(!!sym("Fishery")))]) %>% 
+        mutate(Gender=if_else(!!sym("Sp")==1,"Male","Female")) %>%
+        mutate(Fishery.num=!!sym("as.numeric(as.character(Fishery))")) %>%
+        mutate(tmp=!!sym("if_else(Fishery.num<=Nfsh/2,Fishery.num,Fishery.num-Nfsh/2)")) %>%
+        mutate(Fishery.tmp=if(Nfsh/2<10){tmp}else{str_pad(tmp,width=2,pad="0")}) %>% select(-!!sym("tmp")) %>%
+        mutate(Fishery2=fleetlabs[ifelse(!!sym("Gender")=="Male",!!sym("Fishery.num"),!!sym("Fishery.num-Nfsh/2"))]) %>%
+        unite(col="Fishery3",!!!syms(c("Fishery.tmp","Fishery2")),remove=TRUE) %>% select(-!!sym("Fishery"))  %>%
+        rename(Fishery=!!sym("Fishery3")) %>% select(-!!sym("Sp")) %>% select(-!!sym("Fishery.num"))->plot.dat
         plot.dat$freq<-plot.dat$freq*0.5
 #        plot.dat %>% group_by(set,Fishery,sizebin,Gender)  %>% summarise_each(funs(mean)) %>%   # debug_pipe() %>%
 #          filter(set == "Observed") %>% select(-Gender)  %>%summarise_each(funs(sum)) ->plot.dat.obs  ## Need to check if sum is OK
-#        cat("L113\n");browser()
+
     ## Need to make conditioning  if there is Gender specific observed size composition
     }
 #   if(verbose)cat("L103\n");browser()

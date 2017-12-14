@@ -1,6 +1,20 @@
+#' Making time series trend of depletion by region
+#'
+#' @param plotrep output of read.rep
+#' @param type string if type=="SSB" depletion in terms of SSB is used, otherwise depeletion in terms of total biomass is calculated
+#' @param plot.layout plot.layout
+#' @param legpos position of legend
+#' @param mainleg mainleg
+#' @param legplot legplot
+#' @param windows windows
+#' @param ylab ylab
+#'
 #' @importFrom magrittr "%>%"
 #' @export
-plot_depletion.regional <- function(plotrep=read.rep(baserep),type="SSB", plot.layout=c(5,2), legpos="bottomleft", mainleg="topleft", legplot=5,
+plot_depletion.regional <- function(plotrep,
+                                    type="SSB", 
+                                    plot.layout=c(5,2), 
+                                    legpos="bottomleft", mainleg="topleft", legplot=5,
                                             windows=c(11,1),ylab="text")
 {
 ##-----------------------------------------------------------------------

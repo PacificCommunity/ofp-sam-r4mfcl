@@ -1,6 +1,15 @@
-## test code
+## 
 ## plot.catch.fit.gg(plotrepfile=rep,fleetlabs)
-#'
+#' Making plots of fits of predicted catch to observed catch
+#' @param plotrepfile outputs of read.rep
+#' @param par  outputs of read.par 
+#' @param frq outputs of read.frq
+#' @param fleetlabs vector of string of name of sisheries
+#' @param plot.layout not used 
+#' @param ylims range of years to be plotted
+#' @param line.col color of lines
+#' @param pnt.col color of points
+#' 
 #' @importFrom ggplot2 ggplot theme theme_set theme_bw scale_y_continuous aes_string scale_x_continuous
 #' @importFrom ggplot2  facet_wrap geom_line geom_point xlab ylab element_blank
 #' @importFrom dplyr group_by summarise
@@ -10,7 +19,7 @@
 plot_catch.fit.gg <- function(plotrepfile=read.rep(tmp.rep), 
                               par=NULL,
                               frq=NULL,
-                              fleetlabs=BET_fleets$fnames, 
+                              fleetlabs, 
                               plot.layout=c(10,4),
                               yrlims=c(1950,2015),
                               line.col=alpha("red", 0.6),
