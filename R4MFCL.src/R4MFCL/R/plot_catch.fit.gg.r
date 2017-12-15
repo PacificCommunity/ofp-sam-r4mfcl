@@ -6,17 +6,24 @@
 #' @param frq outputs of read.frq
 #' @param fleetlabs vector of string of name of sisheries
 #' @param plot.layout not used 
-#' @param ylims range of years to be plotted
+#' @param yrlims range of years to be plotted
 #' @param line.col color of lines
 #' @param pnt.col color of points
+#' @param n.col ncol
+#' @param plot.log plot.log
+#' @param lnsize lnsize
+#' @param nbrks nbrks
+#' @param yaxe label for caption on x-axis
+#' @param plot LOGICAL if plot be sent to graphics device
+#' @param verbose verbose or not  
 #' 
 #' @importFrom ggplot2 ggplot theme theme_set theme_bw scale_y_continuous aes_string scale_x_continuous
 #' @importFrom ggplot2  facet_wrap geom_line geom_point xlab ylab element_blank
 #' @importFrom dplyr group_by summarise
 #' @importFrom magrittr "%>%"
-#' @importFrom scales pretty_breaks alpha
+#' @importFrom scales pretty_breaks alpha log_trans
 #' @export
-plot_catch.fit.gg <- function(plotrepfile=read.rep(tmp.rep), 
+plot_catch.fit.gg <- function(plotrepfile, 
                               par=NULL,
                               frq=NULL,
                               fleetlabs, 
@@ -73,8 +80,8 @@ plot_catch.fit.gg <- function(plotrepfile=read.rep(tmp.rep),
    if(verbose)cat("L39;")
   dat <- data.frame(yrqtr = year.tmp, Year = floor(year.tmp), co = co.tmp, cp = cp.tmp, Fsh = Fsh)
 
-  dat.pl <- dat %>% group_by(Fsh, Year) %>% summarise(ObsCatch = sum(co, na.rm = TRUE),
-                                                      PreCatch = sum(cp, na.rm = TRUE))
+  dat.pl <- dat %>% group_by(!!!syms(c("Fsh", "Year"))) %>% summarise(ObsCatch = !!sym("sum(co, na.rm = TRUE)"),
+                                                      PreCatch = !!sym("sum(cp, na.rm = TRUE)"))
 
   plt.dat <- merge(dat.pl, alltimes, by = "Year", all.y = TRUE)
 

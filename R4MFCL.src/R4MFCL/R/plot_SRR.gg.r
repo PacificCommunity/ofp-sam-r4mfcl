@@ -3,14 +3,15 @@
 #' @param repfile outputs of read.rep
 #' @param annual LOGICAL if SRR is annualized
 #' @param xlabel string, caption to x-axis
+#' @param l.overide l.overide
 #' @param plot LOGICAL if plot be produced to graphic device
-#' @param LEGEN LOGICAL if legend be made
+#' @param LEGEND LOGICAL if legend be made
 #' @importFrom ggplot2 ggplot geom_line xlim geom_point ylim xlab ylab theme scale_color_gradient aes_string labs theme_set theme_bw
-#'
+#' @importFrom grDevices hsv
 #' @export
 #'
 plot_SRR.gg <- function(repfile,  annual=FALSE,
-                     xlabel="Spawning biomass",  # l.overide=NULL,
+                     xlabel="Spawning biomass",   l.overide=NULL,
                      plot=TRUE,
                      LEGEND=TRUE){
   # default colors is black,red,green3,cyan,magenda,yellow,gray,

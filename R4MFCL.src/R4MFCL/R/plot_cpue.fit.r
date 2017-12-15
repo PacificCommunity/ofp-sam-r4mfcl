@@ -1,10 +1,22 @@
 #' Function to plot cpue fits
 #' 
+#' @param plotrep file name of rep file
+#' @param frq output of read.frq
+#' @param fisheries vector of positive integer, fisheries to be included into plot
+#' @param parfile file name of par file
+#' @param fleetlabs vector of string, names of fisheries
+#' @param XLIM XLIM
+#' @param addLine LOGICAL add lines of predicted CPUEs
+#' @param fac.levels fac.levels
 #' @importFrom ggplot2 ggplot theme_set theme_bw xlab facet_wrap geom_line geom_point theme ylab ylim element_blank scale_y_continuous
 # ' @importFrom scales
 #' @export 
-plot_cpue.fit <- function(plotrep=baserep, frq=read.frq(basefrq), fisheries=c(1,2,4,7,10,12), parfile=basepar,
-                          fleetlabs=BET_fleets$fnames, XLIM=c(1950,2011), addLine=TRUE, fac.levels=c("P-ALL-1","P-ALL-2","P-ALL-3","S-ID.PH-4","S-ASS-ALL-5"))
+plot_cpue.fit <- function(plotrep, 
+                          frq, 
+                          fisheries=c(1,2,4,7,10,12), 
+                          parfile,
+                          fleetlabs, 
+                          XLIM=c(1950,2011), addLine=TRUE, fac.levels=c("P-ALL-1","P-ALL-2","P-ALL-3","S-ID.PH-4","S-ASS-ALL-5"))
 {
 ###########################################################################
 # Adam's code turned into a function
@@ -71,7 +83,7 @@ theme_set(theme_bw())
     #    p <- p + facet_wrap(~ fshry, ncol=2, scales="free_y")
         p <- p + facet_wrap(~ fshry, ncol=2)
         p <- p + xlab("") + ylab("CPUE / 1000") +ylim(0,max(max(dat.tmp$cpue.obs/1000),max(dat.tmp$cpue.pred/1000))*1.1)
-        if(addLine == TRUE) p <- p + geom_line(data=dat.tmp, aes(x=time, y=cpue.obs/1000), colour="red", size=0.6, alpha=0.3)
+        if(addLine == TRUE) p <- p + geom_line(data=dat.tmp, aes_string(x="time", y="cpue.obs/1000"), colour="red", size=0.6, alpha=0.3)
         p <- p + geom_line(data=dat.tmp, aes_string(x="time", y="cpue.pred/1000"), colour="black", size=0.6, alpha=0.7)
         p <- p + geom_point(data=dat.tmp, aes_string(x="time", y="cpue.pred/1000"), colour="black", size=1, alpha=0.7)
         p <- p + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())

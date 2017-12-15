@@ -1,5 +1,6 @@
-#require(data.table)
+#' Plot regions for assessment
 # ' @importFrom RColorBrewer
+#' 
 #' @import mapdata 
 
 plot.regions <- function(col.map='wheat3', col.regions='lightyellow', col.labels='black'){

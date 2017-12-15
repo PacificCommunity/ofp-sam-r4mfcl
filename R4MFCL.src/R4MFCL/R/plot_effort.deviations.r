@@ -1,7 +1,19 @@
+#' Plots of effor deviations
+#'
+#' @param plotrepfile outputs of read.rep
+#' @param frqfile outputs of read.frq
+#' @param fleetlabs vector of string names of fisheries
+#' @param ylimit range of y-axis
+#' @param fishplot vector of intergers indicationg, which  fishery needs to include in plot
+#' @param nclm number of columns of plot
+#' @param spandef parameter to control loess smoothing
+#'
 #' @importFrom ggplot2 ggplot facet_wrap geom_point aes_string geom_abline stat_smooth theme element_blank
 #' @importFrom ggplot2 xlab ylab ylim theme_set theme_bw
 #' @export
-plot_effort.deviations <- function(plotrepfile=read.rep(baserep), frqfile=read.frq(basefrq), fleetlabs=BET_fleets$fnames,
+plot_effort.deviations <- function(plotrepfile, 
+                                   frqfile, 
+                                   fleetlabs,
                                    ylimit=c(-2,2), fishplot=1:33, nclm = 4, spandef = 0.8)
 {
 

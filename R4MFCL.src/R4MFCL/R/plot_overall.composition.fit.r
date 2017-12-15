@@ -10,8 +10,8 @@
 #' @param line.wdth width of lines 
 #' @param fleetlabs vector of string, names of fishery
 #' @param lincol color of line
-#' @param filcol color of aread filled with color
-#' @param ngrks number of greaks 
+#' @param fillcol color of aread filled with color
+#' @param nbrks number of greaks 
 #' @param nSp number of species
 #' @param aggregate LOGICAL  
 #' @param dir character either "h" or "v" if "h" plot be made horizontal order 

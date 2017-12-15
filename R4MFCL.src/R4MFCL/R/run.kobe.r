@@ -1,5 +1,16 @@
+#' Calculate and store time series of benchmarks for kobe plot (and majuro plot)
 #'
-#'
+#' @param rootdir rootdir
+#' @param basedir basedir
+#' @param mfclexe mfclexe
+#' @param mfclfiles mfclfiles
+#' @param runfiles runfiles
+#' @param msy.start msy.start
+#' @param msy.finish msy.finish
+#' @param years years
+#' @param mfclcmd command arguments of mfcl
+#' @param lyr last year
+#' @param save.rep of rep files be retained
 #' @export
 run.kobe <- function(rootdir="C:/bet/2014/assessment/Setup",
                      basedir="C:/bet/2014/assessment/Model_runs/2014s/Run238",

@@ -1,5 +1,15 @@
+#' Plots of time trends of quantile of length composition data
+#' @param frq outputs of read.frq
+#' @param tmp.rep outputs of read.rep
+#' @param vector of string names of fisheries
+#' @param YLIM YLIM
+#' @param Nrows number of rows of plot in one page
+#' @param Ncols number of columns of plot in one page
+#' @param annual LOGICAL if summarize annually, default=FALSE 
 #' @export
-plot_length.temporal <- function(frq=basefrq, tmp.rep=read.rep(baserep), fleetlabs=spp_fleets$fnames, YLIM=c(0,200),
+plot_length.temporal <- function(frq, 
+                                 tmp.rep, 
+                                 fleetlabs, YLIM=c(0,200),
                                 Nrows=5, Ncols=3, annual=FALSE)
 {
   line1 <- grep("# Datasets ", readLines(frq))

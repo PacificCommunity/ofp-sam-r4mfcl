@@ -2,7 +2,7 @@
 #' @param rep outputs of read.rep
 #' @param YLIM minimum and maximum of Y-axis of the plot
 #' @param xlab string label of X-axis
-#' @param alpha 
+#' @param alpha alpha
 #' @param plot LOGICAL if plot be made to graphic device
 #' @param only.mean LOGICAL if 2SDs be plot with mean length, default : TRUE
 #' @param model.names string
@@ -29,7 +29,7 @@ plot_growth.function.gg <- function(rep,
 #  require(magrittr)
 #  require(dplyr)
 #  require(tidyr)
-  
+  .<-"XXXXX"
   # growth curve with variation
   if(length(model.names)==1){
   nages <- if(is.null(rep$version)){rep$nAges

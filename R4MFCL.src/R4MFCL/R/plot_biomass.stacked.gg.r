@@ -1,13 +1,26 @@
-
-#'
+#' Plots of SSB (or total biomass or recruit) stacked by region and (if 2-sex ) by gender
+#' @param plotrep output of read.rep
+#' @param pmain pmain
+#' @param type string either "SSB", "REC", or anything else (total biomass)
+#' @param maxylim naximum of y-axis
+#' @param lgposi position of legend
+#' @param reg.cols colos to be used for each stacked level
+#' @param tit.colour color of title
+#' @param reverse LOGICAL order of stack
+#' @param fill LOGICAL if plot area be filled with color
+#' @param alpha alpha for colors of filled area
+#' @param plot LOGICAL plot be sent to graphics device or not
+#' @param reg.labels labels for each region
+#' @param femaleOnly if TRUE and the model is sex structured and type=="SSB", only female SSB be plotted  
 #' @importFrom ggplot2 ggplot geom_area aes_string guides guide_legend position_stack
 #' @importFrom ggplot2 scale_fill_manual scale_fill_discrete theme labs element_text scale_color_manual scale_color_discrete
 #' @importFrom magrittr "%>%"
 #' @importFrom tidyr gather
+#' @importFrom grDevices grey
 #'
 #' @export
 #'
-plot_biomass.stacked.gg <- function(plotrep=read.rep(baserep), pmain="Run 3d", type="SSB", maxylim=NULL,
+plot_biomass.stacked.gg <- function(plotrep, pmain="Run 3d", type="SSB", maxylim=NULL,
                                         lgposi=c(0.9, 0.93), reg.cols = NULL, tit.colour=grey(0.4),reverse=TRUE,fill=TRUE,
                                         alpha=1,plot=TRUE,reg.labels=NULL,femaleOnly=TRUE)
 {
@@ -78,17 +91,21 @@ for(i in 3:ncol(Bout)){
 dimnames(Bout)[[2]]<-
 dimnames(Bout.stacked)[[2]]<-c("Year",paste0("Region",1:(ncol(Bout.stacked)-1)))
 cat("L76 in plot.biomass.stacked\n") # ;browser()
-Bout.stacked.long<-Bout %>% gather(key=Region,value=val,-Year)
+Bout.stacked.long<-Bout %>% gather(key="Region",value="val",-!!sym("Year"))
  Bout.stacked.long %>% ggplot()->plt
 # cat("L79 in plot.biomass.stacked\n");browser()
  plt<-plt+xlab("Year")+ylab(textlab)
 if(fill){
-  plt<-plt+geom_area(aes(x=Year,y=val,fill=Region),position=position_stack(reverse=reverse),alpha=alpha)
-  if(!is.null(cols) && is.null(reg.labels))plt<-plt+scale_fill_manual(values=cols)
-  if(is.null(cols) && !is.null(reg.labels))plt<-plt+scale_fill_discrete(labels=reg.labels)
-  if(!is.null(cols) && !is.null(reg.labels))plt<-plt+scale_fill_manual(values=cols, labels=reg.labels)
+  plt<-plt+geom_area(aes_string(x="Year",y="val",fill="Region"),position=position_stack(reverse=reverse),alpha=alpha)
+  plt<-if(!is.null(cols) && is.null(reg.labels)){
+    plt+scale_fill_manual(values=cols)
+  }else if(is.null(cols) && !is.null(reg.labels)){
+    plt+scale_fill_discrete(labels=reg.labels)
+  }else if(!is.null(cols) && !is.null(reg.labels)){
+    plt+scale_fill_manual(values=cols, labels=reg.labels)
+  }else{plt}
 }else{
-  plt<-plt+geom_line(aes(x=Year,y=val,color=Region),position=position_stack(reverse=reverse))
+  plt<-plt+geom_line(aes_string(x="Year",y="val",color="Region"),position=position_stack(reverse=reverse))
   if(!is.null(cols) && is.null(reg.labels))plt<-plt+scale_color_manual(values=cols)
   if(is.null(cols) &&  !is.null(reg.labels))plt<-plt+scale_color_discrete(labels=reg.labels)
   if(!is.null(cols) && !is.null(reg.labels))plt<-plt+scale_color_manual(values=cols, labels=reg.labels)

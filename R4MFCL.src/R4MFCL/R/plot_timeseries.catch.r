@@ -1,6 +1,6 @@
 #' @importFrom ggplot2 theme_set theme_bw ggplot xlab ylab scale_y_continuous 
 #' @importFrom ggplot2 geom_bar guides guide_legend facet_wrap scale_fill_manual element_blank scale_fill_manual
-#' @importFrom ggplot2 aes aes_string unit element_text
+#' @importFrom ggplot2 aes_string unit element_text
 #' @importFrom ggplot2 scale_fill_grey scale_fill_hue
 #' @importFrom magrittr "%<>%"
 #' @importFrom reshape2 melt

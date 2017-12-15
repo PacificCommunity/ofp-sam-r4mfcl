@@ -1,4 +1,10 @@
-#'
+#' Plot  of F at Age
+#' @param rep output.of read.rep
+#' @param plot LOGICAL if plot be sent to graphics device
+#' @param verbose LOGICAL if TRUE, make verbose outputs
+#' @param Year range of year
+#' @param YLAB label for y-axis
+#' @param onlyTotal LOGICAL if TRUE both F@A of whole population and F@A by region be made, otherwise F@A of whole population only be made
 #' @importFrom dplyr filter
 #' @importFrom tidyr gather 
 #' @importFrom ggplot2 ggplot theme theme_set theme_bw labs geom_line ylab labs aes_string ylim xlab
@@ -8,14 +14,10 @@
 #' @export
 #'
 plot_FAA<-function(rep,plot=TRUE,verbose=TRUE,Year=1952:2015,YLAB="Fishing mortality/year",onlyTotal=FALSE){
-#library(dplyr)
-#library(tidyr)
-#library(ggplot2)
-#library(scales)
-#library("gridExtra")
+
 theme_set(theme_bw())
 
-#library(R4MFCL)
+.<-"XXXX"
 
 add.FAAs<-function(FAA){
   FAA<-as.data.frame(FAA)
@@ -39,10 +41,13 @@ FAAreg<-lapply(1:2,function(i){add.FAAs(rep$FatYrAgeReg[[1]][,,i])})
 FAA<-add.FAAs(FAA)
 maxF<-max(max(FAA[,c("1_3","4_6","7+")]),sapply(FAAreg,function(x){max(x[,c("1_3","4_6","7+")])}))
 #cat("L33\n");browser()
-pl.all<-FAA%>%gather(Age,F,-Year)%>% filter(.,Age %in% c("1_3","4_6","7+"))%>% ggplot(aes_string(x="Year",y="F",color="Age"))
+pl.all<-FAA%>%gather(key="Age",value="F",-!!sym("Year"))%>%
+           filter(.,!!quo('%in%'(sym("Age"), c("1_3","4_6","7+")))) %>% 
+           ggplot(aes_string(x="Year",y="F",color="Age"))
 pl.all<-pl.all+geom_line(size=1)+ylab(YLAB)+labs(title="Total")+labs(colour="")+theme(legend.position="bottom")+ylim(0,maxF*1.05)
 pl.reg<-FAAreg%>%lapply(.,function(z){
-  pl<-z%>%gather(.,Age,F,-Year)%>% filter(.,Age %in% c("1_3","4_6","7+"))%>% ggplot(aes_string(x="Year",y="F",color="Age"))
+  pl<-z%>%gather(.,key="Age",value="F",-!!sym("Year"))%>% 
+    filter(.,!!sym("Age") %in% c("1_3","4_6","7+"))%>% ggplot(aes_string(x="Year",y="F",color="Age"))
   pl<-pl+geom_line(size=1)+ylab(YLAB)+xlab("")+labs(colour="")+theme(legend.position="none")+ylim(0,maxF*1.05)
   return(pl)
 })

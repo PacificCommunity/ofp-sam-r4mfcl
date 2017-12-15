@@ -23,12 +23,13 @@ theme_set(theme_bw())
     mat <- as.data.frame(frqfiles$mat)
     mat$se[mat$effort == -1] <- NA
     mat$effort[mat$effort == -1] <- NA  
-    mat %<>% filter('%in%'(!!quo(fishery), !!quo(nfish))) %>% mutate(cpue = !!quo(catch/effort), cvs = !!quo(1/sqrt(2*se)), yrqtr = !!quo(year + (qtr - 0.5)/12))
+    mat %<>% filter('%in%'(!!sym("fishery"), !!sym("nfish"))) %>% 
+        mutate(cpue = !!sym("catch/effort"), cvs = !!sym("1/sqrt(2*se)"), yrqtr = !!sym("year + (qtr - 0.5)/12"))
 
     fshmeans <- aggregate(mat$cpue, list(mat$fishery), mean, na.rm=TRUE)
     mat$cpue <- mat$cpue/fshmeans[match(mat$fishery, fshmeans[,1]),2]
 
-     mat %<>% mutate(LL = !!quo(exp(log(cpue) - 2*cvs)), UL = !!quo(exp(log(cpue) + 2*cvs)))
+     mat %<>% mutate(LL = !!sym("exp(log(cpue) - 2*cvs)"), UL = !!sym("exp(log(cpue) + 2*cvs)"))
  
 
     pldat <- merge(mat, tmp, by=c("yrqtr","fishery"), all.y=TRUE)
@@ -36,9 +37,10 @@ theme_set(theme_bw())
     pldat$years <- floor(pldat$yrqtr)
 
     if(plot.annual){
-    pldat %<>% group_by(!!quo(fishery), !!quo(years)) %>% summarise(cpue = !!quo(mean(cpue, na.rm=TRUE)),
-                                                          LL = !!quo(mean(LL, na.rm=TRUE)),
-                                                          UL = !!quo(mean(UL, na.rm=TRUE)))
+    pldat %<>% group_by(!!sym("fishery"), !!sym("years")) %>% 
+                summarise(cpue = !!sym("mean(cpue, na.rm=TRUE)"),
+                                                          LL = !!sym("mean(LL, na.rm=TRUE)"),
+                                                          UL = !!sym("mean(UL, na.rm=TRUE)"))
         pldat$yrqtr <- pldat$years
     }
 

@@ -1,3 +1,4 @@
+#'  R tools for Multifan-cl
 #'  @importFrom grDevices col2rgb colorRampPalette dev.cur dev.new dev.off dev.size gray grey hsv rainbow rgb savePlot win.graph windows x11
 #'  @importFrom graphics abline arrows axis barplot box boxplot image layout layout.show legend lines mtext par plot points polygon segments symbols text title
 #'  @importFrom stats aggregate aggregate.data.frame dnorm lowess median na.omit quantile rnorm sd

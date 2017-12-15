@@ -9,7 +9,7 @@
 #' @param vers vers
 #' @param keep.vector vector of string, which benchmarks to be retained
 #' @param rnd.cutoff rnd.cutoff
-#' @param output.tab 
+#' @param output.tab output.tab
 #'
 #' @importFrom xtable xtable print.xtable
 #' @export
