@@ -1,5 +1,12 @@
+#' read ini file
+#'
+#' @param ini.file file name of ini file
+#' @param nSp number of species/sex
+#' @param nReg number of regions
+#' @param mpy number of movement per year
+#' @param size of incidence matrix
 #' @export
-read.ini <- function(ini.file,nSp=2,nReg=2,mpy=4,incidence=c(1,1))
+read.ini <- function(ini.file,nSp=1,nReg=2,mpy=4,incidence=c(1,1))
 ##============================================================================
 ## by Simon Hoyle June 2008
 ##  revised, PK June 2011

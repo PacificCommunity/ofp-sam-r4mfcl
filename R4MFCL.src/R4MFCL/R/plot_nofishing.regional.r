@@ -1,5 +1,12 @@
+#'
+#'
+#' @param plotrep output of read.rep
+#' @param type string if SSB, SSB (AdultBiomass) otherwise total biomass
+#'
+#' @importFrom graphics box
 #' @export
-plot_nofishing.regional <- function(plotrep=read.rep(baserep),type="SSB", plot.layout=c(5,2), legpos="bottomleft", mainleg="topleft", legplot=5,YLAB=NULL)
+plot_nofishing.regional <- function(plotrep,
+                          type="SSB", plot.layout=c(5,2), legpos="bottomleft", mainleg="topleft", legplot=5,YLAB=NULL)
 {
 ##-----------------------------------------------------------------------
 ##-----------------------------------------------------------------------

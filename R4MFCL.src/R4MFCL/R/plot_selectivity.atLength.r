@@ -1,4 +1,15 @@
-## Function to plot selectivity of 2 sex model from
+#' Function to plot selectivity at mean length at age 
+#'
+#' @param filename file name of "selectivity-multi-sex", default : "selectivity-multi-sex"
+#' @param fishlab vector of string names of fisheries
+#' @param rep outputs of read.rep
+#' @param xlab caption of x-axis
+#' @param ylab caption of y-axis
+#' @param ncol number of columns of plots
+#' @param dir horizontal order or not
+#' @param use.selex.multi.sex LOGICAL if selex from selectivity-multi-sex be used instead from plot.rep, default : FALSE
+#' @param plot LOGICAL if plot be sent ot graphics device
+#' @param verbose verbose or not
 #' @importFrom ggplot2 ggplot theme_set theme_bw geom_line aes_string geom_point facet_wrap guides labs ylab
 #' @importFrom tidyr gather separate unite
 #' @importFrom dplyr mutate
@@ -101,7 +112,7 @@ plot_selectivity.atLength<-function(filename="selectivity-multi-sex",
   yy.dt2 %>% unite(col="Fishery_Gender",!!!syms(c("Fishery","Gender")),sep="-") %>%
     gather(key="AgeClass",value="selex",remove=-!!sym("Fishery_Gender")) %>%
     separate(col="Fishery_Gender",into=c("Fishery","Gender"),sep="-") %>%
-    mutate(Age=!!sym("as.numeric(AgeClass)"),Fish=!!sym("Fishery"))-> yy.dt3
+    mutate(Age=as.numeric(!!sym("AgeClass")),Fish=!!sym("Fishery"))-> yy.dt3
   if(verbose)cat("L98;") #;  browser()
   yy.dt3$meanL<-1:dim(yy.dt3)[1]
   for(i in 1:dim(yy.dt3)[1]){

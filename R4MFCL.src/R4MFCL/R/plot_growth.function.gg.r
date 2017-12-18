@@ -81,7 +81,7 @@ plot_growth.function.gg <- function(rep,
     }
     positions2<-do.call("rbind",positions)
     plt<-plt+geom_polygon(data=positions2,aes_string(x="x",y="y",group="age"),
-      color="grey",alpha="alpha")
+      color="grey",alpha=alpha)
   }else{
     cols<-c("black","red")
     for(j in 1:nSp){
@@ -97,7 +97,7 @@ plot_growth.function.gg <- function(rep,
       positions2$Gender<-c("Male","Female")[j]
       plt<-plt+geom_polygon(data=positions2,
                   aes_string(x="x",y="y",group="age",colour="Gender",fill="Gender"),
-                  alpha="alpha")
+                  alpha=alpha)
     }
   }
   }

@@ -89,7 +89,7 @@ plot_selectivity.atAge<-function(filename="selectivity-multi-sex",
   yy.dt2 %>% unite(col="Fishery_Gender",!!!syms(c("Fishery","Gender")),sep="-") %>%
       gather(key="AgeClass",value="selex",remove=-!!sym("Fishery_Gender")) %>%
       separate(col="Fishery_Gender",into=c("Fishery","Gender"),sep="-") %>%
-      mutate(Age=!!sym("as.numeric(AgeClass)"),Fish=!!sym("Fishery"))-> yy.dt3
+      mutate(Age=as.numeric(!!sym("AgeClass")),Fish=!!sym("Fishery"))-> yy.dt3
   p<-yy.dt3 %>% ggplot(aes_string(x="Age",y="selex"))
   p<-p+xlab(xlab)+ylab(ylab)
   p<-p+geom_line(aes_string(color="Gender"))+geom_point(aes_string(color="Gender"),size=1)+facet_wrap(~Fish,ncol=ncol,dir=dir)+ylab(ylab)

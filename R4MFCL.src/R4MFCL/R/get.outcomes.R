@@ -1,5 +1,8 @@
+#' Read and calculate benchmarks
+#' @export
 get.outcomes <- function (file.rep=read.rep("SKJ14/plot-12.par.rep"), file.par=read.par("SKJ14/12.par"), catch.rep="SKJ14/catch.rep",
-                               nofish=TRUE, nofishp=c(44,4), lateyr=2014, version="original", re.keep=c("bo","sbo"),veryrecent=c(4,1))
+                               nofish=TRUE, nofishp=c(44,4), lateyr=2014, version="original", 
+                               re.keep=c("bo","sbo"),veryrecent=c(4,1),verbose=FALSE)
 {
 
 # Updated 9/30/2014 3:03:02 PM SJH - corrected F0 time period calcs which started 1 quarter to soon
@@ -16,7 +19,7 @@ get.outcomes <- function (file.rep=read.rep("SKJ14/plot-12.par.rep"), file.par=r
 # 4. revise the order to be consistent betwen B and SB
 # 5. Multiply MSY and YieldFcurr by rp$nRecs.yr
 # 6. Reads in a catch.rep file and get some recent catch stuff
-
+  if(verbose)cat("Starting get.outcomes\n")
   if(is.character(file.rep))
   {
     rp <- read.rep(file.rep)
@@ -252,7 +255,7 @@ get.outcomes <- function (file.rep=read.rep("SKJ14/plot-12.par.rep"), file.par=r
 
   latout <- latout[match(re.keep, names(latout))]
   latout <- unlist(latout)
-
+  if(verbose)cat("Finished get.outcomes\n")
   if(version == "original")  return(resout)
   if(version == "latex") return(latout)
 }

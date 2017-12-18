@@ -10,6 +10,7 @@
 #' @param ylab ylab
 #'
 #' @importFrom magrittr "%>%"
+#' @importFrom graphics box
 #' @export
 plot_depletion.regional <- function(plotrep,
                                     type="SSB", 

@@ -1,11 +1,12 @@
 #' Plots of time trends of quantile of length composition data
 #' @param frq outputs of read.frq
 #' @param tmp.rep outputs of read.rep
-#' @param vector of string names of fisheries
+#' @param fleetlabs vector of string names of fisheries
 #' @param YLIM YLIM
 #' @param Nrows number of rows of plot in one page
 #' @param Ncols number of columns of plot in one page
 #' @param annual LOGICAL if summarize annually, default=FALSE 
+#' @importFrom graphics lines mtext polygon points segments plot
 #' @export
 plot_length.temporal <- function(frq, 
                                  tmp.rep, 

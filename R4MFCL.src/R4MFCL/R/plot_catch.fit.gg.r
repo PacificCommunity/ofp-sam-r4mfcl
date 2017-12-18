@@ -80,8 +80,8 @@ plot_catch.fit.gg <- function(plotrepfile,
    if(verbose)cat("L39;")
   dat <- data.frame(yrqtr = year.tmp, Year = floor(year.tmp), co = co.tmp, cp = cp.tmp, Fsh = Fsh)
 
-  dat.pl <- dat %>% group_by(!!!syms(c("Fsh", "Year"))) %>% summarise(ObsCatch = !!sym("sum(co, na.rm = TRUE)"),
-                                                      PreCatch = !!sym("sum(cp, na.rm = TRUE)"))
+  dat.pl <- dat %>% group_by(!!!syms(c("Fsh", "Year"))) %>% 
+      summarise(ObsCatch = sum(!!sym("co"), na.rm = TRUE),PreCatch = sum(!!sym("cp"), na.rm = TRUE))
 
   plt.dat <- merge(dat.pl, alltimes, by = "Year", all.y = TRUE)
 
