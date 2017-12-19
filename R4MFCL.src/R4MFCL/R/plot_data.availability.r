@@ -1,5 +1,17 @@
+#' Summarize availability of fishery data 
+#'
+#' @param frqfile outputs of read.frq
+#' @param  timespan range of years of data availability summary
+#' @param plotcols plotcols
+#' @param fleetlabs fleetlabs
+#' @param Ylab.space Ylab.space
+#' @param stand.fsh which fishery have standardized CPUE(effort)
 #' @export
-plot_data.availability = function(frqfile=read.frq(basefrq), timespan=c(1950,2014), plotcols=1:33, fleetlabs=1:33, Ylab.space=10, stand.fsh=c(1:3))
+plot_data.availability = function(frqfile, 
+                                    timespan=c(1950,2014), 
+                                    plotcols=1:33, 
+                                    fleetlabs=1:33, 
+                                    Ylab.space=10, stand.fsh=c(1:3))
 {
     Nfshry = frqfile$struct$nf
 

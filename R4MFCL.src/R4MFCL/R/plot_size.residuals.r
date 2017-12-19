@@ -10,6 +10,7 @@
 #' @param Fish.keep vector of string which fisheires need to be included in plot
 #' @param plot TRUE if send plot to graphics device
 #' @param LenFit LOGICAL if length composition is used
+#' @param ylabel string caption for y-axis
 #' @param verbose verbose or not
 #' @param rep outputs of read.rep
 #' @param Year1  first year of model

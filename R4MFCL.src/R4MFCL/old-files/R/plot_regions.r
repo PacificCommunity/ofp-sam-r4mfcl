@@ -1,9 +1,14 @@
 #' Plot regions for assessment
 # ' @importFrom RColorBrewer
-#' 
+#' @param col.map
+#' @param col.regions
+#' @param col.labels
+#' @importFrom utils data
+#' @importFrom maps map
+#' @grDevices col2rgb
 #' @import mapdata 
 
-plot.regions <- function(col.map='wheat3', col.regions='lightyellow', col.labels='black'){
+plot_regions <- function(col.map='wheat3', col.regions='lightyellow', col.labels='black'){
 
 #require(RColorBrewer)
 #require(mapdata)
