@@ -109,7 +109,7 @@ function(fit.file,
         obslf[[f]] <- data.frame(t(datfromstr(a[obsloc]))) 
         predlf[[f]] <- data.frame(t(datfromstr(a[obsloc+1])))
       }
-      if(verbose)cat("L111 ; ") 
+      if(verbose)cat("L112 ; ") 
       colnames(obslf[[f]])<-
         colnames(predlf[[f]])<-paste0("B",seq(from=binfirst,length.out=nbins,by=binwidth))
       if(verbose)cat("L115 ;")#;browser()
@@ -121,6 +121,9 @@ function(fit.file,
 
   makeNewdata<-function(lf,set=NA){
     if(verbose)cat("starting makeNewdata\n")
+    #cat("L124\n");
+    set<-ifelse(!is.na(set),set,ifelse(deparse(substitute(lf))=="obslf","Obs","Pred"))
+  #  browser()
     newdata.tmp<-lapply((1:length(dates))[!sapply(dates,"is.null")],function(i){
     if(verbose)cat("L125 ; i=",i,";")
     tmp<-if(version<=2){
@@ -146,14 +149,14 @@ function(fit.file,
     colnames(tmp)[1:3]<-c("Year","Month","Week")
     if(version>2)colnames(tmp)[4:5]<-c("Sp1","Sp2")
     tmp$Set<-ifelse(!is.na(set),set,stop("L148 in makeNewdata in read.fit set is NA "))
-#    cat("L149 ;\n");browser()
+ #   cat("L149 ;\n");browser()
     return(tmp)
   })
   return(newdata.tmp)
   }
 
-  newdata.obs<-makeNewdata(obslf,"Obs")
-  
+#  newdata.obs<-makeNewdata(obslf,"Obs")
+   newdata.obs<-makeNewdata(obslf)
   ############## for version >2 ############
 
   if(version>2 & nSp>1){
@@ -181,7 +184,8 @@ function(fit.file,
 
 ###################################################
  
-  newdata.pred<-makeNewdata(predlf,"Pred")
+#  newdata.pred<-makeNewdata(predlf,"Pred")
+   newdata.pred<-makeNewdata(predlf)
   if(verbose)cat("L185 ;") 
   ####### for version>2 & nSp>1
   if(version>2 & nSp>1){
@@ -236,7 +240,7 @@ function(fit.file,
     c("timeperiod","month","week","RealFishery","Sp","Set")
   }else if(version>2 & nSp==1){
     c("timeperiod","month","week","Both","nsmpl","RealFishery","Sp","Gender","Set")
-  }else if(version>2 &  nSp==2){
+  }else if(version>2 & nSp==2){
     c("timeperiod","month","week","Male","Female","nsmpl","RealFishery","Sp","Gender","Set")
   }
   }
@@ -282,12 +286,12 @@ function(fit.file,
                     if(version==1)
                       unite(.,col="United",!!!syms(c("timeperiod","month","week","Fishery","Set")),remove=TRUE,sep="_")
                     else if(version==2)
-                      unite(col="United",!!!syms(c("timeperiod","month","week","Fishery","Sp","Set")),remove=TRUE,sep="_")
+                      unite(.,col="United",!!!syms(c("timeperiod","month","week","Fishery","Sp","Set")),remove=TRUE,sep="_")
                     else if(nSp==1)
-                      unite(col="United",!!!syms(c("timeperiod","month","week","Both","nsmpl","Fishery","Sp","Gender","Set")),
+                      unite(.,col="United",!!!syms(c("timeperiod","month","week","Both","nsmpl","Fishery","Sp","Gender","Set")),
                           remove=TRUE,sep="_")
                     else if(nSp==2)
-                      unite(col="United",!!!syms(c("timeperiod","month","week","Male","Female",
+                      unite(.,col="United",!!!syms(c("timeperiod","month","week","Male","Female",
                           "nsmpl","Fishery","Sp","Gender","Set")),remove=TRUE,sep="_")
                     else
                       stop("nSp=",nSp)
@@ -380,5 +384,6 @@ function(fit.file,
     results$p<-p
     results$plot.data<-plot.data
   }
+  cat("Finished read.fit\n")
   return(invisible(results))
 }

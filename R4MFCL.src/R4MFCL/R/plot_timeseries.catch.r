@@ -1,3 +1,16 @@
+#' Plots of catch time series by fishery
+#' @param catdat string, file name of catch.rep
+#' @param repfile outputs of read.rep
+#' @param nocls number of columns of plots
+#' @param gear vector of string of gear type by fishery
+#' @param region vector of integer indicating region of each fishery
+#' @param all.regions LOGICAL if TRUE summarize by year and gear type, otherwise by year, gear type and region
+#' @param leg.txt.sz leg.txt.sz
+#' @param leg.box.sz leg.box.sz
+#' @param brwidth brwidth
+#' @param legpos position of legend
+#' @param collist list of color to be used
+#' 
 #' @importFrom ggplot2 theme_set theme_bw ggplot xlab ylab scale_y_continuous 
 #' @importFrom ggplot2 geom_bar guides guide_legend facet_wrap scale_fill_manual element_blank scale_fill_manual
 #' @importFrom ggplot2 aes_string unit element_text

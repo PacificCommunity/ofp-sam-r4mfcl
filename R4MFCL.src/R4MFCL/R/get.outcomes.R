@@ -1,4 +1,16 @@
 #' Read and calculate benchmarks
+#'
+#' @param file.rep outputs of read.rep
+#' @param file.par outputs of read.par
+#' @param catch.rep string, file name of catch.rep
+#' @param nofish LOGICAL if BF0 and SBF0 be calculate
+#' @param nofishp range of time step from the last time step to calculate BF0 and SBF0
+#' @param lateyr year to calculate "*_latest" quantity
+#' @param version string, "latex" or "original"
+#' @param re.keep  vector of string indicating which benchmarks to be included
+#' @param veryrecent range of time step from the last time step to calculate "very recent" quantity
+#' @param verbose LOGICAL verbose or not 
+#'
 #' @export
 get.outcomes <- function (file.rep=read.rep("SKJ14/plot-12.par.rep"), file.par=read.par("SKJ14/12.par"), catch.rep="SKJ14/catch.rep",
                                nofish=TRUE, nofishp=c(44,4), lateyr=2014, version="original", 

@@ -3,7 +3,7 @@
 #' @param frq.file file name of frq file
 #' @param frq.title frq.title
 #' @param ntop ntop
-#' @param fishdefs
+#' @param fishdefs fishdefs
 #' @importFrom utils count.fields
 #' @export
 read.frq <-
