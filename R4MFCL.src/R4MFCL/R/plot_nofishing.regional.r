@@ -1,7 +1,13 @@
+#' Plot time series of biomass with and without fishing
 #'
-#'
+#' 
 #' @param plotrep output of read.rep
 #' @param type string if SSB, SSB (AdultBiomass) otherwise total biomass
+#' @param plot.layout plot.layout in one page
+#' @param legpos position of legend
+#' @param mainleg mainleg
+#' @param legplot legplot
+#' @param YLAB YLAB
 #'
 #' @importFrom graphics box
 #' @export

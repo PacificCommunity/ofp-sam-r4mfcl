@@ -239,9 +239,9 @@ function(fit.file,
   }else if(version==2){
     c("timeperiod","month","week","RealFishery","Sp","Set")
   }else if(version>2 & nSp==1){
-    c("timeperiod","month","week","Both","nsmpl","RealFishery","Sp","Gender","Set")
+    c("timeperiod","month","week","Both","nsmpl","Fishery","Sp","Gender","Set")
   }else if(version>2 & nSp==2){
-    c("timeperiod","month","week","Male","Female","nsmpl","RealFishery","Sp","Gender","Set")
+    c("timeperiod","month","week","Male","Female","nsmpl","Fishery","Sp","Gender","Set")
   }
   }
   if(version>=2)newdata %<>% select(.,-!!sym("Fishery")) %>% rename(Fishery=!!sym("RealFishery"))
@@ -259,11 +259,7 @@ function(fit.file,
                     else
                       stop("nSp=",nSp)
                 }
-         #       if(version==1)
          #         unite(.,col="United",from=!!!from.nm)
-         #       else if(version==2)
-         #         select(.,-!!"Fishery")
-              #      } %>% gather_(key_col="bin",value_col="frq",gather_cols="United")->tmp2
                    } %>% gather(key="bin",value=!!sym("frq"),-!!sym("United"))->tmp2
   if(verbose)cat("L265 ; ")  #;browser()
   longdata<-tmp2 %>% { if(version==1)

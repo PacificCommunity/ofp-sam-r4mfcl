@@ -1,3 +1,13 @@
+#' Make plot of CPUE time series with associated CVs
+#' @param repfile outputs of read.rep
+#' @param frqfiles outputs of read.frq
+#' @param fleetlabs vector of string, fleet names
+#' @param nfish vector of fishery number
+#' @param plot.layout not used
+#' @param n.cols number of columns of plot
+#' @param plot.annual LOGICAL if summarise annually
+#' @param fac.levels dac.levels
+#' @param plot logical if plot be sent to graphics device (default=TRUE) 
 #' @importFrom ggplot2 geom_point geom_line facet_wrap theme element_blank theme_set theme_bw aes_string
 #' @importFrom magrittr "%<>%" "%>%"
 #' @importFrom dplyr filter mutate summarise
@@ -6,7 +16,7 @@
 #' @export
 plot_cpue.with.cvs <- function(repfile=read.rep("ALB15/plot-12.par.rep"), frqfiles=read.frq("ALB15/alb.frq"),
                                fleetlabs=paste("Region",1:8), nfish=1:8, plot.layout=c(3,3), n.cols=3,
-                               plot.annual=TRUE, fac.levels=c("P-ALL-1","P-ALL-2","P-ALL-3","S-ID.PH-4","S-ASS-ALL-5"))
+                               plot.annual=TRUE, fac.levels=c("P-ALL-1","P-ALL-2","P-ALL-3","S-ID.PH-4","S-ASS-ALL-5"),plot=TRUE)
 {
 
 # require(dplyr)
@@ -24,7 +34,7 @@ theme_set(theme_bw())
     mat$se[mat$effort == -1] <- NA
     mat$effort[mat$effort == -1] <- NA  
     mat %<>% filter('%in%'(!!sym("fishery"), !!sym("nfish"))) %>% 
-        mutate(cpue = !!sym("catch/effort"), cvs = !!sym("1/sqrt(2*se)"), yrqtr = !!sym("year + (qtr - 0.5)/12"))
+        mutate(cpue = !!sym("catch")/!!sym("effort"), cvs = 1/sqrt(2*!!sym("se")), yrqtr = !!sym("year + (qtr - 0.5)/12"))
 
     fshmeans <- aggregate(mat$cpue, list(mat$fishery), mean, na.rm=TRUE)
     mat$cpue <- mat$cpue/fshmeans[match(mat$fishery, fshmeans[,1]),2]
@@ -50,7 +60,8 @@ theme_set(theme_bw())
                  geom_line(aes_string(x="yrqtr", y="cpue"), colour="black", size=0.7) + geom_point(aes_string(x="yrqtr", y="cpue"), colour="black", size=0.5) +
                  theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
 
-    print(pl)
+    if(plot)print(pl)
+    return(invisible(pl))
 
 }
 

@@ -6,10 +6,19 @@
 #' @param nofsh nofsh
 #' @param nofshp nofshp
 #' @param ltyr latest year
-#' @param vers vers
+#' @param vers vers latex or original
 #' @param keep.vector vector of string, which benchmarks to be retained
 #' @param rnd.cutoff rnd.cutoff
 #' @param output.tab output.tab
+#' @param out.file string file name of table of benchmarks
+#' @param output.percent LOGICAL if to produce table of quantiles 
+#' @param per.file string file name of table of quantiles
+#' @param captn.out Caption
+#' @param captn.per captn.per
+#' @param tab.header tab.header
+#' @param calc.quants probs parameter of quantile function  
+#' @param size.out size parameter for print.xtable if output.percent is FALSE
+#' @param size.per size parameter for print.xtable if output.percent is TRUE
 #'
 #' @importFrom xtable xtable print.xtable
 #' @export
@@ -28,7 +37,7 @@ get.multiple.outcomes = function(direcs=c("SKJ14/","SKJ14/"), repnm="plot-12.par
     out.fun = function(x)
     {
       
-      get.outcomes(file.rep=read.rep(paste0(direcs[x], repnm[x])), file.par=read.par(paste0(direcs[x], parnm[x])), catch.rep=paste0(direcs[x], "catch.rep"),
+      get.outcomes(file.rep=read.rep(file.path(direcs[x], repnm[x])), file.par=read.par(file.path(direcs[x], parnm[x])), catch.rep=file.path(direcs[x], "catch.rep"),
                    nofish=nofsh, nofishp=nofshp, lateyr=ltyr, version=vers, re.keep=keep.vector)
 
     }

@@ -52,9 +52,9 @@ plot_timeseries.catch = function(catdat = "ALB15/catch.rep", repfile = read.rep(
   dat$year <- floor(dat$yrqtr)
   
   if(all.regions){
-      dat %<>% group_by(!!!syms(c("year","gear"))) %>% summarise(tcatch = !!sym("sum(catch)"))
+      dat %<>% group_by(!!!syms(c("year","gear"))) %>% summarise(tcatch = sum(!!sym("catch")))
   } else {
-      dat %<>% group_by(!!!syms(c("year","region","gear"))) %>% summarise(tcatch = !!sym("sum(catch)"))  
+      dat %<>% group_by(!!!syms(c("year","region","gear"))) %>% summarise(tcatch = sum(!!sym("catch")))  
   }
   
   pl <- ggplot(dat, aes_string(x = "year", y = "tcatch/1000", fill = "gear")) + geom_bar(stat="identity", width=brwidth) +

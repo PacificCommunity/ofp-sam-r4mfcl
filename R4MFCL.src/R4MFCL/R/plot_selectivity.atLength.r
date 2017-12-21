@@ -106,14 +106,14 @@ plot_selectivity.atLength<-function(filename="selectivity-multi-sex",
     }
   }
 
-#  browser()
-  if(verbose)cat("L92;")#;browser()
+
+  if(verbose)cat("L110 ;")#;browser()
   yy.dt2$Fishery<-fishlab[1:(nfishWTblocks*nSp)]
   yy.dt2 %>% unite(col="Fishery_Gender",!!!syms(c("Fishery","Gender")),sep="-") %>%
     gather(key="AgeClass",value="selex",remove=-!!sym("Fishery_Gender")) %>%
     separate(col="Fishery_Gender",into=c("Fishery","Gender"),sep="-") %>%
     mutate(Age=as.numeric(!!sym("AgeClass")),Fish=!!sym("Fishery"))-> yy.dt3
-  if(verbose)cat("L98;") #;  browser()
+  if(verbose)cat("L116;") #;  browser()
   yy.dt3$meanL<-1:dim(yy.dt3)[1]
   for(i in 1:dim(yy.dt3)[1]){
     Gender<-if(nSp>1){
@@ -129,7 +129,7 @@ plot_selectivity.atLength<-function(filename="selectivity-multi-sex",
     }
    yy.dt3[i,"meanL"]<-meanL
   }
-  if(verbose)cat("L114;") #;browser()
+  if(verbose)cat("L132;") #;browser()
   p<-yy.dt3 %>% ggplot(aes_string(x="meanL",y="selex"))
   p<-p+xlab(xlab)+ylab(ylab)
    p<-p+geom_line(aes_string(color="Gender"))+geom_point(aes_string(color="Gender"),size=1)+facet_wrap(~Fish,ncol=ncol,dir=dir)

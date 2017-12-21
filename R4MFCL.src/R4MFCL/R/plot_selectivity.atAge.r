@@ -1,4 +1,14 @@
-## Function to plot selectivity of 2 sex model from
+#' Function to plot selectivity at age of 2 sex model from
+#' @param filename file name of "selectivity-multi-sex", default : "selectivity-multi-sex"
+#' @param fishlab vector of string names of fisheries
+#' @param rep outputs of read.rep
+#' @param xlab caption of x-axis
+#' @param ylab caption of y-axis
+#' @param ncol number of columns of plots
+#' @param dir horizontal order or not
+#' @param use.selex.multi.sex LOGICAL if selex from selectivity-multi-sex be used instead from plot.rep, default : FALSE
+#' @param plot LOGICAL if plot be sent ot graphics device
+#' @param verbose verbose or not
 #' @importFrom ggplot2 ggplot theme_set theme_bw geom_line aes_string geom_point facet_wrap guides labs ylab
 #' @importFrom tidyr gather separate unite
 #' @importFrom dplyr mutate

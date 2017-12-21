@@ -1,4 +1,4 @@
-plot.Kobe <- function(plotdir="S:/OFP Publications/Tuna Fishery Assessment Report/2007/Figures/BET/",plotrep=test,type="SSB",plotname="Kobe",plottype="wmf",COL=T) {
+plot_Kobe <- function(plotdir="S:/OFP Publications/Tuna Fishery Assessment Report/2007/Figures/BET/",plotrep=test,type="SSB",plotname="Kobe",plottype="wmf",COL=T) {
 # Adds the time series to the template plot
 
 #template
