@@ -10,8 +10,8 @@
 #' @param plot logical if plot be sent to graphics device (default=TRUE) 
 #' @importFrom ggplot2 geom_point geom_line facet_wrap theme element_blank theme_set theme_bw aes_string
 #' @importFrom magrittr "%<>%" "%>%"
-#' @importFrom dplyr filter mutate summarise
-#' @importFrom rlang quo
+#' @importFrom dplyr filter mutate summarise mutate
+#' @importFrom rlang quo syms  expr
 #' @importFrom stats setNames
 #' @export
 plot_cpue.with.cvs <- function(repfile=read.rep("ALB15/plot-12.par.rep"), frqfiles=read.frq("ALB15/alb.frq"),
@@ -34,12 +34,12 @@ theme_set(theme_bw())
     mat$se[mat$effort == -1] <- NA
     mat$effort[mat$effort == -1] <- NA  
     mat %<>% filter('%in%'(!!sym("fishery"), !!sym("nfish"))) %>% 
-        mutate(cpue = !!sym("catch")/!!sym("effort"), cvs = 1/sqrt(2*!!sym("se")), yrqtr = !!sym("year + (qtr - 0.5)/12"))
-
+        mutate(cpue = "/"(!!!syms(c("catch","effort"))), cvs = 1/sqrt(2*(!!sym("se"))), yrqtr = eval(parse(text="year+ (qtr- 0.5)/12")))
+   # cat("L38 in plot_cpue.with.cvs\n");browser()
     fshmeans <- aggregate(mat$cpue, list(mat$fishery), mean, na.rm=TRUE)
     mat$cpue <- mat$cpue/fshmeans[match(mat$fishery, fshmeans[,1]),2]
 
-     mat %<>% mutate(LL = !!sym("exp(log(cpue) - 2*cvs)"), UL = !!sym("exp(log(cpue) + 2*cvs)"))
+     mat %<>% mutate(LL = eval(parse(text="exp(log(cpue) - 2*cvs)")), UL = eval(parse(text="exp(log(cpue) + 2*cvs)")))
  
 
     pldat <- merge(mat, tmp, by=c("yrqtr","fishery"), all.y=TRUE)
@@ -48,9 +48,9 @@ theme_set(theme_bw())
 
     if(plot.annual){
     pldat %<>% group_by(!!sym("fishery"), !!sym("years")) %>% 
-                summarise(cpue = !!sym("mean(cpue, na.rm=TRUE)"),
-                                                          LL = !!sym("mean(LL, na.rm=TRUE)"),
-                                                          UL = !!sym("mean(UL, na.rm=TRUE)"))
+                summarise(cpue = mean(!!sym("cpue"), na.rm=TRUE),
+                                                          LL = mean(!!sym("LL"), na.rm=TRUE),
+                                                          UL = mean(!!sym("UL"), na.rm=TRUE))
         pldat$yrqtr <- pldat$years
     }
 

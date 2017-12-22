@@ -11,8 +11,8 @@
 #' @importFrom magrittr "%>%"
 #' @importFrom ggplot2 ggplot geom_line aes_string xlab ylab
 #' @importFrom ggplot2 scale_y_continuous element_blank facet_wrap theme
-#' @importFrom scales pretty_breaks
-#' @importFrom rlang sym syms
+#' @importFrom scales pretty_breaks alpha
+#' @importFrom rlang sym syms 
 #' @export
 #'
 #'
@@ -55,7 +55,7 @@ plot_q <- function(parfile,
   if(annual)
   {
     plt.dat$Year <- floor(plt.dat$Year)
-    plt.dat %<>% group_by(!!!syms(c("Year", "Fsh"))) %>% summarise(co = !!sym("mean(co)"))
+    plt.dat %<>% group_by(!!!syms(c("Year", "Fsh"))) %>% summarise(co = mean(!!sym("co")))
   }
   
   pl <- ggplot(plt.dat, aes_string(x = "Year", y = "co")) + geom_line(colour = line.col, size = lnsize) +
