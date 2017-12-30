@@ -22,7 +22,7 @@ plot_cpue.with.cvs <- function(repfile=read.rep("ALB15/plot-12.par.rep"), frqfil
 # require(dplyr)
 # require(magrittr)
 
-theme_set(theme_bw())
+    theme_set(theme_bw())
 
     tmp <- if(repfile$nRecs.yr==4){
               data.frame(yrqtr = rep(repfile$yrs, each=length(nfish)), fishery = nfish)

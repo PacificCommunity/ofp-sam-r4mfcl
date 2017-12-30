@@ -11,7 +11,8 @@
 #' @importFrom magrittr "%>%"
 #' @importFrom ggplot2 ggplot geom_line aes_string xlab ylab
 #' @importFrom ggplot2 scale_y_continuous element_blank facet_wrap theme
-#' @importFrom scales pretty_breaks alpha
+#' @importFrom scales pretty_breaks 
+#' @importFrom scales alpha
 #' @importFrom rlang sym syms 
 #' @export
 #'
@@ -21,7 +22,7 @@
 plot_q <- function(parfile, 
                    plotrepfile, 
                    fleetlabs, 
-                   line.col=alpha("red", 0.6),
+                   line.col=NULL, # =alpha("red", 0.6),
                    n.col=4, 
                    lnsize=1, 
                    nbrks=4, 
@@ -32,7 +33,7 @@ plot_q <- function(parfile,
 #  require(magrittr)
   
   theme_set(theme_bw())
-  
+  if(is.null(line.col))line.col<-alpha("red", 0.6) 
   nfish <- plotrepfile$nFisheries
   Ntimes <- dim(plotrepfile$Rlz.t.fsh)[2]
   
@@ -58,9 +59,12 @@ plot_q <- function(parfile,
     plt.dat %<>% group_by(!!!syms(c("Year", "Fsh"))) %>% summarise(co = mean(!!sym("co")))
   }
   
-  pl <- ggplot(plt.dat, aes_string(x = "Year", y = "co")) + geom_line(colour = line.col, size = lnsize) +
-               facet_wrap(~ !!sym("Fsh"), ncol = n.col, scales="free_y") +
-               xlab("") + ylab("Catchability coefficient (q)") + 
+  pl <- ggplot(plt.dat, aes_string(x = "Year", y = "co")) + 
+               geom_line(colour = line.col, size = lnsize) +
+  #             facet_wrap(~ !!sym("Fsh"), ncol = n.col, scales="free_y") +
+               facet_wrap(as.formula(substitute("~Fsh")), ncol = n.col, scales="free_y") +
+               xlab("") + 
+               ylab("Catchability coefficient (q)") + 
                scale_y_continuous(breaks=pretty_breaks(n=nbrks)) +
                theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
   print(pl) 

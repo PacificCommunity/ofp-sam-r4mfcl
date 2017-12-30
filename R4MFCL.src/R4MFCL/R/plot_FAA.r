@@ -11,6 +11,7 @@
 # ' @importFrom scales 
 #' @importFrom gridExtra grid.arrange
 #' @importFrom magrittr "%>%" 
+#' @importFrom rlang UQ UQS '!!' '!!!' parse_expr
 #' @export
 #'
 plot_FAA<-function(rep,plot=TRUE,verbose=TRUE,Year=1952:2015,YLAB="Fishing mortality/year",onlyTotal=FALSE){
@@ -41,18 +42,21 @@ FAAreg<-lapply(1:2,function(i){add.FAAs(rep$FatYrAgeReg[[1]][,,i])})
 FAA<-add.FAAs(FAA)
 maxF<-max(max(FAA[,c("1_3","4_6","7+")]),sapply(FAAreg,function(x){max(x[,c("1_3","4_6","7+")])}))
 #cat("L33\n");browser()
-pl.all<-FAA%>%gather(key="Age",value="F",-!!sym("Year"))%>%
-           filter(.,!!quo('%in%'(sym("Age"), c("1_3","4_6","7+")))) %>% 
+pl.all<-FAA%>%
+           gather(key="Age",value="F",-!!sym("Year")) %>%
+  #         filter('%in%'( !!sym("Age"), !!!syms(c("1_3","4_6","7+")))) %>%
+  #         filter(match( !!sym("Age"), c("1_3","4_6","7+"))>0) %>%  
+           filter(eval(parse_expr( 'Age %in% c("1_3","4_6","7+")' ))) %>% 
            ggplot(aes_string(x="Year",y="F",color="Age"))
 pl.all<-pl.all+geom_line(size=1)+ylab(YLAB)+labs(title="Total")+labs(colour="")+theme(legend.position="bottom")+ylim(0,maxF*1.05)
 pl.reg<-FAAreg%>%lapply(.,function(z){
   pl<-z%>%gather(.,key="Age",value="F",-!!sym("Year"))%>% 
-    filter(.,!!sym("Age") %in% c("1_3","4_6","7+"))%>% ggplot(aes_string(x="Year",y="F",color="Age"))
+    filter(.,eval(parse_expr('Age %in% c("1_3","4_6","7+")'))) %>% ggplot(aes_string(x="Year",y="F",color="Age"))
   pl<-pl+geom_line(size=1)+ylab(YLAB)+xlab("")+labs(colour="")+theme(legend.position="none")+ylim(0,maxF*1.05)
   return(pl)
 })
 for(i in 1:2)pl.reg[[i]]<-pl.reg[[i]]+labs(title=paste0("Region ",i))
-cat("L41\n") #;browser()
+cat("L59\n") #;browser()
 
 pl<-if(!onlyTotal){
   grid.arrange(pl.reg[[1]],pl.reg[[2]],pl.all,ncol=2)

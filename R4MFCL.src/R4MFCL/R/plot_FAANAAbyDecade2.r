@@ -17,8 +17,11 @@
 #' @importFrom magrittr "%>%" 
 #' @export
 #'
-plot_FAANAAbyDecade2<-function(rep,plot=TRUE,verbose=TRUE,Year=1952:2015, # col=heat.colors(7),
-YLAB="average N@A by decade"){
+plot_FAANAAbyDecade2<-function(rep,
+                               plot=TRUE,
+                               verbose=TRUE,
+                               Year=1952:2015, # col=heat.colors(7),
+                               YLAB="average N@A by decade"){
 theme_set(theme_bw())
 
 .<-"XXXX"
@@ -39,7 +42,7 @@ Fdecade<-t(sapply(decades,function(y){colMeans(FAA[FAA$Year==y,1:20])}))
 rownames(Fdecade)<-paste(decades)
 Fdecade<-as.data.frame(Fdecade)
 Fdecade$decade<-rownames(Fdecade)
-Fdecade.long<-Fdecade %>%gather(., key="Age",!!sym("paste(1:20)"),value="F")
+Fdecade.long<-Fdecade %>%gather(., key="Age",eval(parse_expr("paste(1:20)")),value="F")
 Fdecade.long$Age<-as.numeric(paste(Fdecade.long$Age))
 pl.F<-Fdecade.long %>%ggplot(.,aes_string(x="Age",y="F"))+geom_line()+xlab("")+ylab("Average F by decade)")
 #pl<-pl+geom_line()
@@ -56,7 +59,7 @@ rownames(Ndecade)<-paste(decades)
 Ndecade<-as.data.frame(Ndecade)
 Ndecade$decade<-rownames(Ndecade)
 cat("L56 ; ") #;browser()
-Ndecade.long<-Ndecade %>% gather(., key="Age",!!sym("paste(1:20)"),value="F")
+Ndecade.long<-Ndecade %>% gather(., key="Age",eval(parse_expr("paste(1:20)")),value="F")
 Ndecade.long$Age<-as.numeric(paste(Ndecade.long$Age))
 pl.N<-Ndecade.long %>%ggplot(.,aes_string(x="Age",y="F"))+geom_line()+xlab("")+ylab(YLAB)
 pl.N<-pl.N+facet_wrap(~decade,ncol=1)
