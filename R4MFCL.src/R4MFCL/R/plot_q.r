@@ -13,6 +13,7 @@
 #' @importFrom ggplot2 scale_y_continuous element_blank facet_wrap theme
 #' @importFrom scales pretty_breaks 
 #' @importFrom scales alpha
+#' @importFrom stats as.formula
 #' @importFrom rlang sym syms 
 #' @export
 #'
