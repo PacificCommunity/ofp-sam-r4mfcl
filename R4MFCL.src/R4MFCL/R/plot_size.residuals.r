@@ -37,7 +37,7 @@ plot_size.residuals = function(fitfl = read.fit("length.fit"),
 #    require(scales)
     .<-"XXXXXX"
     theme_set(theme_bw())
-    if(verbose)cat("L13  starting plot.size.residuals\n")#;browser()
+    if(verbose)cat("L40  starting plot.size.residuals\n")#;browser()
     Year0<-if(!is.na(Year1)){
       Year1-1
     }else{
@@ -49,12 +49,12 @@ plot_size.residuals = function(fitfl = read.fit("length.fit"),
     }else{
       seq(from = frq$dl$wffirst, by = frq$dl$wfwidth, length.out = frq$dl$wfint)
     }
-    if(verbose)cat("L20 ;")#;browser()
+    if(verbose)cat("L52 ; ")#;browser()
     datlg <- rbindlist(fitfl$dates)
-    if(verbose)cat("L22 in plot.size.residuals\n")#;browser()
+    if(verbose)cat("L54 in plot.size.residuals\n")#;browser()
     if(any(sapply(fitfl$obslf,is.null))){
       obslg <- rbindlist(fitfl$obslf[!sapply(fitfl$obslf,is.null)], idcol = "ID")
-      if(verbose)cat("L25 in plot.size.residuals\n")#;browser()
+      if(verbose)cat("L57 in plot.size.residuals\n")#;browser()
       prelg <- rbindlist(fitfl$predlf[!sapply(fitfl$predlf,is.null)], idcol = "ID")
       obslg$ID<-(1:length(fitfl$obslf))[!sapply(fitfl$obslf,is.null)][obslg$ID]
       prelg$ID<-(1:length(fitfl$predlf))[!sapply(fitfl$predlf,is.null)][prelg$ID]
@@ -62,7 +62,7 @@ plot_size.residuals = function(fitfl = read.fit("length.fit"),
       obslg <- rbindlist(fitfl$obslf, idcol = "ID")
       prelg <- rbindlist(fitfl$predlf, idcol = "ID")
     }
-    if(verbose)cat("L38 in plot.size.residuals\n") #;browser()
+    if(verbose)cat("L65 ; ") #;browser()
     if(LenFit){
 # 2 species model 8 should be 16
       size.av <- if(is.null(frq$version) || frq$version==6){
@@ -83,26 +83,29 @@ plot_size.residuals = function(fitfl = read.fit("length.fit"),
     }
   #  if(frq$version==9){cat("L27 in plot.size.resials\n");browser()}
     size.av <- which(size.av[,  1] > 0)
-    if(verbose)cat("L59 in plotsize.residuals\n") #;browser()
+    if(verbose)cat("L86 ; ") #;browser()
     
     colnames(datlg)<-c("Year","Month","Week")
     reslg <- as.data.frame(obslg - prelg) %>% mutate(ID = factor(obslg$ID, levels = size.av), Year = datlg$"Year" + Year0 +(datlg$"Month" + 1)/12 - 0.125)
-    if(verbose)cat("L63 in plotsize.residuals\n") #;browser()
+    if(verbose)cat("L90 ; ") #;browser()
     colnames(reslg) <- c("Fishery", as.character(lbins), "Year")
-    reswd <- reslg %>% melt(id.vars = c("Fishery","Year"), variable.name = "Length", value.name = "Residual") %>%
-                       mutate(.,Fishery = as.numeric(as.character(!!sym("Fishery"))), Length = as.numeric(as.character(!!sym("Length"))), 
+    reswd <- reslg %>% 
+                melt(id.vars = c("Fishery","Year"), variable.name = "Length", value.name = "Residual") %>%
+          #      gather(key=c("Fishery","Year"),value="Residual",)  %>%
+                mutate(.,Fishery = as.numeric(as.character(!!sym("Fishery"))), Length = as.numeric(as.character(!!sym("Length"))), 
                        Sign = ifelse(!!sym("Residual") <= 0, "Negative", "Positive"), Residual = abs(!!sym("Residual")))
-    if(!LenFit){cat("L68\n") } #;browser()}
+    #          cat("L97 plot_size.residuals\n");browser()
+    if(!LenFit){cat("L96\n") } #;browser()}
     if(!any(reswd$Fishery %in% Fish.keep)){
-      cat("L70 Fish.keep is not included\n")
+      cat("L97 Fish.keep is not included\n")
       cat("unique(reswd$Fishery):\n",unique(reswd$Fishery),"\n")
       cat("Fish.keep            :",Fish.keep,"\n")
       browser()
     }else{
-      cat("L75 Fish.keep:\n");print(Fish.keep)
-      cat("L76 unique(reswd$Fishery):\n",unique(reswd$Fishery),"\n")
+      cat("L102 Fish.keep:\n");print(Fish.keep)
+      cat("L103 unique(reswd$Fishery):\n",unique(reswd$Fishery),"\n")
     }
-    cat("L78\n") # ;browser() match(x, table, nomatch = 0) > 0
+    cat("L105 ;") # ;browser() match(x, table, nomatch = 0) > 0
     cat(colnames(reswd),"\n")
     pldat <- reswd %>% filter( "%in%"(!!sym("Fishery"),  Fish.keep)) %>% 
         mutate(Fishery = factor(fltl[!!sym("Fishery")], levels = unique(fltl[!!sym("Fishery")]))) # Kludge to display them in correct order
@@ -118,6 +121,7 @@ plot_size.residuals = function(fitfl = read.fit("length.fit"),
     }
     pl<-pl+ylab(ylabel)
     if(plot)print(pl)
+    if(verbose)cat("L121 finished plot.size.residuals\n")
     return(invisible(pl))
 }
 

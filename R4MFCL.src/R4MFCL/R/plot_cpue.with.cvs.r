@@ -12,7 +12,7 @@
 #' @importFrom ggplot2 geom_point geom_line facet_wrap theme element_blank theme_set theme_bw aes_string
 #' @importFrom magrittr "%<>%" "%>%"
 #' @importFrom dplyr filter mutate summarise mutate
-#' @importFrom rlang enquo syms  expr 
+#' @importFrom rlang enquo syms  expr parse_expr
 #' @importFrom stats setNames
 #' @export
 plot_cpue.with.cvs <- function(repfile=read.rep("ALB15/plot-12.par.rep"), frqfiles=read.frq("ALB15/alb.frq"),
@@ -35,7 +35,7 @@ plot_cpue.with.cvs <- function(repfile=read.rep("ALB15/plot-12.par.rep"), frqfil
     mat$se[mat$effort == -1] <- NA
     mat$effort[mat$effort == -1] <- NA  
     mat %<>% filter('%in%'(!!sym("fishery"), nfish)) %>% 
-        mutate(cpue = "/"(!!!syms(c("catch","effort"))), cvs = 1/sqrt(2*(!!sym("se"))), yrqtr = eval(parse(text="year+ (qtr- 0.5)/12")))
+        mutate(cpue = "/"(!!!syms(c("catch","effort"))), cvs = 1/sqrt(2*(!!sym("se"))), yrqtr = eval(parse_expr("year+ (qtr- 0.5)/12")))
     if(verbose)cat("L39 ; ") # ;browser()
     fshmeans <- aggregate(mat$cpue, list(mat$fishery), mean, na.rm=TRUE)
     mat$cpue <- mat$cpue/fshmeans[match(mat$fishery, fshmeans[,1]),2]
