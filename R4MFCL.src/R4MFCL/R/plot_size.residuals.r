@@ -20,6 +20,7 @@
 #' @importFrom ggplot2 ggplot geom_point facet_wrap scale_y_continuous element_blank scale_colour_manual theme scale_size
 #' @importFrom dplyr mutate filter
 #' @importFrom reshape2 melt
+#' @importFrom tidyr gather unite separate
 #' @importFrom scales alpha pretty_breaks
 #' @importFrom data.table rbindlist
 #' @export
@@ -90,11 +91,15 @@ plot_size.residuals = function(fitfl = read.fit("length.fit"),
     if(verbose)cat("L90 ; ") #;browser()
     colnames(reslg) <- c("Fishery", as.character(lbins), "Year")
     reswd <- reslg %>% 
-                melt(id.vars = c("Fishery","Year"), variable.name = "Length", value.name = "Residual") %>%
-          #      gather(key=c("Fishery","Year"),value="Residual",)  %>%
-                mutate(.,Fishery = as.numeric(as.character(!!sym("Fishery"))), Length = as.numeric(as.character(!!sym("Length"))), 
-                       Sign = ifelse(!!sym("Residual") <= 0, "Negative", "Positive"), Residual = abs(!!sym("Residual")))
-    #          cat("L97 plot_size.residuals\n");browser()
+          #      melt(id.vars = c("Fishery","Year"), variable.name = "Length", value.name = "Residual") %>%
+               unite(col="Fishery_Year",!!!syms(c("Fishery","Year")), remove=TRUE) %>% 
+               gather(key="Length",value="Residual",-!!sym("Fishery_Year"))  %>% 
+               separate( col="Fishery_Year",into=c("Fishery","Year"),sep="_") %>%
+               mutate(Sign=ifelse(!!sym("Residual") <= 0, "Negative", "Positive"), Residual = abs(!!sym("Residual")))
+                
+              #  mutate(.,Fishery = as.numeric(as.character(!!sym("Fishery"))), Length = as.numeric(as.character(!!sym("Length"))), 
+              #         Sign = ifelse(!!sym("Residual") <= 0, "Negative", "Positive"), Residual = abs(!!sym("Residual")))
+              cat("L97 plot_size.residuals\n");browser()
     if(!LenFit){cat("L96\n") } #;browser()}
     if(!any(reswd$Fishery %in% Fish.keep)){
       cat("L97 Fish.keep is not included\n")
