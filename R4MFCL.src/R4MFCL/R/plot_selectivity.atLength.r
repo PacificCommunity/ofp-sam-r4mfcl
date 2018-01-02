@@ -31,16 +31,9 @@ plot_selectivity.atLength<-function(filename="selectivity-multi-sex",
                                     plot=TRUE,
                                     verbose=TRUE){
   if(verbose)cat("Starting plot_selectivityatLength\n")
-#  require(R4MFCL)
-#  require(ggplot2)
-#  require(reader)
-#  require(stringr)
-#  require(magrittr)
-#  require(data.table)
-#  require(dplyr)
-#  require(tidyr)
+
   theme_set(theme_bw())
- 
+  nSp<-rep$nSp
   if(all(rep$SelexTblocks==1) & use.selex.multi.sex & filename=="selectivity-multi-sex" & file.exists(filename) & file.size(filename)>0){
     xx<-readLines(filename)
      nfishWTblocks<-nfish<-length(grep(xx,pattern="^# fishery"))
@@ -59,7 +52,7 @@ plot_selectivity.atLength<-function(filename="selectivity-multi-sex",
       nfishWTblocks<-sum(rep$SelexTblocks)/rep$nSp
     }
   }
-  nSp<-rep$nSp
+  
   FL0<-unlist(sapply(1:nfish,function(i){
     nblk<-rep$SelexTblocks[i]
     tmp<-if(nblk==1){paste(i)}else{paste(i,1:nblk,sep="_")}
@@ -113,7 +106,7 @@ plot_selectivity.atLength<-function(filename="selectivity-multi-sex",
     gather(key="AgeClass",value="selex",remove=-!!sym("Fishery_Gender")) %>%
     separate(col="Fishery_Gender",into=c("Fishery","Gender"),sep="-") %>%
     mutate(Age=as.numeric(!!sym("AgeClass")),Fish=!!sym("Fishery"))-> yy.dt3
-  if(verbose)cat("L116;") #;  browser()
+  if(verbose)cat("L109;") #;  browser()
   yy.dt3$meanL<-1:dim(yy.dt3)[1]
   for(i in 1:dim(yy.dt3)[1]){
     Gender<-if(nSp>1){
@@ -129,11 +122,12 @@ plot_selectivity.atLength<-function(filename="selectivity-multi-sex",
     }
    yy.dt3[i,"meanL"]<-meanL
   }
-  if(verbose)cat("L132;") #;browser()
+  if(verbose)cat("L125;") #;browser()
   p<-yy.dt3 %>% ggplot(aes_string(x="meanL",y="selex"))
   p<-p+xlab(xlab)+ylab(ylab)
    p<-p+geom_line(aes_string(color="Gender"))+geom_point(aes_string(color="Gender"),size=1)+facet_wrap(~Fish,ncol=ncol,dir=dir)
-  print(p)
+  if(nSp==1)p<-p+labs(colour="")+guides(color=FALSE)  
+  if(plot)print(p)
 #  browser()
   return(invisible(p))
 }

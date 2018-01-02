@@ -30,15 +30,10 @@ plot_selectivity.atAge<-function(filename="selectivity-multi-sex",
                                  verbose=TRUE
                           ){
   if(verbose)cat("Starting plot_selectivityatAge\n")
-#  require(ggplot2)
-#  require(reader)
-#  require(stringr)
-#  require(magrittr)
-#  require(data.table)
-#  require(dplyr)
-#  require(tidyr)
+
   theme_set(theme_bw())
-  if(use.selex.multi.sex & filename=="selectivity-multi-sex" & file.exists(filename) & file.size(filename)>0){
+  nSp<-rep$nSp
+  if(all(rep$SelexTblocks==1) & use.selex.multi.sex & filename=="selectivity-multi-sex" & file.exists(filename) & file.size(filename)>0){
   ## To-do need to deal with time blocks
     nSp<-2
     xx<-readLines(filename)
@@ -51,6 +46,7 @@ plot_selectivity.atAge<-function(filename="selectivity-multi-sex",
     yy.dt2<-as.data.table(t(yy))
     yy.dt2$Gender<-rep(c("Male","Female"),nfish)
   }else{
+     yy<-t(rep$SelAtAge)
     if(verbose)cat("L41;") #;browser()
     if(all(rep$SelexTblocks==1)){
       nfish<- dim(rep$SelAtAge)[1]/rep$nSp
@@ -61,8 +57,7 @@ plot_selectivity.atAge<-function(filename="selectivity-multi-sex",
       tblocks<-TRUE
       nfishWTblocks<-sum(rep$SelexTblocks)/rep$nSp
     }
-    nSp<-rep$nSp
-    yy<-t(rep$SelAtAge)
+    
     FL0<-unlist(sapply(1:nfish,function(i){
             nblk<-rep$SelexTblocks[i]
             tmp<-if(nblk==1){paste(i)}else{paste(i,1:nblk,sep="_")}
@@ -94,7 +89,7 @@ plot_selectivity.atAge<-function(filename="selectivity-multi-sex",
     }
   }
   #######
-  if(verbose)cat("L79;")#;browser()
+  if(verbose)cat("L92;")#;browser()
   yy.dt2$Fishery<-fishlab[1:(nfishWTblocks*nSp)]
   yy.dt2 %>% unite(col="Fishery_Gender",!!!syms(c("Fishery","Gender")),sep="-") %>%
       gather(key="AgeClass",value="selex",remove=-!!sym("Fishery_Gender")) %>%

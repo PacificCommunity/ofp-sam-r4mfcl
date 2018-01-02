@@ -23,6 +23,7 @@
 #' @importFrom tidyr gather unite separate
 #' @importFrom scales alpha pretty_breaks
 #' @importFrom data.table rbindlist
+#' @importFrom rlang parse_expr eval_tidy
 #' @export
 plot_size.residuals = function(fitfl = read.fit("length.fit"), 
                                frq , 
@@ -31,14 +32,10 @@ plot_size.residuals = function(fitfl = read.fit("length.fit"),
                                Fish.keep = c("1","2"),plot=TRUE,LenFit=TRUE,ylabel="Length (cm)",
                                verbose=TRUE,rep=NULL,Year1=NA,common.xlim=TRUE,XLIM=NULL)
 {
-#    require(data.table)
-#    require(magrittr)
-#    require(dplyr)
-#    require(ggplot2)
-#    require(scales)
+
     .<-"XXXXXX"
     theme_set(theme_bw())
-    if(verbose)cat("L40  starting plot.size.residuals\n")#;browser()
+    if(verbose)cat("L37  starting plot.size.residuals\n")#;browser()
     Year0<-if(!is.na(Year1)){
       Year1-1
     }else{
@@ -50,12 +47,12 @@ plot_size.residuals = function(fitfl = read.fit("length.fit"),
     }else{
       seq(from = frq$dl$wffirst, by = frq$dl$wfwidth, length.out = frq$dl$wfint)
     }
-    if(verbose)cat("L52 ; ")#;browser()
+    if(verbose)cat("L49 ; ")#;browser()
     datlg <- rbindlist(fitfl$dates)
-    if(verbose)cat("L54 in plot.size.residuals\n")#;browser()
+    if(verbose)cat("L51 in plot.size.residuals\n")#;browser()
     if(any(sapply(fitfl$obslf,is.null))){
       obslg <- rbindlist(fitfl$obslf[!sapply(fitfl$obslf,is.null)], idcol = "ID")
-      if(verbose)cat("L57 in plot.size.residuals\n")#;browser()
+      if(verbose)cat("L54 in plot.size.residuals\n")#;browser()
       prelg <- rbindlist(fitfl$predlf[!sapply(fitfl$predlf,is.null)], idcol = "ID")
       obslg$ID<-(1:length(fitfl$obslf))[!sapply(fitfl$obslf,is.null)][obslg$ID]
       prelg$ID<-(1:length(fitfl$predlf))[!sapply(fitfl$predlf,is.null)][prelg$ID]
@@ -63,7 +60,7 @@ plot_size.residuals = function(fitfl = read.fit("length.fit"),
       obslg <- rbindlist(fitfl$obslf, idcol = "ID")
       prelg <- rbindlist(fitfl$predlf, idcol = "ID")
     }
-    if(verbose)cat("L65 ; ") #;browser()
+    if(verbose)cat("L63 ; ") #;browser()
     if(LenFit){
 # 2 species model 8 should be 16
       size.av <- if(is.null(frq$version) || frq$version==6){
@@ -84,37 +81,39 @@ plot_size.residuals = function(fitfl = read.fit("length.fit"),
     }
   #  if(frq$version==9){cat("L27 in plot.size.resials\n");browser()}
     size.av <- which(size.av[,  1] > 0)
-    if(verbose)cat("L86 ; ") #;browser()
+    if(verbose)cat("L83 ; ") #;browser()
     
     colnames(datlg)<-c("Year","Month","Week")
     reslg <- as.data.frame(obslg - prelg) %>% mutate(ID = factor(obslg$ID, levels = size.av), Year = datlg$"Year" + Year0 +(datlg$"Month" + 1)/12 - 0.125)
-    if(verbose)cat("L90 ; ") #;browser()
+    if(verbose)cat("L87 ; ") #;browser()
     colnames(reslg) <- c("Fishery", as.character(lbins), "Year")
     reswd <- reslg %>% 
           #      melt(id.vars = c("Fishery","Year"), variable.name = "Length", value.name = "Residual") %>%
                unite(col="Fishery_Year",!!!syms(c("Fishery","Year")), remove=TRUE) %>% 
                gather(key="Length",value="Residual",-!!sym("Fishery_Year"))  %>% 
-               separate( col="Fishery_Year",into=c("Fishery","Year"),sep="_") %>%
-               mutate(Sign=ifelse(!!sym("Residual") <= 0, "Negative", "Positive"), Residual = abs(!!sym("Residual")))
-                
+               separate( col="Fishery_Year",into=c("Fishery","Year"),sep="_")  %>% # ;cat("L93\n");browser()
+               mutate(Sign=ifelse(eval_tidy(parse_expr("Residual<=0")), "Negative", "Positive"), Residual = abs(!!sym("Residual"))) %>%
+               mutate(Fishery = as.numeric(as.character(!!sym("Fishery")))) %>%
+               mutate(Length  = as.numeric(as.character(!!sym("Length")))) %>%
+               mutate(Year =  as.numeric(as.character(!!sym("Year"))) ) ->reswd              
               #  mutate(.,Fishery = as.numeric(as.character(!!sym("Fishery"))), Length = as.numeric(as.character(!!sym("Length"))), 
               #         Sign = ifelse(!!sym("Residual") <= 0, "Negative", "Positive"), Residual = abs(!!sym("Residual")))
-              cat("L97 plot_size.residuals\n");browser()
-    if(!LenFit){cat("L96\n") } #;browser()}
+    if(verbose)cat("L100 plot_size.residuals\n") #;browser()
+    if(!LenFit){cat("L99 ; ") } #;browser()}
     if(!any(reswd$Fishery %in% Fish.keep)){
-      cat("L97 Fish.keep is not included\n")
+      cat("L103 Fish.keep is not included\n")
       cat("unique(reswd$Fishery):\n",unique(reswd$Fishery),"\n")
       cat("Fish.keep            :",Fish.keep,"\n")
       browser()
     }else{
-      cat("L102 Fish.keep:\n");print(Fish.keep)
-      cat("L103 unique(reswd$Fishery):\n",unique(reswd$Fishery),"\n")
+      cat("L108 Fish.keep:\n");print(Fish.keep)
+      cat("L109 unique(reswd$Fishery):\n",unique(reswd$Fishery),"\n")
     }
-    cat("L105 ;") # ;browser() match(x, table, nomatch = 0) > 0
+    if(verbose)cat("L111 ; ")  # ;browser() # match(x, table, nomatch = 0) > 0
     cat(colnames(reswd),"\n")
     pldat <- reswd %>% filter( "%in%"(!!sym("Fishery"),  Fish.keep)) %>% 
         mutate(Fishery = factor(fltl[!!sym("Fishery")], levels = unique(fltl[!!sym("Fishery")]))) # Kludge to display them in correct order
-
+    if(verbose)cat("L115 ; ") # ; browser()
     pl <- ggplot(pldat, aes_string(x = "Year", y = "Length", size = "Residual", colour = "Sign")) + geom_point() +
                  facet_wrap(~ Fishery, ncol = n.col, scales="free_y") + scale_size(range = sz.range) +
                  scale_y_continuous(breaks = pretty_breaks(n = nbrks)) +
@@ -126,7 +125,7 @@ plot_size.residuals = function(fitfl = read.fit("length.fit"),
     }
     pl<-pl+ylab(ylabel)
     if(plot)print(pl)
-    if(verbose)cat("L121 finished plot.size.residuals\n")
+    if(verbose)cat("L128 finished plot.size.residuals\n")
     return(invisible(pl))
 }
 
