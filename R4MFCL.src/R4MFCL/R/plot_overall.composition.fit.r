@@ -48,14 +48,7 @@ plot_overall.composition.fit = function(filename="length.fit",
                                         fit=TRUE,
                                         rep=NULL)
 {
-#    require(R4MFCL)
-#    require(ggplot2)
-#    require(reshape2)
-#    require(scales)
-#    require(magrittr)
-#    require(dplyr)
- #   require(stringr)
-#    require(tidyr)
+
     if(verbose)cat("Starting plot_overall.composition.fit.r\n")
 
     theme_set(theme_bw())
@@ -67,7 +60,7 @@ plot_overall.composition.fit = function(filename="length.fit",
               }else{
                 1
               }
-    cat("fit file version=",version,"\n")
+    if(verbose)cat("fit file version=",version,"\n")
 
     Nfsh <- scan(filename, nlines=1, skip=ifelse(version==1,2,3)) - 1   # Determine the number of fisheries from file header
     Nskips <- scan(filename, nlines=1, skip=ifelse(version==1,4,5))   # Determine the number of lines in the matrix for each fishery, from file header
@@ -77,7 +70,7 @@ plot_overall.composition.fit = function(filename="length.fit",
     if(version>=2)nSp<-length(unique(fishSpPtr))
     #cat("L38\n");browser()
     if(nSp>1 & fit & is.null(rep))stop("rep is needed for multi species/sex model")
-    if(verbose)cat("L38 in plot.overall.composition.fit.r; nSp=",nSp,"\n") #;browser()
+    if(verbose)cat("L73 in plot.overall.composition.fit.r; nSp=",nSp,"\n") #;browser()
     VecFsh <- 1:(Nfsh)   # Vector of fisheries numbers - just numeric for now
     LineKeep <- (VecFsh-1) * (Nskips + 6) + 1   # Identify the lines of the observed size frequencies for the fisheries
     if(nSp>1 & fit){
@@ -92,7 +85,6 @@ plot_overall.composition.fit = function(filename="length.fit",
                         tmp<-sapply(yq[[i]],function(x){which(Rlz.t.fsh1[i,]==x)});if(length(tmp)>0){pcatch[i,tmp]}else{NULL}
                     }) %>% sapply(sum)
       # catchtotalByFsh<-sapply(1:Nfsh,function(i){pcatch[i,sapply(yq[[i]],function(x){which(Rlz.t.fsh1[i,]==x)})]})
-
     }
     dat <- readLines(filename)   # Read in the file as text - run time could be reduced by only reading in from '# fishery totals' down but no skiplines argument in readLines - will have a hunt
 
@@ -125,7 +117,6 @@ plot_overall.composition.fit = function(filename="length.fit",
           }
         }
       }
-#      cat("L88\n");browser()
     }
 # Combine observed and predicted datasets
     dat.full <- rbind(dat.obs, dat.pred)
@@ -142,10 +133,11 @@ plot_overall.composition.fit = function(filename="length.fit",
         plot.dat$Fishery <- factor(fleetlabs[as.numeric(paste(plot.dat$Fishery))], levels = fleetlabs)
     }else{
       plot.dat %>% mutate(Sp=fishSpPtr[as.numeric(as.character(!!sym("Fishery")))]) %>% 
-        mutate(Gender=if_else(!!sym("Sp")==1,"Male","Female")) %>%
+        mutate(Gender=if_else(eval_tidy(parse_expr("Sp==1")),"Male","Female")) %>%
         mutate(Fishery.num=!!sym("as.numeric(as.character(Fishery))")) %>%
         mutate(tmp=!!sym("if_else(Fishery.num<=Nfsh/2,Fishery.num,Fishery.num-Nfsh/2)")) %>%
-        mutate(Fishery.tmp=if(Nfsh/2<10){tmp}else{str_pad(tmp,width=2,pad="0")}) %>% select(-!!sym("tmp")) %>%
+        mutate(Fishery.tmp=if(Nfsh/2<10){tmp}else{str_pad(tmp,width=2,pad="0")}) %>% 
+        select(-!!sym("tmp")) %>%
         mutate(Fishery2=fleetlabs[ifelse(!!sym("Gender")=="Male",!!sym("Fishery.num"),!!sym("Fishery.num-Nfsh/2"))]) %>%
         unite(col="Fishery3",!!!syms(c("Fishery.tmp","Fishery2")),remove=TRUE) %>% select(-!!sym("Fishery"))  %>%
         rename(Fishery=!!sym("Fishery3")) %>% select(-!!sym("Sp")) %>% select(-!!sym("Fishery.num"))->plot.dat
