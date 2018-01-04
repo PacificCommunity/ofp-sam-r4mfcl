@@ -9,6 +9,7 @@
 #' @param use.selex.multi.sex LOGICAL if selex from selectivity-multi-sex be used instead from plot.rep, default : FALSE
 #' @param plot LOGICAL if plot be sent ot graphics device
 #' @param verbose verbose or not
+#' @param withData logical if TRUE return value will be p : ggplot object, wide data and long data, default : FALSE
 #' @importFrom ggplot2 ggplot theme_set theme_bw geom_line aes_string geom_point facet_wrap guides labs ylab
 #' @importFrom tidyr gather separate unite
 #' @importFrom dplyr mutate
@@ -27,7 +28,8 @@ plot_selectivity.atAge<-function(filename="selectivity-multi-sex",
                                  rep=read.rep("plot-09.par.rep"),
                                  use.selex.multi.sex=FALSE,
                                  plot=TRUE,
-                                 verbose=TRUE
+                                 verbose=TRUE,
+                                 withData=FALSE
                           ){
   if(verbose)cat("Starting plot_selectivityatAge\n")
 
@@ -89,8 +91,9 @@ plot_selectivity.atAge<-function(filename="selectivity-multi-sex",
     }
   }
   #######
-  if(verbose)cat("L92;")#;browser()
+  
   yy.dt2$Fishery<-fishlab[1:(nfishWTblocks*nSp)]
+  if(verbose)cat("L92;") #;browser()
   yy.dt2 %>% unite(col="Fishery_Gender",!!!syms(c("Fishery","Gender")),sep="-") %>%
       gather(key="AgeClass",value="selex",remove=-!!sym("Fishery_Gender")) %>%
       separate(col="Fishery_Gender",into=c("Fishery","Gender"),sep="-") %>%
@@ -101,6 +104,12 @@ plot_selectivity.atAge<-function(filename="selectivity-multi-sex",
   if(nSp==1)p<-p+labs(colour="")+guides(color=FALSE)    #+guide_legend(label=FALSE)
 #  browser()
   if(plot)print(p)
-  return(invisible(p))
+  if(verbose)cat("Finished plot_selectivity.atAge\n") # ;browser()
+  if(withData){
+    output<-list(p=p,widedata=yy.dt2,longdata=yy.dt3)
+    return(invisible(output))
+  }else{
+    return(invisible(p))
+  }
 }
 

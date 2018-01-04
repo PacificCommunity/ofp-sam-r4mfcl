@@ -1,10 +1,13 @@
+#' Function to read test_plot_output
+#' @param filename string  file name of the file contains the details of likelihood components, default : "test_plot_output"
+#' @param verbose verbose?
+#' @param summarize LOGICAL if TRUE, make summary table
+#' @param par output of read.par. It is used to obtain total objective function value
+#' @param totpop LOGICAL if totpop scale be included into output
 #' @importFrom magrittr "%>%"
 #' @export
 read.Lprofile.detail<-function(filename="test_plot_output",verbose=TRUE,summarize=TRUE,par=NULL,totpop=FALSE){
-  #
-  # Function to read test_plot_output
-  #
- # require(magrittr)
+
   offset.fn<-function(x,offset){x+offset}
   get.vec<-function(input,keyword,offset=1){
     if(verbose)cat("get.vec, keyword=",keyword,"\n")
