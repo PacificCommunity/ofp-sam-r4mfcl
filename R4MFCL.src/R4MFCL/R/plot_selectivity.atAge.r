@@ -35,51 +35,48 @@ plot_selectivity.atAge<-function(filename="selectivity-multi-sex",
 
   theme_set(theme_bw())
   nSp<-rep$nSp
-  if(all(rep$SelexTblocks==1) & use.selex.multi.sex & filename=="selectivity-multi-sex" & file.exists(filename) & file.size(filename)>0){
+  tblocks<-!all(rep$SelexTblocks==1)
+  nfishWTblocks<-sum(rep$SelexTblocks)/rep$nSp
+  nfish<-rep$nFisheries # length(rep$SelexTblocks)/rep$nSp
+  FL0<-unlist(sapply(1:nfish,function(i){
+            nblk<-rep$SelexTblocks[i]
+            tmp<-if(nblk==1){paste(i)}else{paste(i,1:nblk,sep="_")}
+            if(i<10){paste0("0",tmp)}else{tmp}
+          }))
+
+  use.selex.multi.sex<-(all(rep$SelexTblocks==1) & use.selex.multi.sex & filename=="selectivity-multi-sex" & file.exists(filename) & file.size(filename)>0 )
+  if( use.selex.multi.sex){
   ## To-do need to deal with time blocks
     nSp<-2
     xx<-readLines(filename)
     nfish<-length(grep(xx,pattern="^# fishery"))
     xx[sort(c((1:nfish)*3,(1:nfish)*3-1))] %>%
-      sapply(function(x){str_trim(x) %>% str_split(pattern=" +",simplify=T) %>% as.numeric()},simplify="array") ->yy
+      sapply(function(x){str_trim(x) %>% str_split(pattern=" +",simplify=TRUE) %>% as.numeric()},simplify="array") ->yy
     dimnames(yy)[[1]]<-paste0(1:dim(yy)[1])
     dimnames(yy)[[2]]<-  paste0("FL",rep(1:nfish,each=2),c("Male","Female"))
-    yy<-apply(yy,1:2,as.numeric)
+    # yy<-apply(yy,1:2,as.numeric)
+    storage.mode(yy)<-"numeric"
     yy.dt2<-as.data.table(t(yy))
     yy.dt2$Gender<-rep(c("Male","Female"),nfish)
   }else{
      yy<-t(rep$SelAtAge)
     if(verbose)cat("L41;") #;browser()
-    if(all(rep$SelexTblocks==1)){
-      nfish<- dim(rep$SelAtAge)[1]/rep$nSp
-      tblocks<-FALSE
-      nfishWTblocks<-nfish
-    }else{
-      nfish<- length(rep$SelexTblocks)/rep$nSp
-      tblocks<-TRUE
-      nfishWTblocks<-sum(rep$SelexTblocks)/rep$nSp
-    }
-    
-    FL0<-unlist(sapply(1:nfish,function(i){
-            nblk<-rep$SelexTblocks[i]
-            tmp<-if(nblk==1){paste(i)}else{paste(i,1:nblk,sep="_")}
-            if(i<10){paste0("0",tmp)}else{tmp}
-          }))
     dimnames(yy)[[1]]<-paste0(1:dim(yy)[1])
-    dimnames(yy)[[2]]<-if(nSp>1){
-      paste0("FL",rep(FL0,2),c(rep("Male",nfishWTblocks),rep("Female",nfishWTblocks)))
+    dimnames(yy)[[2]]<-paste0("FL",if(nSp>1){
+      c(rep(FL0,2),rep("Male",nfishWTblocks),rep("Female",nfishWTblocks))
     }else{
-     paste0("FL",FL0)
-    }
-    yy<-apply(yy,1:2,as.numeric)
+      FL0
+    })
+    # yy<-apply(yy,1:2,as.numeric)
+    storage.mode(yy)<-"numeric"
     yy.dt2<-as.data.table(t(yy))
     yy.dt2$Gender<-if(nSp>1){c(rep("Male",nfishWTblocks),rep("Female",nfishWTblocks))
     }else{rep("Both",nfishWTblocks)}
   }
-  if(verbose)cat("L69;")
-  fishlab<-if(use.selex.multi.sex & filename=="selectivity-multi-sex" & file.exists(filename) & file.size(filename)>0){
+  if(verbose)cat("L75;")
+  fishlab<-if(use.selex.multi.sex){
     if(is.null(fishlab)){
-      paste(rep(FL0,each=2),paste0("FL",rep(FL0,each=2)),sep="_")
+      paste(rep(FL0,each=2),paste0("FL",rep(substr(FL0,1,2),each=2)),sep="_")
     }else{
       paste(rep(FL0,each=2),rep(unlist(sapply(1:nfish,function(i){rep(fishlab[i],rep$SelexTblocks[i])})),each=2),sep="_")
     }
