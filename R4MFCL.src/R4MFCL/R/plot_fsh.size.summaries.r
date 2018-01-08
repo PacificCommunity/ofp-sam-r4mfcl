@@ -7,18 +7,41 @@
 #                                   xlabel="Weight (kg)",remove.fsh="TRUE",
 #                                   fsh.labels=c(letters,paste(letters[1:7],"1",sep="")), Ncols=4,
 #                                   plotname="SizeFit.png", plot.wdth=12, plot.hgt=10, line.wdth=1.2)
+#'
+#' Plot summary of *.fit 
+#'
+#' @param filename string file name of *.fit file
+#' @param xlabel string label of x-axis
+#' @param fsh.labels vector of string 
+#' @param Ncols Ncols
+#' @param plotname file name of plots 
+#' @param plot.wdth plot.wdth, default : 12
+#' @param plot.hgt plot.hgt, default : 10
+#' @param line.wdth line.wdth, default=1.2
 #' @importFrom ggplot2 ggsave ggplot xlab ylab facet_wrap geom_bar
 #' @importFrom ggplot2 ggplot 
 # ' @importFrom reshape2 melt
+# ' @export
 
-plot.fsh.size.summaries = function(filename,xlabel,remove.fsh,fsh.labels,Ncols,plotname,plot.wdth,plot.hgt,line.wdth)
+plot_fsh.size.summaries = function(filename,
+                                    xlabel,
+                                    remove.fsh=NULL,
+                                    fsh.labels=NULL,
+                                    Ncols,
+                                    plotname,
+                                    plot.wdth,
+                                    plot.hgt,
+                                    line.wdth)
 {
-#    windows(dlfhsakfhhd)
-#    require(ggplot2)
-#    require(reshape2)
-    
-    Nfsh <- scan(filename, nlines=1, skip=2) - 1   # Determine the number of fisheries from file header
-    Nskips <- scan(filename, nlines=1, skip=4)   # Determine the number of lines in the matrix for each fishery, from file header
+    a <- readLines(filename)
+
+  version<- if(strsplit(a[1],split=" +")[[1]][1]=='#'){
+             as.numeric(strsplit(a[1],split=" +")[[1]][3])
+            }else{
+              1
+            }    
+    Nfsh <- as.numeric(a[ifelse(version==1,3,4)])-1 # scan(filename, nlines=1, skip=2) - 1   # Determine the number of fisheries from file header
+    Nskips <-as.numeric(a[ifelse(version==1,5,6)]) #  scan(filename, nlines=1, skip=4)   # Determine the number of lines in the matrix for each fishery, from file header
     size.pars <- scan(filename, nlines=1, skip=1)  # Extract the parameters that determine the size bins - no. bins, first bin size, bin width
     sizebins <- seq(from=size.pars[2], by=size.pars[3], length.out=size.pars[1])   # Construct the size bins from the file header
     
@@ -61,6 +84,7 @@ plot.fsh.size.summaries = function(filename,xlabel,remove.fsh,fsh.labels,Ncols,p
     print(p)
     
     ggsave(p, file=plotname, width=plot.wdth, height=plot.hgt)
+    return(invisible(p))
 }
 
 
