@@ -190,57 +190,53 @@ function(fit.file,
   if(verbose)cat("L190;") 
 
 ###################################################
- 
-#  newdata.pred<-makeNewdata(predlf,"Pred")
    newdata.pred<-makeNewdata(predlf)
-  if(verbose)cat("L196 ;") 
-  ####### for version>2 & nSp>1
-  if(version>2 & nSp>1){
-    if(is.null(rep))stop("rep is needed" )
-    pcatch<-rep$PredCatch
+  if(verbose)cat("L194 ;") 
+  if(!is.null(rep)){
     Year1<-rep$Year1
     Rlz.t.fsh<-rep$Rlz.t.fsh
     Rlz.t.fsh1<-Rlz.t.fsh-Year1+1
     yq<-lapply(dates,function(x){x[,1]+(x[,2]%/%3+1)/4-0.125})
+  }else{yq<-NULL}
+  ####### for version>2 & nSp>1
+  if(version>2 & nSp>1){
+    if(is.null(rep))stop("rep is needed" )
+    pcatch<-rep$PredCatch
     pcatch1<-1:length(dates) %>% sapply(function(i){
                         tmp<-sapply(yq[[i]],function(x){which(Rlz.t.fsh1[i,]==x)});if(length(tmp)>0){pcatch[i,tmp]}else{NULL}
                     })
     if(verbose)cat("length(pcatch)=",length(pcatch),"\n","length(pcatch1)=",length(pcatch1),"\n")
     for(i in 1:length(newdata.pred)){
-      if(verbose)cat("L210 i=",i,";")
+      if(verbose)cat("L208 i=",i,";")
       fish<-as.numeric(unique(newdata.pred[[i]]$Fishery))
       prop<-pcatch1[[fish]]/if(fish<=nfish/nSp){
         pcatch1[[fish]]+pcatch1[[fish+nfish/nSp]]}else{pcatch1[[fish-nfish/nSp]]+pcatch1[[fish]]}
       newdata.pred[[i]][5+1:nbins]<-newdata.pred[[i]][5+1:nbins]*prop*newdata.pred[[i]]$smplSz
     }
   }
-  if(verbose)cat("L217 ;") 
+  yq<-if(!is.null(rep)){lapply(yq,function(x){x+Year1-1})}else{NULL}
+  if(verbose)cat("L218 ;") 
   ####################################
   newdata.pred<-do.call("rbind",newdata.pred)
-
   newdata<-rbind(newdata.obs,newdata.pred)
-  if(verbose)cat("L222 ;") # ; browser()
+  if(verbose)cat("L223 ;") # ; browser()
   #########################################
   if(0){
-  col.offset<-if(version==1){
-    3
-  }else{
-    ifelse(nSp==1,5,6)
+  col.offset<-if(version==1){3}else{ifelse(nSp==1,5,6)}
   }
-  }
-  if(verbose)cat("L230 ;") # ; browser()
+  if(verbose)cat("L227 ;") # ; browser()
   colnames(newdata.pred)[1:3]<-colnames(newdata.obs)[1:3]<-colnames(newdata)[1:3]<-c("timeperiod","month","week")
   col.offset<-ifelse(version>2,3,1)
   if(version>2){
     colnames(newdata.pred)[4:(4+nSp)]<-colnames(newdata.obs)[4:(4+nSp)]<-colnames(newdata)[4:(4+nSp)]<-
                     if(nSp==1){c("Both","nsmpl")}else{c("Male","Female","nsmpl")}
   }
-  if(verbose)cat("L237 ;") # ;browser() 
+  if(verbose)cat("L234 ;") # ;browser() 
   colnames(newdata)[col.offset+1+nSp+1:nbins]<-
   colnames(newdata.pred)[col.offset+1+nSp+1:nbins]<-
   colnames(newdata.obs)[col.offset+1+nSp+1:nbins]<-paste0(binfirst+(0:(nbins-1))*binwidth)
-  
-  if(verbose)cat("L242 ;")  # ; browser()
+  newdata$yq<-newdata.obs$yq<-newdata.pred$yq<-if(!is.null(yq)){unlist(yq)}else{NA}
+  if(verbose)cat("L239 ;")  # ; browser()
   nms<-if(version==1){
     c("timeperiod","month","week","Fishery","Set")
   }else if(version==2){
@@ -250,16 +246,18 @@ function(fit.file,
   }else if(version>2 & nSp==2){
     c("timeperiod","month","week","Male","Female","nsmpl","Fishery","Sp","Gender","Set")
   }
+ # if(!is.null(rep))
+  nms<-c(nms,"yq")
   
   if(version>=2){
     newdata %<>% select(.,-!!sym("Fishery")) %>% rename(Fishery=!!sym("RealFishery"))
     newdata.obs %<>% select(.,-!!sym("Fishery")) %>% rename(Fishery=!!sym("RealFishery"))
     newdata.pred %<>% select(.,-!!sym("Fishery")) %>% rename(Fishery=!!sym("RealFishery"))
   }
-  if(verbose)cat("L258\n") #  ;browser()
+  if(verbose)cat("L257\n")  # ;browser()
   newdata %>% unite(.,col="United",from=!!!syms(nms),remove=TRUE,sep="_") %>%
                      gather(key="bin",value="frq",-!!sym("United"))->tmp2
-  if(verbose)cat("L261 ; ")  #;browser()
+  if(verbose)cat("L260 ; ")  #;browser()
   longdata<-tmp2 %>% separate(.,col="United",into=nms,sep="_")
                      
   # longdata$SizeBin<-as.numeric(substr(longdata$bin,start=2,stop=6))
@@ -271,7 +269,7 @@ function(fit.file,
   if(verbose)cat("L270 ;") # ;browser()
   longdata.obs<-tmp2 %>% separate(.,col="United",into=nms,sep="_")
           
-  if(verbose)cat("L273 ;")
+  if(verbose)cat("L272 ;")
 
   if(overall.composition.plot){
     if(nSp==1 || version<=2)stop("overall.composition.plot is only available for 2 sex and version 3 fit file")
@@ -279,13 +277,13 @@ function(fit.file,
     plot.data$Fishery<-
       paste(if(nfish/nSp<10){plot.data$Fishery}else{str_pad(paste(plot.data$Fishery),width=2,pad="0")},
         plot.ctl$fleetlabs[as.numeric(paste(plot.data$Fishery))],sep="_")
-      if(verbose){cat("L281 ;");cat("colnames(plot.data):\n",colnames(plot.data),"\n")}
+      if(verbose){cat("L280 ;");cat("colnames(plot.data):\n",colnames(plot.data),"\n")}
       p<-plot.data %>% filter(.,!!sym("Set")=="Obs") %>% ggplot(aes_string(x="bin",y="n"))+
         geom_bar(stat="identity", colour=plot.ctl$fillcol, fill=plot.ctl$fillcol)+
         facet_wrap(~Fishery,ncol=plot.ctl$Ncols,scales="free_y",dir=plot.ctl$dir)
       p<-p+xlab(plot.ctl$xlabel) + ylab("Samples")
       if(fit){
-        if(verbose){cat("L287 ; ");cat("colnames(plot.data):\n",colnames(plot.data),"\n")}
+        if(verbose){cat("L286 ; ");cat("colnames(plot.data):\n",colnames(plot.data),"\n")}
         p<-p+ plot.data %>% filter(.,!!sym("Set")=="Pred") %>%
           geom_line(data=.,aes_string(x="SizeBin",y="n",group="Gender",color="Gender"), size=plot.ctl$line.wdth,position="Stack")
       }
@@ -318,6 +316,7 @@ function(fit.file,
                         newdata=newdata,
                         newdata.obs=newdata.obs,
                         newdata.pred=newdata.pred)
+#  if(!is.null(yq))results$yq<-yq
   if(overall.composition.plot){
     results$p<-p
     results$plot.data<-plot.data
