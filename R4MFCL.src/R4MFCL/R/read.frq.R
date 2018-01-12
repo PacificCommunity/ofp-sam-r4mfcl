@@ -7,7 +7,7 @@
 #' @importFrom utils count.fields
 #' @export
 read.frq <-
-function(frq.file,frq.title="",ntop=0,fishdefs=NA) {
+function(frq.file,frq.title="",ntop=0,fishdefs=NA,remove0frq=TRUE) {
 ##===================================================================================
 ## by Simon Hoyle June 2008
 ## SDH 2/2/09 change for multi-region

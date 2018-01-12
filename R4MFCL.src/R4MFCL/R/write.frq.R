@@ -1,4 +1,10 @@
+#' Function to write frq file
+#'
+#' @param frqfile file name of frq file to write
+#' @param frq.obj ourputs from read.frq
+#'
 #' @importFrom utils write.table
+#' @export
 write.frq <- function(frqfile,frq.obj) {
 ##============================================================================
 ## by Simon Hoyle June 2008
@@ -7,6 +13,8 @@ write.frq <- function(frqfile,frq.obj) {
 ##  enhanced  PK 13/06/2011
 ##============================================================================
     x<-frq.obj
+    version<-x$version
+    nsp<-x$struct$nsp
     m <- x$mat
     x$struct$nf <- length(unique(m[,4]))
     ttl <- x$frq.title
@@ -65,11 +73,21 @@ write.frq <- function(frqfile,frq.obj) {
   }
   fish <- sort(unique(m[,4]))
   matout <- vector(mode="character",length=0)
-  if(x$struct$te>=6) poslf <- 8 else poslf <- 7
+  poslf <- if(version<6){
+    7
+  }else if(version>=6 & version <8 ){
+    8
+  }else if(version==8 ){
+    8+msp*3
+  }else if(version==9 ){
+    8+msp*4
+  }else{
+    stop("frq version is ",x$struct$te)
+  } 
   lfint <- x$dl$lfint ; wfint <- x$dl$wfint
   if ((lfint!=0 && wfint==0) || (lfint==0 && wfint!=0)) {
     for (i in 1:nrow(m)) {
-      if (m[i,poslf]==-1) {
+      if (m[i,poslf]==-1 || sum(m[i,poslf:dim(m)[2]])==0) {
         matout[i] <- " -1"   #paste(" ",m[i,(poslf+1):ncol(m)],collapse=" ")
       } else {
         matout[i] <- paste(" ",m[i,-(1:(poslf-1))],collapse=" ")
@@ -78,9 +96,9 @@ write.frq <- function(frqfile,frq.obj) {
   }
   else if (lfint!=0 && wfint!=0) {
     for (i in 1:nrow(m)) {
-      if (m[i,poslf]==-1) {matout[i] <- " -1" ; nlf <- poslf+1}
+      if (m[i,poslf]==-1 || sum(m[i,poslf+1:lfint-1]==0 )) {matout[i] <- " -1" ; nlf <- poslf+1}
       else {matout[i] <- paste(" ",m[i,poslf:(poslf+lfint-1)],collapse=" "); nlf <- poslf+lfint}
-      if(m[i,nlf]==-1) matout[i] <- paste(matout[i]," -1")
+      if(m[i,nlf]==-1 || sum(m[i,nlf+1:wfint-1])==0) matout[i] <- paste(matout[i]," -1")
       else matout[i] <- paste(matout[i]," ",paste(m[i,(nlf):(nlf+wfint-1)],collapse=" ")) 
       ##struc <- paste(m[i,7:(poslf-1)],collapse=" ")
       ##if (m[i,poslf]==-1) nlf <- 1 else nlf <- x$dl$lfint
