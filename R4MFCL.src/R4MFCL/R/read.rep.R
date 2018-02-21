@@ -6,7 +6,7 @@
 #' @importFrom tidyr unite separate gather
 #' @importFrom dplyr mutate
 #' @importFrom rlang sym syms 
-#'@export
+#' @export
 read.rep <- function(rep.file,verbose=FALSE) {
   # Simon Hoyle June 2008
   # NMD June 2011 - flexibility for tag reporting rates structure
@@ -168,7 +168,8 @@ read.rep <- function(rep.file,verbose=FALSE) {
       pos.offset<-3
     }
  #   pos.offset<-ifelse(nSp==1,3,4) ## YT This needs to be updated for multispecies model (2 sex model is OK)
-    tmp<-strsplit(a[pos1+pos.offset],split="[[:blank:]]+")[[1]]
+   # tmp<-strsplit(a[pos1+pos.offset],split="[[:blank:]]+")[[1]]
+    tmp<-strsplit(a[grep("Beverton-Holt stock-recruitment relationship report",a)+1],split=" +")[[1]]
     columns.vec<-if(length(tmp)==13){c(4,7,10,13)}else{c(4,7,10)}
     names(columns.vec)<-if(length(tmp)==13){c("alpha","beta","steepness","varRdev")}else{c("alpha","beta","steepness")}
     tmp<-as.numeric(tmp[columns.vec])
@@ -181,7 +182,7 @@ read.rep <- function(rep.file,verbose=FALSE) {
     SRR <- NA
     SPR0<-NULL;SSB0<-NULL;R0<-NULL
   }
-
+  #cat("L184\n");browser()
   pos1 <- grep("# Observed spawning Biomass",a) ; Obs.SB <- if(length(pos1)>0){datfromstr(a[pos1+1])}else{NULL} # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   pos1 <- grep("# Observed recruitment",a) ; Obs.R <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   pos1 <- grep("# Spawning Biomass",a) ; Pred.SB <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
