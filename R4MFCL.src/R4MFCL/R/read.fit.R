@@ -16,7 +16,7 @@
 #' @export
  read.fit <-
 function(fit.file,
-         verbose=FALSE,
+         verbose=FALSE,DEBUG=FALSE,
          rep=NULL,
          overall.composition.plot=FALSE,
          fit=FALSE,
@@ -153,7 +153,7 @@ function(fit.file,
   }
 
   newdata.obs<-makeNewdata(obslf,"Obs")
-  if(verbose)cat("L156 ;") 
+  if(verbose)cat("L156 ;") ; if(DEBUG)browser()
   ############## for version >2 ############
 
   if(version>2 & nSp>1){
@@ -182,7 +182,7 @@ function(fit.file,
 ###################################################
  
   newdata.pred<-makeNewdata(predlf,"Pred")
-  if(verbose)cat("L185 ;") 
+  if(verbose)cat("L185 ;") ; if(DEBUG)browser()
   ####### for version>2 & nSp>1
   if(version>2 & nSp>1){
     if(is.null(rep))stop("rep is needed" )
@@ -215,17 +215,18 @@ function(fit.file,
   }else{
     ifelse(nSp==1,5,6)
   }
+  if(verbose)cat("L218; ") ; if(DEBUG)browser()
   colnames(newdata)[col.offset+1:nbins]<-
         paste0(ifelse(fit.file=="length.fit","L","W"),seq(from=binfirst,length.out=nbins,by=binwidth))
 
-  if(verbose)cat("L220 ;") 
+  if(verbose)cat("L222 ;") ; if(DEBUG)browser() 
   colnames(newdata.pred)[1:3]<-colnames(newdata.obs)[1:3]<-colnames(newdata)[1:3]<-c("timeperiod","month","week")
   col.offset<-ifelse(version>2,3,1)
   if(version>2){
     colnames(newdata.pred)[4:(4+nSp)]<-colnames(newdata.obs)[4:(4+nSp)]<-colnames(newdata)[4:(4+nSp)]<-
                     if(nSp==1){c("Both","nsmpl")}else{c("Male","Female","nsmpl")}
   }
-  if(verbose)cat("L227 ;") 
+  if(verbose)cat("L227 ;") ;if(DEBUG)browser()
   colnames(newdata.pred)[col.offset+1+nSp+1:nbins]<-
   colnames(newdata.obs)[col.offset+1+nSp+1:nbins]<-paste0(binfirst+(0:(nbins-1))*binwidth)
   if(0){
@@ -240,6 +241,7 @@ function(fit.file,
     c("timeperiod","month","week","Male","Female","nsmpl","RealFishery","Sp","Gender","Set")
   }
   }
+  cat("L243\n");if(DEBUG)browser()
   newdata %>% {
                 if(1){
                     if(version==1)
@@ -262,7 +264,7 @@ function(fit.file,
          #         select(.,-!!"Fishery")
               #      } %>% gather_(key_col="bin",value_col="frq",gather_cols="United")->tmp2
                    } %>% gather(key="bin",value=!!sym("frq"),-!!sym("United"))->tmp2
-  if(verbose)cat("L265 ; ")  #;browser()
+  if(verbose)cat("L265 ; ")  ;if(DEBUG)browser()
   longdata<-tmp2 %>% { if(version==1)
                         separate(.,col=!!sym("United"),into=c("timeperiod","month","week","Fishery","Set"),sep="_")
                       else if(version==2)
@@ -277,7 +279,7 @@ function(fit.file,
                         stop("nSp=",nSp)
                     }
   longdata$SizeBin<-as.numeric(substr(longdata$bin,start=2,stop=6))
-  if(verbose)cat("L280 ;") 
+  if(verbose)cat("L281 ;") ; if(DEBUG)browser()
 
   newdata.obs %>% {
                     if(version==1)
@@ -310,11 +312,12 @@ function(fit.file,
                       else
                         stop("nSp=",nSp)
                     }
-    if(verbose)cat("L313 ;")
+    if(verbose)cat("L313 ;")  ;if(DEBUG)browser()
 
     if(overall.composition.plot){
       if(nSp==1 || version<=2)stop("overall.composition.plot is only available for 2 sex and version 3 fit file")
-      plot.data <- longdata %>% group_by(!!!syms(c("RealFishery","Gender","Set","SizeBin"))) %>% summarize(!!"n":=sum(sym("frq")))
+      cat("L317\n"); if(DEBUG)browser()
+      plot.data <- longdata %>% group_by(!!!syms(c("RealFishery","Gender","Set","SizeBin"))) %>% summarize(n=sum(!!sym("frq")))
       plot.data$Fishery<-
         paste(if(nfish/nSp<10){
           plot.data$RealFishery}else{str_pad(paste(plot.data$RealFishery),width=2,pad="0")},

@@ -7,7 +7,7 @@
 #' @importFrom dplyr mutate
 #' @importFrom rlang sym syms 
 #' @export
-read.rep <- function(rep.file,verbose=FALSE) {
+read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   # Simon Hoyle June 2008
   # NMD June 2011 - flexibility for tag reporting rates structure
   # SDH October 2011 - adapt for projections ##
@@ -269,19 +269,20 @@ read.rep <- function(rep.file,verbose=FALSE) {
   #############################################################################################
   #  Code to create selex data base adapted from plot_selectivity.atAge
   tSelAtAge<-t(SelAtAge)
-  if(verbose)cat("L271;") #;browser()
+  if(verbose)cat("L271;") ; if(DEBUG)browser()
   tblocks<-!all(SelexTblocks==1)
   nfish<-nFisheries
-  nfishWTblocks<-ifelse(tblocks,sum(SelexTblocks)/nSp,nFisheries)
-
+  nfishWTblocks<-ifelse(tblocks,sum(SelexTblocks)/nSp,nFisheries/nSp)
+  cat("L276\n");if(DEBUG)browser()
   FL0<-unlist(sapply(1:nFisheries,function(i){
             nblk<-SelexTblocks[i]
             tmp<-if(nblk==1){paste(i)}else{paste(i,1:nblk,sep="_")}
             if(i<10){paste0("0",tmp)}else{tmp}
           }))
+  cat("L282\n");if(DEBUG)browser()
   dimnames(tSelAtAge)[[1]]<-paste0(1:dim(tSelAtAge)[1])
   dimnames(tSelAtAge)[[2]]<-if(nSp>1){
-    paste0("FL",rep(FL0,2),c(rep("Male",nfishWTblocks),rep("Female",nfishWTblocks)))
+    paste0("FL",FL0,c(rep("Male",nfishWTblocks),rep("Female",nfishWTblocks)))  # Fixed 2018-04-18
   }else{
     paste0("FL",FL0)
   }

@@ -10,7 +10,7 @@
 #' @importFrom magrittr "%>%"
 #' @export
 read.par <-
-function(par.file,verbose=TRUE) {
+function(par.file,verbose=TRUE,DEBUG=FALSE) {
 #  require(magrittr)
   datfromstr<-function (datstring)
   {
@@ -22,7 +22,7 @@ function(par.file,verbose=TRUE) {
     return(out)
   }
   a <- readLines(par.file)
-  if(verbose)cat("L19 in read.par;")#;browser()
+  if(verbose)cat("L19 in read.par;") ; if(DEBUG)browser()
   pfl <- datfromstr(a[2]) # as.numeric(unlist(strsplit(a[2],split="[[:blank:]]+"))[-1])
   version<-pfl[200]
   nages <- a[5]
@@ -32,7 +32,7 @@ function(par.file,verbose=TRUE) {
 # 13/03/2017 YT added code to read multi-sp/sex age flags
   mp.afl.ln<-ifelse(!is.na(ax<-grep(a,pattern="# multi-species age flags")[1]+1),ax,NA)
   nSp<-ifelse(is.na(mp.afl.ln),1,2) ## YT current code does not support multi-species model with number of species more than 2
-  if(verbose)cat("L29;") #;browser()
+  if(verbose)cat("L29;") ; if(DEBUG)browser()
   mp.afl<-if(!is.na(mp.afl.ln)){
       datfromstr(a[mp.afl.ln])
   }else{NULL}
@@ -41,10 +41,11 @@ function(par.file,verbose=TRUE) {
   pos2 <- grep("tag flags",a) ;
   if(length(pos2)==0)   pos2 <- grep("# region control flags",a) ;
   ffl<-datfromstr(a[(pos1+1):(pos2-1)])
-  if(verbose)cat("L37 ;") # ;browser()
+  if(verbose)cat("L37 ;")  ; if(DEBUG)browser()
 #  cat("L21 read.par.r ;");browser()
   nfisheries <- dim(ffl)[1]
   ## check if selectivity time block is implemented
+  cat("L48\n"); if(DEBUG)browser()
   do.selblocks<-ifelse(any(ffl[,71]>0),TRUE,FALSE)
 # Check if there are the new tag report sections in the par file
   tsw <- 0  #Default switch setting on tag parameters to zero
