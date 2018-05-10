@@ -115,7 +115,9 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
 # SDH 2011/10/24 added 4 lines so the code works when extra comment text is added for projections
   posyr <- rep(1,nTimes)
   if(length(grep("#   Projected",a, ignore.case = TRUE)) > 0) {
-    projyrs <- grep("# Exploitable population biomass by fishery \\(across\\) and year \\(down\\)",a) - max(grep("#   Projected",a, ignore.case = T)) - 1
+    #projyrs <- grep("# Exploitable population biomass by fishery \\(across\\) and year \\(down\\)",a) - max(grep("#   Projected",a, ignore.case = T)) - 1
+    # YT 2018-05-10
+    projyrs <- grep("# Exploitable population biomass by fishery (down) and by year-season  (across)",a,fixed=TRUE)-max(grep("#   Projected",a, ignore.case = T)) - 1 
     posyr[nTimes-projyrs+1] <- 2
     }
   pos1 <- grep("# Population Number by age \\(across\\), year \\(down\\) and region",a, ignore.case = TRUE)
@@ -126,6 +128,8 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
       pos1 <- pos1 + 1
       for(i in 1:nTimes) {
         pos1 <- pos1 + posyr[i] # SDH 2011/10/24 changed from  'pos1 <- pos1 + 1'
+        #cat("region ",j,"; nTimes ",i,"\n") ; if(i==257)browser()
+
         NatYrAgeReg[i,,j] <- datfromstr(a[pos1])
      }
     }

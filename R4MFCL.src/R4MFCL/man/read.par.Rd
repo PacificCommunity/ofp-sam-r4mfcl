@@ -9,7 +9,7 @@ NMD 22/06/12 - allow instance of no tag flags or tag pars at all (e.g. striped m
 YT : 27/02/17 : Upgraded for multi species/sex model
 YT : 10/06/2017 : made it compatible to para file version 1042}
 \usage{
-read.par(par.file, verbose = TRUE)
+read.par(par.file, verbose = TRUE, DEBUG = FALSE)
 }
 \arguments{
 \item{par.file}{charactor file name of par file}

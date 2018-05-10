@@ -4,7 +4,7 @@
 \alias{read.rep}
 \title{Function to read plot.rep file}
 \usage{
-read.rep(rep.file, verbose = FALSE)
+read.rep(rep.file, verbose = FALSE, DEBUG = FALSE)
 }
 \arguments{
 \item{rep.file}{CHARACTER file name of plot.rep file}
