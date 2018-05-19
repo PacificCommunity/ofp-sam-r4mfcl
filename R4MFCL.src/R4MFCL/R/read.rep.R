@@ -122,17 +122,21 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
     }
   pos1 <- grep("# Population Number by age \\(across\\), year \\(down\\) and region",a, ignore.case = TRUE)
   nAges1<-if(nSp>1){nAges[1]}else{nAges};NatYrAgeReg <- array(dim=c(nTimes,nAges1,nReg)) ;
-#  cat("L137 in read.rep.R ; ") #;browser()
-  # YT 2017/02/17 If, in the future, MFCL becomes to allow different nAges by sp/sex, this code needs to be upgrades
-    for(j in 1:nReg) {
-      pos1 <- pos1 + 1
-      for(i in 1:nTimes) {
-        pos1 <- pos1 + posyr[i] # SDH 2011/10/24 changed from  'pos1 <- pos1 + 1'
-        #cat("region ",j,"; nTimes ",i,"\n") ; if(i==257)browser()
+  cat("L125 in read.rep.R ; ") #;browser()
 
-        NatYrAgeReg[i,,j] <- datfromstr(a[pos1])
-     }
-    }
+  xxx<-scan(text=a[pos1+1:(nTimes*nReg+100)],n=nTimes*nAges1*nReg,what=0,comment.char="#")
+  dim(xxx)<-c(nAges1,nTimes,nReg)
+  NatYrAgeReg <-aperm(xxx,c(2,1,3))
+  # YT 2017/02/17 If, in the future, MFCL becomes to allow different nAges by sp/sex, this code needs to be upgrades
+  #  for(j in 1:nReg) {
+  #    pos1 <- pos1 + 1
+  #    for(i in 1:nTimes) {
+  #      pos1 <- pos1 + posyr[i] # SDH 2011/10/24 changed from  'pos1 <- pos1 + 1'
+  #      #cat("region ",j,"; nTimes ",i,"\n") ; if(i==257)browser()
+  #
+  #      NatYrAgeReg[i,,j] <- datfromstr(a[pos1])
+  #   }
+  #  }
   if(length(pos1)==0)  {
     pos1 <- grep("# Exploitable population by fishery \\(across\\) and year \\(down\\)",a)
   } else {
