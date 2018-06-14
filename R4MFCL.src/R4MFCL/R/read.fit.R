@@ -189,11 +189,18 @@ function(fit.file,
     pcatch<-rep$PredCatch
     Year1<-rep$Year1
     Rlz.t.fsh<-rep$Rlz.t.fsh
-    Rlz.t.fsh1<-Rlz.t.fsh-Year1+1
+    #Rlz.t.fsh1<-Rlz.t.fsh-Year1+1
+    Rlz.t.fsh1<-Rlz.t.fsh
     yq<-lapply(dates,function(x){x[,1]+(x[,2]%/%3+1)/4-0.125})
-    pcatch1<-1:length(dates) %>% sapply(function(i){
-                        tmp<-sapply(yq[[i]],function(x){which(Rlz.t.fsh1[i,]==x)});if(length(tmp)>0){pcatch[i,tmp]}else{NULL}
+    if(verbose)cat("L194 ;") #;browser()
+    #pcatch1<-1:length(dates) %>% sapply(function(i){
+    #                    tmp<-sapply(yq[[i]],function(x){which(Rlz.t.fsh1[i,]==x)});if(length(tmp)>0){pcatch[i,tmp]}else{NULL}
+    #                })
+    pcatch1<-1:length(dates) %>% lapply(function(i){
+                        tmp<-which(Rlz.t.fsh1[i,] %in% yq[[i]])
+                        if(length(tmp)>0){pcatch[i,tmp]}else{NULL}
                     })
+
     if(verbose)cat("length(pcatch)=",length(pcatch),"\n","length(pcatch1)=",length(pcatch1),"\n")
 
     for(i in 1:length(newdata.pred)){
