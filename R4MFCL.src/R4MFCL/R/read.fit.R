@@ -189,8 +189,11 @@ function(fit.file,
     pcatch<-rep$PredCatch
     Year1<-rep$Year1
     Rlz.t.fsh<-rep$Rlz.t.fsh
-    #Rlz.t.fsh1<-Rlz.t.fsh-Year1+1
-    Rlz.t.fsh1<-Rlz.t.fsh
+    Rlz.t.fsh1<-if(rep$nRecs.yr==1){
+      Rlz.t.fsh-Year1+1
+    }else{
+      Rlz.t.fsh
+    }
     yq<-lapply(dates,function(x){x[,1]+(x[,2]%/%3+1)/4-0.125})
     if(verbose)cat("L194 ;") #;browser()
     #pcatch1<-1:length(dates) %>% sapply(function(i){
@@ -204,17 +207,18 @@ function(fit.file,
     if(verbose)cat("length(pcatch)=",length(pcatch),"\n","length(pcatch1)=",length(pcatch1),"\n")
 
     for(i in 1:length(newdata.pred)){
-      if(verbose)cat("L199 i=",i,";")
+      if(verbose)cat("L207 i=",i,";")
       fish<-as.numeric(unique(newdata.pred[[i]]$Fishery))
       prop<-pcatch1[[fish]]/if(fish<=nfish/nSp){
         pcatch1[[fish]]+pcatch1[[fish+nfish/nSp]]}else{pcatch1[[fish-nfish/nSp]]+pcatch1[[fish]]}
+        #browser()
       newdata.pred[[i]][5+1:nbins]<-newdata.pred[[i]][5+1:nbins]*prop*newdata.pred[[i]]$smplSz
     }
   }
-  if(verbose)cat("L206 ;") 
+  if(verbose)cat("L214 ;") 
   ####################################
   newdata.pred<-do.call("rbind",newdata.pred)
-  if(verbose)cat("L209 ;") #;
+  if(verbose)cat("L217 ;") #;
   newdata<-rbind(newdata.obs,newdata.pred)
   #########################################
   col.offset<-if(version==1){
@@ -222,11 +226,11 @@ function(fit.file,
   }else{
     ifelse(nSp==1,5,6)
   }
-  if(verbose)cat("L218; ") ; if(DEBUG)browser()
+  if(verbose)cat("L225; ") ; if(DEBUG)browser()
   colnames(newdata)[col.offset+1:nbins]<-
         paste0(ifelse(fit.file=="length.fit","L","W"),seq(from=binfirst,length.out=nbins,by=binwidth))
 
-  if(verbose)cat("L222 ;") ; if(DEBUG)browser() 
+  if(verbose)cat("L229 ;") ; if(DEBUG)browser() 
   colnames(newdata.pred)[1:3]<-colnames(newdata.obs)[1:3]<-colnames(newdata)[1:3]<-c("timeperiod","month","week")
   col.offset<-ifelse(version>2,3,1)
   if(version>2){
