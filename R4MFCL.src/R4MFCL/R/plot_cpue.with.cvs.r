@@ -34,9 +34,12 @@ plot_cpue.with.cvs <- function(repfile=read.rep("ALB15/plot-12.par.rep"), frqfil
     mat <- as.data.frame(frqfiles$mat)
     mat$se[mat$effort == -1] <- NA
     mat$effort[mat$effort == -1] <- NA  
+    if(verbose)cat("L37 ; ") # ;browser()
     mat %<>% filter('%in%'(!!sym("fishery"), nfish)) %>% 
-        mutate(cpue = "/"(!!!syms(c("catch","effort"))), cvs = 1/sqrt(2*(!!sym("se"))), yrqtr = eval(parse_expr("year+ (qtr- 0.5)/12")))
-    if(verbose)cat("L39 ; ") # ;browser()
+       # mutate(cpue = "/"(!!!syms(c("catch","effort"))), cvs = 1/sqrt(2*(!!sym("se"))), yrqtr = eval(parse_expr("year+ (qtr- 0.5)/12")))
+     mutate(cpue = eval(parse_expr("catch/effort")), cvs = 1/sqrt(2*(!!sym("se"))), yrqtr = eval(parse_expr("year+ (qtr- 0.5)/12")))
+    
+    if(verbose)cat("L40 ; ") # ;browser()
     fshmeans <- aggregate(mat$cpue, list(mat$fishery), mean, na.rm=TRUE)
     mat$cpue <- mat$cpue/fshmeans[match(mat$fishery, fshmeans[,1]),2]
 

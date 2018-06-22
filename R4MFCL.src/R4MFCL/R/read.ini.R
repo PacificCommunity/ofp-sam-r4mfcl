@@ -6,7 +6,7 @@
 #' @param mpy number of movement per year
 #' @param incidence size of incidence matrix
 #' @export
-read.ini <- function(ini.file,nSp=1,nReg=2,mpy=4,incidence=c(1,1))
+read.ini <- function(ini.file,nSp=NA,nReg=2,mpy=4,incidence=c(1,1),verbose=TRUE)
 ##============================================================================
 ## by Simon Hoyle June 2008
 ##  revised, PK June 2011
@@ -20,7 +20,12 @@ read.ini <- function(ini.file,nSp=1,nReg=2,mpy=4,incidence=c(1,1))
 ## nSp : number of species
 ## nReg : number of region
 {
-  a <- readLines(ini.file)
+	a<-if(file.exists(ini.file)){
+  	readLines(ini.file)
+  }else{
+  	if(verbose)print(dir())
+  	stop("Can not find ", ini.file)
+  }
   hpts <- grep("^#",a)
   ini.obj <- list()
 
@@ -137,6 +142,15 @@ read.ini1002<-function(ini.file,nSp=2,nReg=2,mpy=4,incidence=c(1,1),verbose=TRUE
     }
   }
   ini.obj<-list()
+  # First of all if nSp==NA, make a guess
+  if(is.na(nSp)){
+  	nSp<-if(allnums[2]==allnums[3]){
+  		2
+  	}else{
+  		1
+  	}
+  	cat("nSp was guessed to ",nSp,"\n")	
+  }
   i<-1
   ini.obj$version<-as.numeric(allnums[i]);i<-i+1
 #  cat("L129\n");browser()
