@@ -11,7 +11,7 @@
 plot_length.temporal <- function(frq, 
                                  tmp.rep, 
                                  fleetlabs, YLIM=c(0,200),
-                                Nrows=5, Ncols=3, annual=FALSE)
+                                Nrows=5, Ncols=3, annual=FALSE,verbose=TRUE)
 {
   line1 <- grep("# Datasets ", readLines(frq))
   a <- count.fields(frq, skip=line1+1)
@@ -53,6 +53,7 @@ plot_length.temporal <- function(frq,
   rm(sumlf)
   
   alb <- as.data.frame(mat)
+  if(verbose)cat("L56 ;");browser()
   lf <- aggregate.data.frame(alb[,5:(lfint+4)], list(alb[,4]), sum)
   lf2 <- apply(lf[,2:(lfint+1)], 1, sum)
   for(i in 1:dim(lf)[1]){

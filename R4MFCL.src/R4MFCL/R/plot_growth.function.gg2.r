@@ -99,8 +99,9 @@ plot_growth.function.gg2 <- function(rep=tmp.rep,YLIM=c(0,210),
       }else{
         as.data.frame(t(x$mean.LatAge))
       }
-      colnames(lth0)<-paste0(x$.model.name,if(nSp==1){"_Aggregated"}else{c("_Male","_Female")})
-      lth0$age<-1:nages
+      #cat("L102\n");browser()
+      colnames(lth0)<-paste0(x$.model.name,if(x$nSp==1){"_Aggregated"}else{c("_Male","_Female")})
+      lth0$age<-if(x$nSp==1){1:nages}else{1:nages[1]}
       return(lth0)
     })
 
@@ -111,8 +112,8 @@ plot_growth.function.gg2 <- function(rep=tmp.rep,YLIM=c(0,210),
       }else{
         as.data.frame(t(x$sd.LatAge))
       }
-      colnames(lthsd0)<-paste0(x$.model.name,if(nSp==1){"_Aggregated"}else{c("_Male","_Female")})
-      lthsd0$age<-1:nages
+      colnames(lthsd0)<-paste0(x$.model.name,if(x$nSp==1){"_Aggregated"}else{c("_Male","_Female")})
+      lthsd0$age<-if(x$nSp==1){1:nages}else{1:nages[1]}
       return(lthsd0)
   })
   cat("117\n") #;browser()

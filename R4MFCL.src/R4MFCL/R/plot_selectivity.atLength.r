@@ -52,12 +52,25 @@ plot_selectivity.atLength<-function(filename="selectivity-multi-sex",
   }else{
     yy<-t(rep$SelAtAge)
     if(verbose)cat("L44 ; ") #;browser()
-
+   if(all(rep$SelexTblocks==1)){
+      nfish<- dim(rep$SelAtAge)[1]/rep$nSp
+      tblocks<-FALSE
+      nfishWTblocks<-nfish/rep$nSp
+    }else{
+      nfish<- length(rep$SelexTblocks)/rep$nSp
+      tblocks<-TRUE
+      nfishWTblocks<-sum(rep$SelexTblocks)/rep$nSp
+    }
   }
-    
-  if(verbose)cat("L55;")
+  nSp<-rep$nSp
+  FL0<-unlist(sapply(1:nfish,function(i){
+    nblk<-rep$SelexTblocks[i]
+    tmp<-if(nblk==1){paste(i)}else{paste(i,1:nblk,sep="_")}
+    if(i<10){paste0("0",tmp)}else{tmp}
+  }))  
+  if(verbose)cat("L71;")
   dimnames(yy)[[1]]<-paste0(1:dim(yy)[1])
-  if(verbose)cat("L57;")
+  if(verbose)cat("L73;") #; browser()
   dimnames(yy)[[2]]<-if(use.selex.multi.sex){
     paste0("FL",rep(1:nfish,each=2),c("Male","Female"))
   }else{

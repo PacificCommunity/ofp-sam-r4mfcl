@@ -12,7 +12,7 @@
 #' @importFrom graphics points segments
 #' @export
 plot_weight.temporal <- function(frq, tmp.rep, ini, fleetlabs, YLIM=c(0,200),
-                                Nrows=5, Ncols=3, annual=FALSE,fish.selblock=4)
+                                Nrows=5, Ncols=3, annual=FALSE,fish.selblock=4,verbose=TRUE)
 {
   line1 <- grep("# Datasets ", readLines(frq))
   a <- count.fields(frq, skip=line1+1)
