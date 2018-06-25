@@ -62,17 +62,29 @@ else
   B <- aggregate(B,list(year),mean)
   #year <- B[,1]
   #B <- B[,-1]
+  
   Bnof0<-Bnof <- aggregate(Bnof,list(year),mean)
+    ## Compare SBf0 from the way which cause an error for annual model
+  #Bnof.error<-aggregate(Bnof,list(year),mean)
+  #SBf0.error<-Bnof.error[(nyr-windows[1]):(nyr-windows[2]+1),]%>% colMeans()
+  # 2018-06-25 YT Need to make special treatments for annual model
+  #Bnof0<-Bnof <-if(tsteps>1){
+  #  aggregate(Bnof,list(year),mean)
+  #}else{
+  #  Bnof
+  #}
 #  require(magrittr)
   SBf0<-Bnof[(nyr-windows[1]):(nyr-windows[2]+1),]%>% colMeans()
-#  cat("L43\n");browser()
+	cat("Correct SBf0\n");print(SBf0)
+	#cat("Incorrect SBf0\n");print(SBf0.error)
+  cat("L80\n") #;browser()
 #  B$type<-"Fished"
 #  SBf0$type<-"Unfished"
   Depletion<-B
-  if(verbose)cat("72 ;\n") #;browser()
+  if(verbose)cat("L84 ;\n") #;browser()
   Depletion[,2:dim(Depletion)[2]]<-
     t(apply(Depletion[,2:dim(Depletion)[2]],1,"/",SBf0[2:dim(Depletion)[2]]))
-
+	cat("L87\n")#;browser()
   colnames(Depletion)[1]<-"Year"
   nRegPlot<-ifelse(nSp==1,nReg,ifelse(female,nReg/nSp,nReg))
   colnames(Depletion)[1+1:nRegPlot]<-paste0('Region',1:nRegPlot)
@@ -92,7 +104,7 @@ else
   labs <- c(paste("Region",seq(nplt-1)),"Overall")
   year <- B[,1]
 
-par(mfrow=plot.layout, mar=c(2,4,1,2)+.1, lwd=.5, xpd=T, omi=c(0,0.2,0,0))
+  #par(mfrow=plot.layout, mar=c(2,4,1,2)+.1, lwd=.5, xpd=T, omi=c(0,0.2,0,0))
   
   for(i in 1:nplt){
     ymax<-max(B[,i+1]/SBf0[i+1])*1.1

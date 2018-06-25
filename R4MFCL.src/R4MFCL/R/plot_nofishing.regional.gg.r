@@ -13,7 +13,7 @@
 #' @export
 plot_nofishing.regional.gg <- function(plotrep,
                           type="SSB", plot.layout=c(5,2), legpos="bottomleft", mainleg="topleft", legplot=5,YLAB=NULL,
-                          plot=TRUE,female=TRUE,verbose=TRUE,ncol=NA)
+                          plot=TRUE,female=TRUE,verbose=TRUE,ncol=NA,free_y=TRUE)
 {
 ##-----------------------------------------------------------------------
 ##-----------------------------------------------------------------------
@@ -71,7 +71,12 @@ else
   B0 %<>% gather(key="Region",value="B",-Year,-type)
   if(verbose)cat("L72 ;\n") #;browser()
   plt<-ggplot()+geom_line(data=B0,aes_string(x="Year",y="B",colour="type"))
-  plt<-plt+facet_wrap(~Region,ncol=ifelse(is.na(ncol),plot.layout[2],ncol))+labs(y=textlab)
+  if(free_y){
+  	plt<-plt+facet_wrap(~Region,ncol=ifelse(is.na(ncol),plot.layout[2],ncol),scales="free_y")+labs(y=textlab)
+  }else{
+  	plt<-plt+facet_wrap(~Region,ncol=ifelse(is.na(ncol),plot.layout[2],ncol))+labs(y=textlab)
+  }
+  
   if(plot)plot(plt)
   return(invisible(plt))
   if(0){
