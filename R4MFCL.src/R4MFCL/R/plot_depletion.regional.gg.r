@@ -21,7 +21,7 @@ plot_depletion.regional.gg <- function(plotrep,
 {
 ##-----------------------------------------------------------------------
 ##-----------------------------------------------------------------------
-
+ theme_set(theme_bw())
 # Dimensioning
 #time steps
 nyr <- plotrep$nTimes
