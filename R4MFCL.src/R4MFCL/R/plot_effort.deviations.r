@@ -36,7 +36,17 @@ plot_effort.deviations <- function(plotrepfile,
   for(i in fishplot) {
 
   j <- j + 1
-  effort <- frqfile$mat[,6][frqfile$mat[,4]==i]
+  effort <- if(frq$version<=6){ # YT 2018-07-05 check frq version since version 9 have more columns before effort
+  	frqfile$mat[,"effort"][frqfile$mat[,"fishery"]==i]
+  	}else if(frq$version==9){
+  		if(is.null(frq$struct$nsp)| frq$struct$nsp==1){
+  			frqfile$mat[,"effort"][frqfile$mat[,"fishery"]==i]
+  		}else{
+  			frqfile$mat[,"effort"][frqfile$mat[,"fishery"]==i & frqfile$mat[,"Sex1"]==1]
+  		}
+  	}else{ 
+  		stop("frq version is ",frq$version," I do not know how to dealwith")
+  	}
   year <- year.tmp[i,!is.na(year.tmp[i,])]
   cp <- cp.tmp[i,!is.na(cp.tmp[i,])]
   co <- co.tmp[i,!is.na(co.tmp[i,])]
