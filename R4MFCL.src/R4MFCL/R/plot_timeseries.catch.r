@@ -42,7 +42,11 @@ plot_timeseries.catch = function(catdat = "ALB15/catch.rep", repfile = read.rep(
   dat <- as.data.frame(dat)
   
   names(dat) <- 1:nfsh
-  
+  cat("L45;\n")
+  if(length(repfile$yrs)!=dim(dat$yrqtr)[1]){
+  	stop("length(repfile$yrs)!=dim(dat$yrqtr)[1]), \nlength(repfile$yrs)=",length(repfile$yrs),"\n",
+  	"dim(dat$yrqtr)[1]=",dim(dat$yrqtr)[1])
+  }
   dat$yrqtr <- repfile$yrs
   
   dat <- melt(dat, measure.vars = 1:(dim(dat)[2]-1), id.vars = "yrqtr", variable.name = "fsh", value.name = "catch")

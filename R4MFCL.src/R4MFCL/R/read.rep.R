@@ -36,6 +36,14 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
 #  pos2 <- grep("F at MSY",a) ; rem <- a[(pos1+1):length(a)] # YT, 2017/02//27, I do not know if this line i necessary. For the time being, it is commented out
   # load data
   frqfilename<-strsplit(a[3],split=" +")[[1]][5]
+  inputParfilename<-strsplit(a[4],split=" +")[[1]][6]
+  outputParfilename<-strsplit(a[6],split=" +")[[1]][6]
+  MFCL.version.string<-strsplit(a[5],split=" +")[[1]][5]
+  MFCL.version<-list()
+  MFCL.version$Major<-as.numeric(strsplit(MFCL.version.string,".")[[1]][1])
+  MFCL.version$Minor<-as.numeric(strsplit(MFCL.version.string,".")[[1]][2])
+  MFCL.version$Build<-as.numeric(strsplit(MFCL.version.string,".")[[1]][3])
+  MFCL.version$Revision<-as.numeric(strsplit(MFCL.version.string,".")[[1]][4])
   pos1 <- grep("# Number of time periods",a) ; nTimes <- datfromstr(a[pos1+1]) 
   pos1 <- grep("# Year 1",a) ; Year1 <- datfromstr(a[pos1+1]) 
   pos1 <- grep("# Number of regions",a) ; nReg <- datfromstr(a[pos1+1]) 
@@ -164,7 +172,7 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
 
   pos1 <- grep("# Predicted CPUE by fishery \\(down\\) and time \\(across\\)",a) ; PredCPUE <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh)) ;
     for(i in 1:nFisheries) { PredCPUE[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i]) }
-
+  BH.ar<-NULL
   pos1 <- grep("# Yield analysis option",a) ; YieldOption <- as.numeric(a[pos1+1])
   if(YieldOption==1)
   {
@@ -330,6 +338,9 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
             PredCatch.interact=PredCatch.interact,
             version=viewerVer.num,nSp=nSp,spPtr=spPtr,spSexPtr=spSexPtr,regSpPtr=regSpPtr,filename=rep.file,frqfilename=frqfilename,
             SelexSeasons=SelexSeasons,SelexTblocks=SelexTblocks,SSB0=SSB0,SPR0=SPR0,R0=R0,BH.ar=BH.ar,
-            SelAtAge.wide=SelAtAge.wide,SelAtAge.long=SelAtAge.long)
+            SelAtAge.wide=SelAtAge.wide,SelAtAge.long=SelAtAge.long,
+            inputParfilename=inputParfilename,outputParfilename=outputParfilename,
+            MFCL.version.string=MFCL.version.string,MFCL.version=MFCL.version
+            )
   return(invisible(rep.obj))
   }
