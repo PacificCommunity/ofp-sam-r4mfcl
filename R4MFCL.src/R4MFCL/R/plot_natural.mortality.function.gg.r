@@ -57,11 +57,8 @@ read.rep(baserep)),modlab = c("Base","Base"),verbose=TRUE,plot=TRUE)
   	M.df<-do.call("rbind",M.df)
   	if(verbose)cat("L58 ; \n") #;browser()
     #plot(1:length(M[[1]]), M[[1]], type="n", ylab="Natural mortality", xlab="Age class", ylim=c(0,maxy), las=1)
-    pl<-ggplot(data=M.df,aes(x=age,y=M,col=modlab))+geom_line()
-    #for(i in 2:length(repfiles))
-    #{
-    #  lines(1:length(M[[i]]), M[[i]], lwd=2, col=i)
-    #}
+    pl<-ggplot(data=M.df,aes(x=age,y=M,col=modlab))+geom_line()+theme(legend.title=element_blank())
+
 
     #lines(1:length(M[[1]]), M[[1]], lwd=2, col="black")
     #legend("topright", lwd=2, col=1:length(M), lty=c(1,1), legend=modlab,bty="n")
