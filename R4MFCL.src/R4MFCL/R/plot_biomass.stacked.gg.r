@@ -115,7 +115,7 @@ plt<-plt+theme(legend.position = lgposi,legend.box=("vertical"))
 if(reverse)plt<-plt+guides(fill = guide_legend(reverse=TRUE))
 plt<-plt+guides(fill=guide_legend(title=NULL))
 xlimits<-range(Bout[,1]) ;xlimits[1]<-floor(xlimits[1]/10)*10 ; xlimits[2]<-(floor(xlimits[2]/10)+1)*10 ; # +xlim(range(Bout[,1]))
-ylimits<-
+#ylimits<-
 plt<-plt+ylim(0,maxylim)+scale_x_continuous(breaks=seq(xlimits[1],xlimits[2],by=10),limits=xlimits)
 if(!is.null(pmain)){
   plt<-plt+labs(title=pmain)+theme(plot.title=element_text(hjust = 0.5,color=tit.colour))

@@ -7,6 +7,8 @@
 #' @param lnsize line size of lines
 #' @param nbrks number of breaks in Y-axis
 #' @param annual logical if annual average be plotted
+#' @param ylim default=NULL ylim
+#' 
 #' @importFrom dplyr group_by summarise
 #' @importFrom magrittr "%>%"
 #' @importFrom ggplot2 ggplot geom_line aes_string xlab ylab
@@ -27,7 +29,9 @@ plot_q <- function(parfile,
                    n.col=4, 
                    lnsize=1, 
                    nbrks=4, 
-                   annual=TRUE){
+                   annual=TRUE,
+                   ylim=NULL,
+                   plot=TRUE){
 
 
 #  require(scales)
@@ -68,5 +72,7 @@ plot_q <- function(parfile,
                ylab("Catchability coefficient (q)") + 
                scale_y_continuous(breaks=pretty_breaks(n=nbrks)) +
                theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
-  print(pl) 
+  if(!is.null(ylim))pl<-pl+ylim(ylim)
+  if(plot)print(pl) 
+  return(invisible(pl))
 }
