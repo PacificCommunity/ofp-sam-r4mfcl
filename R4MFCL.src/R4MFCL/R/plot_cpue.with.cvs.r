@@ -46,9 +46,9 @@ plot_cpue.with.cvs <- function(repfile=read.rep("ALB15/plot-12.par.rep"), frqfil
      mat %<>% mutate(LL = eval(parse(text="exp(log(cpue) - 2*cvs)")), UL = eval(parse(text="exp(log(cpue) + 2*cvs)")))
  
     pldat <- merge(mat, tmp, by=c("yrqtr","fishery"), all.y=TRUE)
-    if(verbose)cat("L46 ;") #;browser()
+    if(verbose)cat("L49 ;") #;browser()
     pldat$fishery <- factor(fleetlabs[pldat$fishery], levels = fac.levels)
-    if(verbose)cat("L48 ;") #;browser()
+    if(verbose)cat("L51 ;") #;browser()
     pldat$years <- floor(pldat$yrqtr)
 
     if(plot.annual){
