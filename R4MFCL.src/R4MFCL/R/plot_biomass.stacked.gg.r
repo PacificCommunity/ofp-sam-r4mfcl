@@ -12,6 +12,7 @@
 #' @param plot LOGICAL plot be sent to graphics device or not
 #' @param reg.labels labels for each region
 #' @param femaleOnly if TRUE and the model is sex structured and type=="SSB", only female SSB be plotted  
+#' @param scaler scaler to apply (default=1), this is to be used to compare e.g. sex agregated model with 2 sex model
 #' @importFrom ggplot2 ggplot geom_area aes_string guides guide_legend position_stack
 #' @importFrom ggplot2 scale_fill_manual scale_fill_discrete theme labs element_text scale_color_manual scale_color_discrete
 #' @importFrom magrittr "%>%"
@@ -22,7 +23,7 @@
 #'
 plot_biomass.stacked.gg <- function(plotrep, pmain="Run 3d", type="SSB", maxylim=NULL,
                                         lgposi=c(0.9, 0.93), reg.cols = NULL, tit.colour=grey(0.4),reverse=TRUE,fill=TRUE,
-                                        alpha=1,plot=TRUE,reg.labels=NULL,femaleOnly=TRUE)
+                                        alpha=1,plot=TRUE,reg.labels=NULL,femaleOnly=TRUE,scaler=1)
 {
 #  require(ggplot2)
 #  require(tidyr)
@@ -50,16 +51,21 @@ if(length(lgposi)==1 && match(lgposi, c("none", "left", "right", "bottom", "top"
   {
      #    B <- plotrep$AdultBiomass/1000
     B <- if(plotrep$nSp==1 ||  !femaleOnly){
-          plotrep$AdultBiomass/1000
+          plotrep$AdultBiomass/1000*scaler
         }else{
-          plotrep$AdultBiomass[,which(plotrep$regSpPtr==which(plotrep$spSexPtr==1))]/1000
+          plotrep$AdultBiomass[,which(plotrep$regSpPtr==which(plotrep$spSexPtr==1))]/1000*scaler
         }
  #    cat("L36 in plot.biomass.stacked.gg.r\n");browser()
          textlab <- "Spawning potential"
   }else{
     if(type=="REC"){
-      B <- plotrep$Recruitment*tsteps/1000000
-      textlab <- "Recruitment (millions of fish)"
+      B <- if(plotrep$nSp==1 ||  !femaleOnly){
+      	plotrep$Recruitment*tsteps/1000000*scaler
+      	textlab <- "Recruitment (millions of fish)"
+      }else{
+      	plotrep$Recruitment[,which(plotrep$regSpPtr==which(plotrep$spSexPtr==1))]*tsteps/1000000*scaler
+      	textlab <- "Female recruitment (millions of fish)"
+      }
     }else{
       B <- plotrep$TotBiomass/1000
       textlab <- "Total biomass (1'000's mt)"
@@ -67,7 +73,7 @@ if(length(lgposi)==1 && match(lgposi, c("none", "left", "right", "bottom", "top"
   }
     ##--- aggregate by year
 if(plotrep$nReg > 1){
-  Bout <- aggregate(B,list(year),mean)
+  Bout <- aggregate(B,list(year),mean)*scaler
 } else {
   stop("This model only has one region so will look pretty stupid, that's why I'm not going to let you plot it")
 }
