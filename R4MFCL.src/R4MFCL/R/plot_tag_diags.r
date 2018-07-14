@@ -1,5 +1,6 @@
-
-
+#' Function to make diagnostic plots for tag
+#' 
+# ' @importFrom lattice xyplot
 
 plot_tag_diags <- function(tmptagrepfile, parfile, type='logscale'){
 

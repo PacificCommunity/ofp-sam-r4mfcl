@@ -1,8 +1,9 @@
 #' Making plot of yield curve
 #' @param repfile outputs of read.rep
 #' @param xlimits ranges of F-multiplier
+#' @param plot logical if print plot
 #  ' @importFrom graphics title
-#' @importFrom ggplot2 ggplot geom_line
+#' @importFrom ggplot2 ggplot geom_line aes_string
 #' @export
 plot_yield.gg <- function(repfile, xlimits = c(0,5),plot=TRUE){
 
@@ -26,7 +27,7 @@ plot_yield.gg <- function(repfile, xlimits = c(0,5),plot=TRUE){
 #  lines(x=c(1,1), y=c(-100000, y[which(a==1)])/1000, lty=4, lwd=2, col="firebrick3")
 # lines(x=c(-100000,1), y=c(y[which(a==1)]/1000, y[which(a==1)]/1000), lty=4, lwd=2, col="firebrick3")
 
-  pl<-pl+geom_path(data=data.frame(x=c(0,1,1),y=c(y[which(a==1)]/1000, y[which(a==1)]/1000, 0)), aes(x=x,y=y),linetype="dashed",colour="firebrick3")
+  pl<-pl+geom_path(data=data.frame(x=c(0,1,1),y=c(y[which(a==1)]/1000, y[which(a==1)]/1000, 0)), aes_string(x="x",y="y"),linetype="dashed",colour="firebrick3")
   if(plot)plot(pl)
   return(invisible(pl))
 }

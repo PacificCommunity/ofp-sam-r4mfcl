@@ -18,6 +18,7 @@
 #' @param plot.wdth plot.wdth, default : 12
 #' @param plot.hgt plot.hgt, default : 10
 #' @param line.wdth line.wdth, default=1.2
+#' @param remove.fsh  If true only fisheries with data will be plotted, if false then will be plotted as zeros
 #' @importFrom ggplot2 ggsave ggplot xlab ylab facet_wrap geom_bar
 #' @importFrom ggplot2 ggplot 
 # ' @importFrom reshape2 melt

@@ -1,6 +1,7 @@
 #' read frq file for conversion to 2sex model
 #' @param frqfile file name of frq file
-#' @param verbose
+#' @param verbose make verbose?
+#' @param convert4to6 convert version 4 frq to version 6 frq
 #'
 #' @author Yukio Takeuchi
 #' @export

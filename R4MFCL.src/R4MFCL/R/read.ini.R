@@ -5,6 +5,7 @@
 #' @param nReg number of regions
 #' @param mpy number of movement per year
 #' @param incidence size of incidence matrix
+#' @param  verbose make make verbose
 #' @export
 read.ini <- function(ini.file,nSp=NA,nReg=2,mpy=4,incidence=c(1,1),verbose=TRUE)
 ##============================================================================

@@ -15,6 +15,8 @@ read.par(par.file, verbose = TRUE, DEBUG = FALSE)
 \item{par.file}{charactor file name of par file}
 
 \item{verbose}{if TRUE verbose outputs will be made}
+
+\item{DEBUG}{enable "debug" through browser()}
 }
 \description{
 by Simon Hoyle June 2008

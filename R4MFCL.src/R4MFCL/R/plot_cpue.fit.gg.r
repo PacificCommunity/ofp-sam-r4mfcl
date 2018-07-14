@@ -8,6 +8,7 @@
 #' @param XLIM XLIM
 #' @param addLine LOGICAL add lines of predicted CPUEs
 #' @param fac.levels fac.levels
+#' @param par outputs from read.par 
 #' @importFrom ggplot2 ggplot theme_set theme_bw xlab facet_wrap geom_line geom_point theme ylab ylim element_blank scale_y_continuous
 # ' @importFrom scales
 #' @export 

@@ -7,15 +7,19 @@
 #' @param mainleg mainleg
 #' @param legplot legplot
 #' @param windows windows
+#' @param plot logical, make plot?
+#' @param verbose Do verbose?
 #' @param ylab ylab
-#'
+#' @param female calculation only based on female biomass
+#' @param ncol number of plots in horizontal order 
 #' @importFrom magrittr "%>%"
 #' @importFrom graphics box
 #' @export
 plot_depletion.regional.gg <- function(plotrep,
                                     type="SSB", 
                                     plot.layout=c(5,2), 
-                                    legpos="bottomleft", mainleg="topleft", legplot=5,
+                                    legpos="bottomleft", 
+                                    mainleg="topleft", legplot=5,
                                             windows=c(11,1),ylab="text",
                                     plot=TRUE,ncol=NA,verbose=TRUE,female=TRUE)
 {

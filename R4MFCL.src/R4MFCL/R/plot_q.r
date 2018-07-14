@@ -8,6 +8,7 @@
 #' @param nbrks number of breaks in Y-axis
 #' @param annual logical if annual average be plotted
 #' @param ylim default=NULL ylim
+#' @param plot logical if print plot
 #' 
 #' @importFrom dplyr group_by summarise
 #' @importFrom magrittr "%>%"

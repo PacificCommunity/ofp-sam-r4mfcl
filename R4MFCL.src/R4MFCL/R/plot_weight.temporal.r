@@ -8,6 +8,7 @@
 #' @param Ncols number of columns of plot
 #' @param annual TRUE if plot is summarized by year
 #' @param fish.selblock Currently not used
+#' @param verbose make verbose?
 #' @importFrom stats aggregate.data.frame rnorm median
 #' @importFrom graphics points segments
 #' @export

@@ -2,6 +2,9 @@
 #' 
 #' @param inifiles string or vector of string of filename(s) of ini file 
 #' @param modlab string or vector of string of model name(s) to be used in legend
+#' @param verbose, make verbose?
+#' @param xlab string text for x-axis label
+#' @param plot logical print plot?
 # ' @importFrom graphics legend plot lines
 #' @export
 plot_maturity.function.gg <- function(inifiles,

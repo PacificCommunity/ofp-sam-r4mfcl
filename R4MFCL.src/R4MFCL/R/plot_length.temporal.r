@@ -5,7 +5,8 @@
 #' @param YLIM YLIM
 #' @param Nrows number of rows of plot in one page
 #' @param Ncols number of columns of plot in one page
-#' @param annual LOGICAL if summarize annually, default=FALSE 
+#' @param annual LOGICAL if summarize annually, default=FALSE
+#' @param verbose make verbose? 
 #' @importFrom graphics lines mtext polygon points segments plot
 #' @export
 plot_length.temporal <- function(frq, 

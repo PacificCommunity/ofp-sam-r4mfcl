@@ -1,6 +1,7 @@
 #' Function to read {length, weight}.fit files
 #' @param fit.file CHRACTER file name of *.fit file
 #' @param verbose produce verbose screen outputs?
+#' @param DEBUG enable "debug" through browser()
 #' @param rep outputs of read.rep
 #' @param overall.composition.plot if TRUE make a plot of overall.composition.plot
 #' @param fit if TRUE and if overall.composition.plo is TRUE predicted fits will be overlayed to overall.composition.plot
@@ -16,7 +17,8 @@
 #' @export
  read.fit <-
 function(fit.file,
-         verbose=FALSE,DEBUG=FALSE,
+         verbose=FALSE,
+         DEBUG=FALSE,
          rep=NULL,
          overall.composition.plot=FALSE,
          fit=FALSE,

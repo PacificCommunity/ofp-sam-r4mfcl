@@ -1,16 +1,20 @@
 #' Making plot of natural mortality using ggplot
 #' @param repfiles list of outputs of read.rep
 #' @param modlab vector of stringof labels to be used in legend 
+#' @param verbose make verbose output
+#' @param plot logical if print plot
 #  ' @importFrom graphics matplot legend matlines
-#' @importFrom ggplot2 ggplot geom_line
+#' @importFrom ggplot2 ggplot geom_line aes_string
 #' @export
-plot_natural.mortality.function.gg <- function(repfiles=list(read.rep(baserep),
-read.rep(baserep)),modlab = c("Base","Base"),verbose=TRUE,plot=TRUE)
+plot_natural.mortality.function.gg <- 
+  function(repfiles=list(read.rep("plot-09.rep.par"),read.rep("../run02/plot-09.par.rep")),
+            modlab = c("Base","Base"),
+            verbose=TRUE,
+            plot=TRUE)
 {
 # Plot M-at-age from some different runs
 # Plots basecase last
-	if(verbose)cat("L12 ;\n")
-	require(ggplot2)
+	if(verbose)cat("L17 ;\n")
   M <- list()
   nSps<-vector(mode="numeric",length=length(repfiles))
   for(i in 1:length(repfiles))
@@ -24,13 +28,13 @@ read.rep(baserep)),modlab = c("Base","Base"),verbose=TRUE,plot=TRUE)
   maxy <- max(unlist(lapply(M,max)))
   if(verbose)cat("L25 ;\n")
   # if only one series then just make a plot
-  if(length(repfiles)==1)
+  if(length(repfiles) == 1)
   {
-    if(nSps[1]==1){
+    if(nSps[1] == 1){
     #  plot(1:length(M[[1]]), M[[1]], type="n", ylab="Natural mortality", xlab="Age class", ylim=c(0,maxy), las=1)
     #  lines(1:length(M[[1]]), M[[1]], lwd=2, col="black")
       M.df<-data.frame(M=M[[1]],age=1:length(M[[1]]))
-      pl<-ggplot(data=M.df,aes(x=age,y=M))+geom_line()
+      pl<-ggplot(data=M.df,aes_string(x="age",y="M"))+geom_line()
     }else{
       matplot(1:dim(M[[1]])[2], t(M[[1]]), type="n", ylab="Natural mortality", xlab="Age class", ylim=c(0,maxy), las=1)
       matlines(x=1:dim(M[[1]])[2], t(M[[1]]), lwd=2, col=1:dim(M[[1]])[1])
@@ -57,7 +61,7 @@ read.rep(baserep)),modlab = c("Base","Base"),verbose=TRUE,plot=TRUE)
   	M.df<-do.call("rbind",M.df)
   	if(verbose)cat("L58 ; \n") #;browser()
     #plot(1:length(M[[1]]), M[[1]], type="n", ylab="Natural mortality", xlab="Age class", ylim=c(0,maxy), las=1)
-    pl<-ggplot(data=M.df,aes(x=age,y=M,col=modlab))+geom_line()+theme(legend.title=element_blank())
+    pl<-ggplot(data=M.df,aes_string(x="age",y="M",col="modlab"))+geom_line()+theme(legend.title=element_blank())
 
 
     #lines(1:length(M[[1]]), M[[1]], lwd=2, col="black")

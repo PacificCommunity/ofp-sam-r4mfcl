@@ -10,6 +10,8 @@ read.rep(rep.file, verbose = FALSE, DEBUG = FALSE)
 \item{rep.file}{CHARACTER file name of plot.rep file}
 
 \item{verbose}{LOGICAL if TRUE produce verbose outputs on screen}
+
+\item{DEBUG}{enable "debug" through browser()}
 }
 \description{
 Function to read plot.rep file

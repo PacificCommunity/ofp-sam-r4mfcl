@@ -4,6 +4,7 @@
 #' @param frq.title frq.title
 #' @param ntop ntop
 #' @param fishdefs fishdefs
+#' @param remove0frq ???
 #' @importFrom utils count.fields
 #' @export
 read.frq <-

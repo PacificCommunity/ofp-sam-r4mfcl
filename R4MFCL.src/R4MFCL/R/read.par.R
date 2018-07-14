@@ -7,6 +7,7 @@
 #' @author Simon Hoyle
 #' @param par.file charactor file name of par file
 #' @param verbose if TRUE verbose outputs will be made
+#' @param DEBUG enable "debug" through browser()
 #' @importFrom magrittr "%>%"
 #' @export
 read.par <-
