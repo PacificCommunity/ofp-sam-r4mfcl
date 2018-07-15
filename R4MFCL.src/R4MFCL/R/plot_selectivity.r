@@ -69,6 +69,7 @@ plot_selectivity <- function(fishlab,
     p <- SelAtAge.long %>% ggplot(aes_string(x = x,y = "selex"))
     p <- p + xlab(xlab) + ylab(ylab)
     p <- p + geom_line(aes_string(color = "model",linetype="model") , size = size) 
+    p <- p + guides(colour=guide_legend(title=NULL,legend.position="bottom"),linetype=guide_legend(title=NULL,legend.position="bottom"))
     if(Gender){
       p <- p + geom_point(aes_string( shape = "Gender",fill="Gender") )
       p <- p +  scale_fill_viridis(discrete=TRUE,alpha=0.8)

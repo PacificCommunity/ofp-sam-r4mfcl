@@ -37,13 +37,13 @@ plot_growth.function.gg <- function(rep,
               ifelse(length(rep$nAges)>1,rep$nAges[1],rep$nAges)
            }
   nSp<-ifelse(is.null(rep$nSp),1,rep$nSp)
-
+  cat("L40\n") #;browser()
   ##length at age
-  lth <-if(nSp==1){as.data.frame(rep$mean.LatAge)}else{as.data.frame(t(rep$mean.LatAge))}
+  lth <-if(nSp==1){as.data.frame(t(rep$mean.LatAge))}else{as.data.frame(t(rep$mean.LatAge))}
 
   ##sd at length
   lthsd <-if(nSp==1){
-    as.data.frame(rep$sd.LatAge)
+    as.data.frame(t(rep$sd.LatAge))
   }else{
     as.data.frame(t(rep$sd.LatAge))
   }
