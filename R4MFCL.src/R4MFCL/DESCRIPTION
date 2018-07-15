@@ -20,7 +20,8 @@ Imports:
   rlang,
   data.table,
   gridExtra,
-  xtable
+  xtable,
+  viridis
 Maintainer: Robert Scott <roberts2@spc.int>; Simon Hoyle <simon.hoyle@gmail.com> ; Sam McKechnie <samm@spc.int> and Yukio Takeuchi <yukiot@spc.int>
 License: GPL-2
 Date: 2017-12-18

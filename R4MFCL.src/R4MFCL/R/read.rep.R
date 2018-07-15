@@ -321,7 +321,12 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
 
   fishlab<-paste(rep(FL0,2),paste0("FL",rep(substr(FL0,1,2),2)),sep="_")
    if(verbose)cat("L323;") #; browser()
-  SelAtAge.wide$Fishery<-fishlab[1:(nfishWTblocks*nSp)]
+
+  SelAtAge.wide$Fishery<-if(nSp==1){
+    fishlab[1:nfishWTblocks]
+  }else{
+    rep(fishlab[1:nfishWTblocks],2)
+  }
   if(verbose)cat("L325;") #;browser()
   mean.LatAge %>% as.data.frame() %>% mutate(Gender=rownames(.)) %>% gather(key=AgeClass,value=mean.LatAge,-!!sym("Gender")) -> mean.LatAge.long
   mean.WatAge %>% as.data.frame() %>% mutate(Gender=rownames(.)) %>% gather(key=AgeClass,value=mean.WatAge,-!!sym("Gender")) -> mean.WatAge.long
