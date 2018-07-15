@@ -60,11 +60,11 @@ if(length(lgposi)==1 && match(lgposi, c("none", "left", "right", "bottom", "top"
   }else{
     if(type=="REC"){
       B <- if(plotrep$nSp==1 ||  !femaleOnly){
-      	plotrep$Recruitment*tsteps/1000000*scaler
-      	textlab <- "Recruitment (millions of fish)"
+        textlab <- "Recruitment (millions of fish)"
+      	plotrep$Recruitment*tsteps/1000000*scaler	
       }else{
+        textlab <- "Female recruitment (millions of fish)"
       	plotrep$Recruitment[,which(plotrep$regSpPtr==which(plotrep$spSexPtr==1))]*tsteps/1000000*scaler
-      	textlab <- "Female recruitment (millions of fish)"
       }
     }else{
       B <- plotrep$TotBiomass/1000
@@ -73,6 +73,7 @@ if(length(lgposi)==1 && match(lgposi, c("none", "left", "right", "bottom", "top"
   }
     ##--- aggregate by year
 if(plotrep$nReg > 1){
+  cat("L76\n");browser()
   Bout <- aggregate(B,list(year),mean)*scaler
 } else {
   stop("This model only has one region so will look pretty stupid, that's why I'm not going to let you plot it")

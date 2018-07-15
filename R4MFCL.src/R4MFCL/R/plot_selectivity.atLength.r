@@ -127,7 +127,7 @@ plot_selectivity.atLength<-function(filename="selectivity-multi-sex",
     meanL <-if(nSp>1){
       rep$mean.LatAge[Gender,Age]
     }else{
-      rep$mean.LatAge[Age]
+      rep$mean.LatAge[1,Age]
     }
    yy.dt3[i,"meanL"]<-meanL
   }

@@ -111,7 +111,7 @@ plot_growth.function.gg2 <- function(rep=tmp.rep,YLIM=c(0,210),
   ##length at age
     lth <-lapply(rep,function(x){
       lth0<-if(is.null(x$nSp) |x$nSp==1){
-        as.data.frame(x$mean.LatAge)
+        as.data.frame(t(x$mean.LatAge))
       }else{
         as.data.frame(t(x$mean.LatAge))
       }
@@ -124,7 +124,7 @@ plot_growth.function.gg2 <- function(rep=tmp.rep,YLIM=c(0,210),
   ##sd at length
     lthsd <-lapply(rep,function(x){
       lthsd0<-if(is.null(x$nSp) |x$nSp==1){
-        as.data.frame(x$sd.LatAge)
+        as.data.frame(t(x$sd.LatAge))
       }else{
         as.data.frame(t(x$sd.LatAge))
       }
