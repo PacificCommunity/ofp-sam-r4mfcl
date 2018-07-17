@@ -4,8 +4,8 @@
 #' @param plot logical if print plot
 #  ' @importFrom graphics title
 #' @importFrom ggplot2 ggplot geom_line aes_string scale_color_viridis_d
-#' @impoerFrom magrritr '%>%'
-#' @impoerFrom dplyr filter
+#' @impoertFrom magrritr '%>%'
+#' @impoertFrom dplyr filter
 #' @export
 plot_yield.gg2 <- function(repfiles, xlimits = c(0,5),plot=TRUE,modelnames){
 	
