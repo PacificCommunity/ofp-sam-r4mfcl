@@ -113,11 +113,11 @@ plot_weight.temporal <- function(frq, tmp.rep, ini, fleetlabs, YLIM=c(0,200),
   agemat <- tmp.rep$NatYrAgeReg
   selectivity <- tmp.rep$SelAtAge
 ##weight at age
-  wt <- matrix(tmp.rep$mean.WatAge, 1, nages)
+  wt <- matrix(t(tmp.rep$mean.WatAge), 1, nages)
 ##length at age
-  lth <- matrix(tmp.rep$mean.LatAge, 1, nages)
+  lth <- matrix(t(tmp.rep$mean.LatAge), 1, nages)
 ##sd at length
-  lthsd <- matrix(tmp.rep$sd.LatAge, 1, nages)
+  lthsd <- matrix(t(tmp.rep$sd.LatAge), 1, nages)
   
 ##fisheries with weight data
   stm2 <- stm[stm[,3] > 30,]

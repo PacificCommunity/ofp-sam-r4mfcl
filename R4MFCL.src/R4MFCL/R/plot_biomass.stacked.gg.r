@@ -67,19 +67,19 @@ if(length(lgposi)==1 && match(lgposi, c("none", "left", "right", "bottom", "top"
       	plotrep$Recruitment[,which(plotrep$regSpPtr==which(plotrep$spSexPtr==1))]*tsteps/1000000*scaler
       }
     }else{
-      B <- plotrep$TotBiomass/1000
+      B <- plotrep$TotBiomass/1000*scaler
       textlab <- "Total biomass (1'000's mt)"
     }
   }
     ##--- aggregate by year
 if(plotrep$nReg > 1){
-  cat("L76\n");browser()
-  Bout <- aggregate(B,list(year),mean)*scaler
+  cat("L76\n") #;browser()
+  Bout <- aggregate(B,list(year),mean)
 } else {
   stop("This model only has one region so will look pretty stupid, that's why I'm not going to let you plot it")
 }
 
-#browser()
+cat("L82 in plot_biomass.stacked\n") #;browser()
 titles <- paste("Region",seq(1,(ncol(Bout)-1)))
 if(is.null(maxylim)){
   maxylim <- max(apply(Bout[,2:ncol(Bout)],1,sum))

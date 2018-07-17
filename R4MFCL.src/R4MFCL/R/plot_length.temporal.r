@@ -103,10 +103,10 @@ plot_length.temporal <- function(frq,
   agemat <- tmp.rep$NatYrAgeReg
   selectivity <- tmp.rep$SelAtAge
 ##length at age
-  lth <- matrix(tmp.rep$mean.LatAge, 1, nages)
+  lth <- matrix(t(tmp.rep$mean.LatAge), 1, nages)
 ##sd at length
-  lthsd <- matrix(tmp.rep$sd.LatAge, 1, nages)
-
+  lthsd <- matrix(t(tmp.rep$sd.LatAge), 1, nages)
+#cat("L109\n");browser()
 ##fisheries with lenght data
   fishery <- unique(stmlf2[,2])
   if(annual){
