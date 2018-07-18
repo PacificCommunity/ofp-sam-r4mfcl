@@ -5,7 +5,7 @@
 #' @param filename string file name of **.fit file, either length.fit or weight.fit
 #' @param xlabel string, caption of x-axis
 #' @param remove.fsh logical or string if TRUE or "TRUE", only fishery with data be plotted
-#' @param VecFsh vector of fishery number, probably not used
+#' @param VecFsh vector of fishery number, used
 #' @param Ncols number of columns of plot in one page
 #' @param line.wdth width of lines 
 #' @param fleetlabs vector of string, names of fishery
@@ -19,6 +19,7 @@
 #' @param verbose LOGICAL if making verbose outputs
 #' @param fit LOGICAL if making overlaying plot of fit or not
 #' @param rep outputs of report.rep, only needed if nSp>1 and fit==T
+#' @param ylabel string, caption of y-axis
 #' @importFrom ggplot2 ggplot theme_set theme_bw geom_line aes_string geom_point facet_wrap guides labs ylab
 #' @importFrom ggplot2 geom_bar scale_y_continuous xlab ylab
 #' @importFrom tidyr unite
@@ -33,7 +34,7 @@
 plot_overall.composition.fit = function(filename="length.fit", 
                                         xlabel="Length (cm)", 
                                         remove.fsh=TRUE,
-                                        VecFsh=1:14, 
+                                        VecFsh=NA, 
                                         Ncols=4, 
                                         line.wdth=1.2, 
                                         fleetlabs, 
@@ -46,7 +47,8 @@ plot_overall.composition.fit = function(filename="length.fit",
                                         plot=TRUE,
                                         verbose=TRUE,
                                         fit=TRUE,
-                                        rep=NULL)
+                                        rep=NULL,
+                                        ylabel="Samples")
 {
 
     if(verbose)cat("Starting plot_overall.composition.fit.r\n")
@@ -71,7 +73,7 @@ plot_overall.composition.fit = function(filename="length.fit",
     #cat("L38\n");browser()
     if(nSp>1 & fit & is.null(rep))stop("rep is needed for multi species/sex model")
     if(verbose)cat("L73 in plot.overall.composition.fit.r; nSp=",nSp,"\n") #;browser()
-    VecFsh <- 1:(Nfsh)   # Vector of fisheries numbers - just numeric for now
+    VecFsh <-if(anyNA(VecFsh)){1:(Nfsh)}else{VecFsh}   # Vector of fisheries numbers - just numeric for now
     LineKeep <- (VecFsh-1) * (Nskips + 6) + 1   # Identify the lines of the observed size frequencies for the fisheries
     if(nSp>1 & fit){
       pcatch<-rep$PredCatch
@@ -81,7 +83,7 @@ plot_overall.composition.fit = function(filename="length.fit",
       tmp<-read.fit(filename)
       yq<-lapply(tmp$dates,function(x){x[,1]+(x[,2]%/%3+1)/4-0.125})
 #cat("L50\n");browser()
-      catchtotalByFsh<-1:Nfsh %>% sapply(function(i){
+      catchtotalByFsh<-VecFsh %>% sapply(function(i){
                         tmp<-sapply(yq[[i]],function(x){which(Rlz.t.fsh1[i,]==x)});if(length(tmp)>0){pcatch[i,tmp]}else{NULL}
                     }) %>% sapply(sum)
       # catchtotalByFsh<-sapply(1:Nfsh,function(i){pcatch[i,sapply(yq[[i]],function(x){which(Rlz.t.fsh1[i,]==x)})]})
@@ -93,8 +95,9 @@ plot_overall.composition.fit = function(filename="length.fit",
     dat.obs <- dat[LineKeep]   # This is the only observed data we want keep - pulls out vector for the fishery then skips down to the next fishery and grabs vector, etc. etc.
     dat.obs <- as.data.frame(t(read.table(text=dat.obs, nrows=length(LineKeep))))   # Get it in the right format and transpose
     names(dat.obs) <- VecFsh   # Match the fishery names to the columns
-
-    keep.fsh = c(na.omit(ifelse(apply(dat.obs,2,sum) > 0, names(dat.obs), NA)), "sizebin", "set")   # Used to identify which fisheries have data - if all zeros then removed later on if remove.fsh == "TRUE"
+    #cat("L98\n");browser()
+    keep.fsh = c(na.omit(ifelse(apply(dat.obs,2,sum) > 0, 
+    	names(dat.obs)[names(dat.obs) %in% paste(VecFsh)] , NA)), "sizebin", "set")   # Used to identify which fisheries have data - if all zeros then removed later on if remove.fsh == "TRUE"
 #    cat("L49\n");browser()
     dat.obs$sizebin <- sizebins   # Add sizebins - becomes the x axis later on
     dat.obs$set <- "Observed"   # Neet to identify this data as observed
@@ -120,14 +123,14 @@ plot_overall.composition.fit = function(filename="length.fit",
     }
 # Combine observed and predicted datasets
     dat.full <- rbind(dat.obs, dat.pred)
-
+		#cat("L125\n");browser()
     if(is.logical(remove.fsh) && remove.fsh || remove.fsh=="TRUE"){
         dat.full <- dat.full[,match(keep.fsh,names(dat.full))]
         # If true only fisheries with data will be plotted, if false then will be plotted as zeros
     }
 
     plot.dat <- melt(dat.full, id=c("set","sizebin"))
-
+		if(verbose)cat("L133\n") #;browser()
     names(plot.dat)[3:4] <- c("Fishery","freq")   # Format data into the shape required for ggplot
     if(nSp==1){
         plot.dat$Fishery <- factor(fleetlabs[as.numeric(paste(plot.dat$Fishery))], levels = fleetlabs)
@@ -142,25 +145,22 @@ plot_overall.composition.fit = function(filename="length.fit",
         unite(col="Fishery3",!!!syms(c("Fishery.tmp","Fishery2")),remove=TRUE) %>% select(-!!sym("Fishery"))  %>%
         rename(Fishery=!!sym("Fishery3")) %>% select(-!!sym("Sp")) %>% select(-!!sym("Fishery.num"))->plot.dat
         plot.dat$freq<-plot.dat$freq*0.5
-#        plot.dat %>% group_by(set,Fishery,sizebin,Gender)  %>% summarise_each(funs(mean)) %>%   # debug_pipe() %>%
-#          filter(set == "Observed") %>% select(-Gender)  %>%summarise_each(funs(sum)) ->plot.dat.obs  ## Need to check if sum is OK
-
     ## Need to make conditioning  if there is Gender specific observed size composition
     }
-#   if(verbose)cat("L103\n");browser()
+   if(verbose)cat("L150\n") #;browser()
 # Produce and print plot
 
     if(nSp==1){
       p <- ggplot(plot.dat[plot.dat$set == "Observed",], aes_string(x="sizebin", y="freq")) +
                 geom_bar(stat="identity", colour=fillcol, fill=fillcol) +
                 facet_wrap(~ Fishery, ncol=Ncols, scales="free_y",dir=dir) +
-                xlab(xlabel) + ylab("Samples")
+                xlab(xlabel) + ylab(ylabel)
       if(fit){p<-p+geom_line(data=plot.dat[plot.dat$set == "Predicted",], aes_string(x="sizebin", y="freq"), colour=lincol, size=line.wdth)}
     }else{
       p<-ggplot(plot.dat[plot.dat$set == "Observed",], aes_string(x="sizebin", y="freq")) +
                 geom_bar(stat="identity", colour=fillcol, fill=fillcol) +
                 facet_wrap(~ Fishery, ncol=Ncols, scales="free_y",dir=dir) +
-                xlab(xlabel) + ylab("Samples")
+                xlab(xlabel) + ylab(ylabel)
       if(fit){p<-p+geom_line(data=plot.dat[plot.dat$set == "Predicted",],
                 aes_string(x="sizebin", y="freq",group="Gender", colour="Gender"), size=line.wdth,position="Stack")}
     }

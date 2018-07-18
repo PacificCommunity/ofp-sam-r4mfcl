@@ -9,6 +9,7 @@
 #' @param addLine LOGICAL add lines of predicted CPUEs
 #' @param fac.levels fac.levels
 #' @param par outputs from read.par 
+#' @param ncol number of plots in horizontal direction
 #' @importFrom ggplot2 ggplot theme_set theme_bw xlab facet_wrap geom_line geom_point theme ylab ylim element_blank scale_y_continuous
 # ' @importFrom scales
 #' @export 
@@ -18,7 +19,9 @@ plot_cpue.fit.gg <- function(plotrep,
                           parfile,
                           fleetlabs, 
                           par=NULL,
-                          XLIM=c(1950,2011), addLine=TRUE, fac.levels=c("P-ALL-1","P-ALL-2","P-ALL-3","S-ID.PH-4","S-ASS-ALL-5"))
+                          XLIM=c(1950,2011), addLine=TRUE, 
+                          fac.levels=c("P-ALL-1","P-ALL-2","P-ALL-3","S-ID.PH-4","S-ASS-ALL-5"),
+                          ncol=2)
 {
 ###########################################################################
 # Adam's code turned into a function
@@ -98,7 +101,7 @@ theme_set(theme_bw())
     # Produce and print plot
         p <- ggplot(dat.tmp, aes_string(x="time", y="cpue.obs/1000")) + geom_point(colour="#6699CC", alpha=0.8)
     #    p <- p + facet_wrap(~ fshry, ncol=2, scales="free_y")
-        p <- p + facet_wrap(~ fshry, ncol=2)
+        p <- p + facet_wrap(~ fshry, ncol=ncol)
         p <- p + xlab("") + ylab("CPUE / 1000") +ylim(0,max(max(dat.tmp$cpue.obs/1000),max(dat.tmp$cpue.pred/1000))*1.1)
         if(addLine == TRUE) p <- p + geom_line(data=dat.tmp, aes_string(x="time", y="cpue.obs/1000"), colour="red", size=0.6, alpha=0.3)
         p <- p + geom_line(data=dat.tmp, aes_string(x="time", y="cpue.pred/1000"), colour="black", size=0.6, alpha=0.7)

@@ -23,7 +23,9 @@ function(fit.file,
          overall.composition.plot=FALSE,
          fit=FALSE,
          plot=TRUE,
-  plot.ctl=list(xlabel="Length(cm)",dir="h",line.wdth=0.5,Ncols=2,lincol="#FF3333",fillcol="#6699CC",nbrks=3)) {
+  plot.ctl=list(xlabel="Length(cm)",dir="h",line.wdth=0.5,
+  	Ncols=2,lincol="#FF3333",fillcol="#6699CC",nbrks=3,ylabel="Samples",VecFsh=NA,
+  	legend=TRUE)) {
   # Simon Hoyle March 2010
   # loads the observed and expected LF from the length.fit file by fishery and time period
   # YT March-April 2017 to catch up versions 2 and 3 fit file
@@ -33,7 +35,18 @@ function(fit.file,
   #if(getRversion() >= "2.15.1")  utils::globalVariables(c(".", "n"),add=TRUE)
   .<-"XXXXXX"
   cat("Starting read.fit ;")
-  if(overall.composition.plot)theme_set(theme_bw())
+  if(overall.composition.plot){
+  	theme_set(theme_bw())
+  	if(is.null(plot.ctl$xlabel))plot.ctl$xlabel<-"Length(cm)"
+  	if(is.null(plot.ctl$line.width))plot.ctl$line.width<-0.5
+  	if(is.null(plot.ctl$dir))plot.ctl$dir<-"h"
+  	if(is.null(plot.ctl$Ncols))plot.ctl$Ncols<-2
+  	if(is.null(plot.ctl$lincol))plot.ctl$lincol<-"#FF3333"
+  	if(is.null(plot.ctl$fillcol))plot.ctl$fillcol<-"#6699CC"
+  	if(is.null(plot.ctl$ylabel))plot.ctl$ylabel<-"Samples"
+  	if(is.null(plot.ctl$VecFsh))plot.ctl$VecFsh<-NA
+  	if(is.null(plot.ctl$legend))plot.ctl$legend<-TRUE
+  }
   datfromstr<-function (datstring)
   {
     out<-if(length(datstring)>1){
@@ -242,19 +255,8 @@ function(fit.file,
   if(verbose)cat("L227 ;") ;if(DEBUG)browser()
   colnames(newdata.pred)[col.offset+1+nSp+1:nbins]<-
   colnames(newdata.obs)[col.offset+1+nSp+1:nbins]<-paste0(binfirst+(0:(nbins-1))*binwidth)
-  if(0){
-  if(verbose)cat("L231 ;")  
-  from.nm<-if(version==1){
-    c("timeperiod","month","week","Fishery","Set")
-  }else if(version==2){
-    c("timeperiod","month","week","RealFishery","Sp","Set")
-  }else if(version>2 & nSp==1){
-    c("timeperiod","month","week","Both","nsmpl","RealFishery","Sp","Gender","Set")
-  }else if(version>2 &  nSp==2){
-    c("timeperiod","month","week","Male","Female","nsmpl","RealFishery","Sp","Gender","Set")
-  }
-  }
-  cat("L243\n");if(DEBUG)browser()
+
+  cat("L246\n");if(DEBUG)browser()
   newdata %>% {
                 if(1){
                     if(version==1)
@@ -277,7 +279,7 @@ function(fit.file,
          #         select(.,-!!"Fishery")
               #      } %>% gather_(key_col="bin",value_col="frq",gather_cols="United")->tmp2
                    } %>% gather(key="bin",value=!!sym("frq"),-!!sym("United"))->tmp2
-  if(verbose)cat("L265 ; ")  ;if(DEBUG)browser()
+  if(verbose)cat("L269 ; ")  ;if(DEBUG)browser()
   longdata<-tmp2 %>% { if(version==1)
                         separate(.,col=!!sym("United"),into=c("timeperiod","month","week","Fishery","Set"),sep="_")
                       else if(version==2)
@@ -292,7 +294,7 @@ function(fit.file,
                         stop("nSp=",nSp)
                     }
   longdata$SizeBin<-as.numeric(substr(longdata$bin,start=2,stop=6))
-  if(verbose)cat("L281 ;") ; if(DEBUG)browser()
+  if(verbose)cat("L284 ;") ; if(DEBUG)browser()
 
   newdata.obs %>% {
                     if(version==1)
@@ -311,7 +313,7 @@ function(fit.file,
                     else
                       stop("nSp=",nSp)
                    } %>% gather(key="bin",value=!!sym("frq"),-!!sym("United"))->tmp2
-  if(verbose)cat("L299 ;") # ;browser()
+  if(verbose)cat("L303 ;") # ;browser()
   longdata.obs<-tmp2 %>% { if(version==1)
                         separate(.,col=!!sym("United"),into=c("timeperiod","month","week","Fishery","Set"),sep="_")
                       else if(version==2)
@@ -335,16 +337,33 @@ function(fit.file,
         paste(if(nfish/nSp<10){
           plot.data$RealFishery}else{str_pad(paste(plot.data$RealFishery),width=2,pad="0")},
           plot.ctl$fleetlabs[as.numeric(paste(plot.data$RealFishery))],sep="_")
+       plot.data$FisheryNo<-plot.data$RealFishery
       if(verbose){cat("L322 ;");cat("colnames(plot.data):\n",colnames(plot.data),"\n")}
-      p<-plot.data %>% filter(.,!!sym("Set")=="Obs") %>% ggplot(aes_string(x="SizeBin",y="n"))+
+      VecFsh<-if(anyNA(plot.ctl$VecFsh)){1:(nfish/nSp)}else{plot.ctl$VecFsh}
+      cat("L331 plot.ctl$VecFsh=",plot.ctl$VecFsh,"\n")
+      cat("L332 VecFsh=",VecFsh,"\n")
+      p<-plot.data %>% 
+      	filter(.,!!sym("RealFishery") %in% VecFsh) %>% 
+      	filter(.,!!sym("Set")=="Obs") %>% ggplot(aes_string(x="SizeBin",y="n"))+
         geom_bar(stat="identity", colour=plot.ctl$fillcol, fill=plot.ctl$fillcol)+
         facet_wrap(~Fishery,ncol=plot.ctl$Ncols,scales="free_y",dir=plot.ctl$dir)
-      p<-p+xlab(plot.ctl$xlabel) + ylab("Samples")
+      p<-p+xlab(plot.ctl$xlabel) + ylab(plot.ctl$ylabel)
       if(fit){
         if(verbose){cat("L338 ; ");cat("colnames(plot.data):\n",colnames(plot.data),"\n")}
         p<-p+ plot.data %>% filter(.,!!sym("Set")=="Pred") %>%
-          geom_line(data=.,aes_string(x="SizeBin",y="n",group="Gender",color="Gender"), size=plot.ctl$line.wdth,position="Stack")
+        filter(.,!!sym("RealFishery") %in% VecFsh) %>% 
+          geom_line(data=.,aes_string(x="SizeBin",y="n",group="Gender",color="Gender"), 
+          size=plot.ctl$line.wdth,position="Stack") +
+          scale_colour_discrete(name  ="",
+                            breaks=c("1", "2"),
+                            labels=c("Male", "Female")) 
       }
+      
+      p<-p+if(plot.ctl$legend){
+      		theme(legend.position="bottom")
+      	}else{
+      		theme(legend.position="none")
+      	}
       p<-p+scale_y_continuous(breaks=pretty_breaks(n=plot.ctl$nbrks)) +
                 theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
       if(plot)print(p)
