@@ -151,7 +151,7 @@ function(fit.file,
     if(version>=2)tmp$RealFishery<-ifelse(i<=nfish/nSp,i,i-nfish/nSp)
     colnames(tmp)[1:3]<-c("Year","Month","Week")
     if(version>2)colnames(tmp)[4:5]<-c("Sp1","Sp2")
-    tmp$Set<-ifelse(!is.na(set),set,stop("L148 in makeBewdata in read.fit set is NA "))
+    tmp$Set<-ifelse(!is.na(set),set,stop("L148 in makeNewdata in read.fit set is NA "))
     if(verbose)cat("L155 ;");if(DEBUG)browser()
     return(tmp)
   })
