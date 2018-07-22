@@ -107,6 +107,7 @@ function(fit.file,
       if(version>2){
         spPtrloc<-seq(fishlocs[f]+2,by=7+pos.offset+nages,length.out=recsperfish[f])
         spPtr[[f]]<-data.frame(datfromstr(a[spPtrloc]))
+        if(nSp==1)spPtr[[f]]<-t(spPtr[[f]])
         smplSz[[f]]<-as.numeric(a[spPtrloc+1])
       }
       if(verbose)cat("L112 f=",f,";") 
@@ -157,11 +158,10 @@ function(fit.file,
   })
   return(newdata.tmp)
   }
-
+  
   newdata.obs<-makeNewdata(obslf,"Obs")
   if(verbose)cat("L162 ;") ; if(DEBUG)browser()
   ############## for version >2 ############
-
   if(version>2 & nSp>1){
     if(verbose)cat("L166 ;") #;browser()
     n<-length(newdata.obs)
