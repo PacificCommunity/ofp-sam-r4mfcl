@@ -254,6 +254,8 @@ function(fit.file,
     c("timeperiod","month","week","Both","nsmpl","RealFishery","Sp","Gender","Set","type")
   }else if(version > 2 & nSp==2){
     c("timeperiod","month","week","Male","Female","nsmpl","RealFishery","Sp","Gender","Set","type")
+  }else{
+    stop("nSp=",nSp, " version=",version)
   }
   newdata %>% unite(.,col="United",from=!!!syms(cols),remove=TRUE,sep="_") %>% {
                 if(version==1)
