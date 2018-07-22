@@ -200,7 +200,7 @@ function(fit.file,
   if(verbose)cat("L200 ;") ; if(DEBUG)browser()
   ####### for version>2 & nSp>1
   if(version>2 & nSp>1){
-    if(is.null(rep))stop("rep is needed" )
+    if(is.null(rep))stop("For version 2 fit file and 2 sex model, outputs of read.rep is needed" )
     pcatch<-rep$PredCatch
     Year1<-rep$Year1
     Rlz.t.fsh<-rep$Rlz.t.fsh
