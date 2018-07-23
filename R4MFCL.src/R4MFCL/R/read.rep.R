@@ -114,14 +114,18 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
       lapply(1:nSp,function(sp){datfromstr(a[(pos1+1+sp+(sp-1)*nTimes):(pos1+sp+sp*nTimes)])})
     }
   }
-  if(verbose)cat("L110 ; ") #;browser()
+  if(verbose)cat("L117 ; ") #;browser()
   yrs  <- Year1 + (0:(nTimes-1))/nRecs.yr + ifelse(nRecs.yr==1,0,1/(2*nRecs.yr))
   alltimes  <- sort(unique(as.vector(Rlz.t.fsh)))
 
   pos1 <- grep("# Fishing mortality by age class \\(across\\), year \\(down\\) and region \\(block\\)",a)
-#  cat("L48\n");browser()
-  if(viewerVer.num<3){
-    FatYrAgeReg <-array(dim=c(nTimes,nAges,nReg))
+#  cat("L122\n");browser()
+  nAges1<-if(nSp>1){nAges[1]}else{nAges};
+  FatYrAgeReg <-array(dim=c(nTimes,nAges1,nReg))
+  xxx<-scan(text=a[pos1+1:(nTimes*nReg+100)],n=nTimes*nAges1*nReg,what=0,comment.char="#",quiet=!verbose)
+  dim(xxx)<-c(nAges1,nTimes,nReg)
+  FatYrAgeReg <- aperm(xxx,c(2,1,3))
+    if(0){
     for(j in 1:nReg) {
       pos1 <- pos1 + 1
       for(i in 1:nTimes) {
@@ -130,18 +134,8 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
         FatYrAgeReg[i,,j] <- charVec2numVec(a[pos1]) 
           #as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1]) 
           } }
-  }else{
-    FatYrAgeReg <-lapply(1:nSp,function(sp){
-                      tmp<-array(dim=c(nTimes,nAges[sp],nReg))
-                      for(j in 1:nReg) {
-                        pos1 <- pos1 + 1
-#                        cat("L111\n");browser()
-                        tmp[,,j]<-datfromstr(a[pos1+1:nTimes]);pos1<-pos1+nTimes
-                      }
-                     return(tmp)
-                    })
-  }
-  if(verbose)cat("L136 ; ") #;browser()
+    }
+  if(verbose)cat("L138 ; ") #;browser()
 # SDH 2011/10/24 added 4 lines so the code works when extra comment text is added for projections
   posyr <- rep(1,nTimes)
   if(length(grep("#   Projected",a, ignore.case = TRUE)) > 0) {
@@ -152,9 +146,9 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
     }
   pos1 <- grep("# Population Number by age \\(across\\), year \\(down\\) and region",a, ignore.case = TRUE)
   nAges1<-if(nSp>1){nAges[1]}else{nAges};NatYrAgeReg <- array(dim=c(nTimes,nAges1,nReg)) ;
-  cat("L147 ; ") #;browser()
+  if(verbose)cat("L149 ; ") #;browser()
 
-  xxx<-scan(text=a[pos1+1:(nTimes*nReg+100)],n=nTimes*nAges1*nReg,what=0,comment.char="#")
+  xxx<-scan(text=a[pos1+1:(nTimes*nReg+100)],n=nTimes*nAges1*nReg,what=0,comment.char="#",quiet=!verbose)
   dim(xxx)<-c(nAges1,nTimes,nReg)
   NatYrAgeReg <-aperm(xxx,c(2,1,3))
   # YT 2017/02/17 If, in the future, MFCL becomes to allow different nAges by sp/sex, this code needs to be upgrades
@@ -167,17 +161,21 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   #      NatYrAgeReg[i,,j] <- datfromstr(a[pos1])
   #   }
   #  }
-  if(length(pos1)==0)  {
-    pos1 <- grep("# Exploitable population by fishery \\(across\\) and year \\(down\\)",a)
-  } else {
-    pos1 <- grep("# Exploitable population biomass by fishery \\(across\\) and year \\(down\\)",a)
-  }
+  
   if(verbose)cat("L167 ; ")
-  if(length(pos1)!=0) NexpbyYrFsh <- t(sapply(a[(pos1+1):(pos1+nTimes)],datfromstr,USE.NAMES =F)) else NexpbyYrFsh <- NA
-  pos1 <- grep("# Exploitable population in same units as catch by fishery \\(across\\) and year \\(down\\)",a) ;
-  if(length(pos1)!=0) {
-    ExPopCUnitsbyYrFsh <- t(sapply(a[(pos1+1):(pos1+nTimes)],datfromstr,USE.NAMES =F))
-    } else ExPopCUnitsbyYrFsh <- NA
+  pos1 <-grep("# Exploitable population biomass by fishery (down) and by year-season  (across)",a,fixed=T)
+  #if(length(pos1)!=0) NexpbyYrFsh <- t(sapply(a[(pos1+1):(pos1+nTimes)],datfromstr,USE.NAMES =F)) else NexpbyYrFsh <- NA
+  NexpbyYrFsh <- if(length(pos1)!=0){
+     xxx<-scan(text=a[pos1+1:nFisheries],n=nTimes*nFisheries,what=0,comment.char="#",quiet=!verbose);dim(xxx)<-c(nTimes,nFisheries);t(xxx)
+     }else{NA}
+  #pos1 <- grep("# Exploitable population in same units as catch by fishery \\(across\\) and year \\(down\\)",a) ;
+  #if(length(pos1)!=0) {
+  #  ExPopCUnitsbyYrFsh <- t(sapply(a[(pos1+1):(pos1+nTimes)],datfromstr,USE.NAMES =F))
+  #  } else ExPopCUnitsbyYrFsh <- NA
+  pos1 <- grep(a,pattern="# Exploitable population in same units as catch by fishery (down) and year-season (across)",fixed=T)
+  ExPopCUnitsbyYrFsh <- if(length(pos1)!=0){
+     xxx<-scan(text=a[pos1+1:nFisheries],n=nTimes*nFisheries,what=0,comment.char="#",quiet=!verbose);dim(xxx)<-c(nTimes,nFisheries);t(xxx)
+  }else{NA}
   pos1 <- grep("# Absolute biomass by region \\(across\\) and year \\(down\\)",a) ; Recruitment <- t(sapply(a[(pos1+2):(pos1+1+nTimes)],datfromstr,USE.NAMES =F))
   pos1 <- grep("# Total biomass$",a) ; TotBiomass <- t(sapply(a[(pos1+1):(pos1+nTimes)],datfromstr,USE.NAMES =F))
   pos1 <- grep("# Adult biomass$",a) ; AdultBiomass <- t(sapply(a[(pos1+1):(pos1+nTimes)],datfromstr,USE.NAMES =F))
