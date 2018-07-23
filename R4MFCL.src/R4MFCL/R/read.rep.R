@@ -15,7 +15,7 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   # NMD November 2011 - small fix for input of NexpbyYrFsh
   # SDH September 2013 - added yrs and alltimes. Won't cover all options, but will save calculating each time they're needed.
   # YT  Feb./March 2017 Update for multi-species/sex model
-
+	cat("Starting read.rep ; ")
   datfromstr<-function (datstring)
   {
  #   print(datstring)
@@ -56,11 +56,11 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   if(viewerVer.num>=3){pos1 <- grep("# Regions species pointer",a) ; regSpPtr<-NA; regSpPtr <- datfromstr(a[pos1+1]) }else{regSpPtr<-NA}
   pos1 <- grep("# Number of recruitments per year",a) ; nRecs.yr <- datfromstr(a[pos1+1]) 
   pos1 <- grep("# Number of fisheries",a) ; nFisheries <- datfromstr(a[pos1+1]) 
-  if(verbose)cat("L43\n") #;browser()
+  if(verbose)cat("L59 ; ") #;browser()
   if(viewerVer.num>=3){pos1 <- grep("# Fishery selectivity seasons",a) ; SelexSeasons <- datfromstr(a[pos1+1])}else{SelexSeasons <-rep(1,nFisheries)}
   if(viewerVer.num>=3){pos1 <- grep("# Fishery selectivity time-blocks",a) ; SelexTblocks <- datfromstr(a[pos1+1])}else{SelexTblocks <-rep(1,nFisheries)}
   pos1 <- grep("# Number of realizations per fishery",a) ; nRlz.fsh <- datfromstr(a[pos1+1]) 
-  if(verbose)cat("L47 in read.rep.r ;")
+  if(verbose)cat("L63 ; ")
   pos1 <- grep("# Region for each fishery",a) ; Region.fsh <- datfromstr(a[pos1+1]) 
   pos1 <- grep("# Time of each realization by fishery",a) ; Rlz.t.fsh <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh))
     for (i in 1:nFisheries) {
@@ -81,17 +81,17 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
     rownames(mean.LatAge)<-rownames(sd.LatAge)<-rownames(mean.WatAge)<-c("Both")
   }
 
-  if(verbose)cat("L84 in read.rep.r\n") ;if(DEBUG)browser()
+  if(verbose)cat("L84 ; ") ;if(DEBUG)browser()
   pos1 <- grep("# Natural mortality at age",a) # ;
 
   MatAge <- datfromstr(a[pos1+1:nSp])
-  if(verbose)cat("L88 in read.rep.r ;\n")
+  if(verbose)cat("L88 ; ")
   pos1 <- grep("# Selectivity by age class ",a) ; SelAtAge <- datfromstr(a[(pos1+1):(pos1+sum(SelexTblocks))]) ## Need to check for older versions
   pos1 <- grep("# Catchability by realization ",a) ; qAtAge <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh)) ;
   for(i in 1:nFisheries) {
     qAtAge[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i])
   }
-  if(verbose)cat("L94 in read.rep.r\n");if(DEBUG)browser()
+  if(verbose)cat("L94 ; ");if(DEBUG)browser()
   pos1 <- grep("# Catchability\\+effort dev\\. by realization ",a) ; qEdevAtAge <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh)) ;
   for(i in 1:nFisheries) {
     qEdevAtAge[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i])
@@ -107,7 +107,7 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
       lapply(1:nSp,function(sp){datfromstr(a[(pos1+1+sp+(sp-1)*nTimes):(pos1+sp+sp*nTimes)])})
     }
   }
-  if(verbose)cat("L99 in read.rep;") #;browser()
+  if(verbose)cat("L110 ; ") #;browser()
   yrs  <- Year1 + (0:(nTimes-1))/nRecs.yr + ifelse(nRecs.yr==1,0,1/(2*nRecs.yr))
   alltimes  <- sort(unique(as.vector(Rlz.t.fsh)))
 
@@ -133,7 +133,7 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
                      return(tmp)
                     })
   }
-  if(verbose)cat("L128 in read.rep.R;") #;browser()
+  if(verbose)cat("L136 ; ") #;browser()
 # SDH 2011/10/24 added 4 lines so the code works when extra comment text is added for projections
   posyr <- rep(1,nTimes)
   if(length(grep("#   Projected",a, ignore.case = TRUE)) > 0) {
@@ -144,7 +144,7 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
     }
   pos1 <- grep("# Population Number by age \\(across\\), year \\(down\\) and region",a, ignore.case = TRUE)
   nAges1<-if(nSp>1){nAges[1]}else{nAges};NatYrAgeReg <- array(dim=c(nTimes,nAges1,nReg)) ;
-  cat("L134 in read.rep.R ; ") #;browser()
+  cat("L147 ; ") #;browser()
 
   xxx<-scan(text=a[pos1+1:(nTimes*nReg+100)],n=nTimes*nAges1*nReg,what=0,comment.char="#")
   dim(xxx)<-c(nAges1,nTimes,nReg)
@@ -164,7 +164,7 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   } else {
     pos1 <- grep("# Exploitable population biomass by fishery \\(across\\) and year \\(down\\)",a)
   }
-  if(verbose)cat("L154 in read.rep.R ;")
+  if(verbose)cat("L167 ; ")
   if(length(pos1)!=0) NexpbyYrFsh <- t(sapply(a[(pos1+1):(pos1+nTimes)],datfromstr,USE.NAMES =F)) else NexpbyYrFsh <- NA
   pos1 <- grep("# Exploitable population in same units as catch by fishery \\(across\\) and year \\(down\\)",a) ;
   if(length(pos1)!=0) {
@@ -248,7 +248,7 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   pos1 <- grep("# Grouping indicator \\(0",a) ;
 #  browser()
   if (length(pos1)>0) {
-    TagGrps <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+    TagGrps <- as.numeric(unlist(strsplit(trimws(a[pos1+1]),split="[[:blank:]]+")))
     if (max(TagGrps)==0) { TagGrps <- 1:length(TagGrps) }
     pos1 <- grep("# Reporting rates by fishery \\(no time",a) ;
     xxx <- grep("# Reporting rates by by fishery by tag group \\(no time",a)
