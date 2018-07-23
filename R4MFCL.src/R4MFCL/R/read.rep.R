@@ -27,6 +27,9 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
     }
     return(out)
   }
+  charVec2numVec<-function(x){
+  	x %>% trimws() %>% strsplit(.,split=" +") %>% "[["(1) %>% as.numeric()
+  }
   a <- readLines(rep.file)
   # Identify version number of plot.rep file
   viewerVer<-strsplit(a[2],split=" +")[[1]][2]
@@ -120,8 +123,9 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
       for(i in 1:nTimes) {
         pos1 <- pos1 + 1
         if(verbose)cat("i,j,pos1 :",i,",",j,",",pos1,"\n")
-        FatYrAgeReg[i,,j] <- 
-          as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1]) } }
+        FatYrAgeReg[i,,j] <- charVec2numVec(a[pos1]) 
+          #as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1]) 
+          } }
   }else{
     FatYrAgeReg <-lapply(1:nSp,function(sp){
                       tmp<-array(dim=c(nTimes,nAges[sp],nReg))
@@ -212,9 +216,9 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   }
   if(verbose)cat("L213\n")  #;browser()
   pos1 <- grep("# Observed spawning Biomass",a) ; Obs.SB <- if(length(pos1)>0){datfromstr(a[pos1+1])}else{NULL} # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-  pos1 <- grep("# Observed recruitment",a) ; Obs.R <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-  pos1 <- grep("# Spawning Biomass",a) ; Pred.SB <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-  pos1 <- grep("# Predicted recruitment",a) ; Pred.R <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  pos1 <- grep("# Observed recruitment",a) ; Obs.R <- charVec2numVec(a[pos1+1])  #as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  pos1 <- grep("# Spawning Biomass",a) ; Pred.SB <- charVec2numVec(a[pos1+1])   as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  pos1 <- grep("# Predicted recruitment",a) ; Pred.R <- charVec2numVec(a[pos1+1])  #as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   pos1 <- grep("steepness =",a) ; steep <- as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[10])
   pos1 <- grep("# MSY",a) ; MSY <- as.numeric(a[pos1+1])
   pos1 <- grep("# F multiplier at MSY",a) ; Fmult <- as.numeric(a[pos1+1])
