@@ -30,6 +30,10 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   charVec2numVec<-function(x){
   	x %>% trimws() %>% strsplit(.,split=" +") %>% "[["(1) %>% as.numeric()
   }
+  getQuants<-function(keyword,a){
+    pos1 <- grep(pattern=keyword,x=a) 
+    a[pos1+1] %>% trimws() %>% strsplit(.,split= "[[:blank:]]+") %>% "[["(1) %>% as.numeric()   
+  }
   a <- readLines(rep.file)
   # Identify version number of plot.rep file
   viewerVer<-strsplit(a[2],split=" +")[[1]][2]
@@ -214,10 +218,10 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
     SRR <- NA
     SPR0<-NULL;SSB0<-NULL;R0<-NULL
   }
-  if(verbose)cat("L213\n")  #;browser()
+  if(verbose)cat("L217\n")  #;browser()
   pos1 <- grep("# Observed spawning Biomass",a) ; Obs.SB <- if(length(pos1)>0){datfromstr(a[pos1+1])}else{NULL} # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   pos1 <- grep("# Observed recruitment",a) ; Obs.R <- charVec2numVec(a[pos1+1])  #as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-  pos1 <- grep("# Spawning Biomass",a) ; Pred.SB <- charVec2numVec(a[pos1+1])   as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  pos1 <- grep("# Spawning Biomass",a) ; Pred.SB <- charVec2numVec(a[pos1+1])   # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   pos1 <- grep("# Predicted recruitment",a) ; Pred.R <- charVec2numVec(a[pos1+1])  #as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   pos1 <- grep("steepness =",a) ; steep <- as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[10])
   pos1 <- grep("# MSY",a) ; MSY <- as.numeric(a[pos1+1])
@@ -227,21 +231,24 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   pos1 <- grep("# Adult biomass at MSY",a) ; SBmsy <- as.numeric(a[pos1+1])
   pos1 <- grep("# current Total Biomass to Total biomass at MSY",a) ; B.Bmsy <- as.numeric(a[pos1+1])
   pos1 <- grep("# current Adult Biomass to Adult Biomass at MSY",a) ; SB.SBmsy <- as.numeric(a[pos1+1])
-  pos1 <- grep("# Effort multiplier",a)[1] ; Effmult <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-  pos1 <- grep("# Equilibrium yield",a) ; Eq.yield <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  pos1 <- grep("# Effort multiplier",a)[1] ; Effmult <-  charVec2numVec(a[pos1+1])   # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  pos1 <- grep("# Equilibrium yield",a) ; Eq.yield <-  charVec2numVec(a[pos1+1])   # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
 #  browser()
   YFcurr <- Eq.yield[Effmult==1]
   if(length(YFcurr)==0) YFcurr <- 0
-  pos1 <- grep("# Equilibrium adult biomass",a) ; Eq.SB <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  pos1 <- grep("# Equilibrium adult biomass",a) ; Eq.SB <- charVec2numVec(a[pos1+1])   # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   SBFcurr <- Eq.SB[Effmult==1]
   SB0 <- Eq.SB[Effmult==0]
   if(length(SBFcurr)==0) SBFcurr <- 0
-  pos1 <- grep("# Equilibrium total biomass",a) ; Eq.B <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  #pos1 <- grep("# Equilibrium total biomass",a) ; Eq.B <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  Eq.B <- getQuants(keyword="# Equilibrium total biomass",a)
   BFcurr <- Eq.B[Effmult==1]
   if(length(BFcurr)==0) BFcurr <- 0
   B0 <- Eq.B[Effmult==0]
-  pos1 <- grep("# Adult biomass over adult biomass at MSY",a) ; Eq.SB.SBmsy <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-  pos1 <- grep("# Total biomass over total biomass at MSY",a) ; Eq.B.Bmsy <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  #pos1 <- grep("# Adult biomass over adult biomass at MSY",a) ; Eq.SB.SBmsy <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  Eq.SB.SBmsy <- getQuants(keyword="# Adult biomass over adult biomass at MSY",a)
+  #pos1 <- grep("# Total biomass over total biomass at MSY",a) ; Eq.B.Bmsy <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
+  Eq.B.Bmsy <- getQuants(keyword="# Total biomass over total biomass at MSY",a)
   pos1 <- grep("# Aggregate F over F at MSY",a) ; Eq.F.Fmsy <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   pos1 <- grep("# Aggregate F$",a) ; Eq.aggF <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   if(nSp==1){
