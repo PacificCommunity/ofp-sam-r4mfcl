@@ -104,7 +104,7 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   for(i in 1:nFisheries) {
     qAtAge[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i])
   }
-  if(verbose)cat("L108 ; ");if(DEBUG)browser()
+  if(verbose)cat("L107 ; ");if(DEBUG)browser()
   pos1 <- grep("# Catchability\\+effort dev\\. by realization ",a) ; qEdevAtAge <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh)) ;
   for(i in 1:nFisheries) {
     qEdevAtAge[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i])
@@ -117,10 +117,15 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
     FbyAgeYr <-if(nSp==1){
       datfromstr(a[(pos1+2):(pos1+1+nTimes)])
     }else{
-      lapply(1:nSp,function(sp){datfromstr(a[(pos1+1+sp+(sp-1)*nTimes):(pos1+sp+sp*nTimes)])})
+      #lapply(1:nSp,function(sp){datfromstr(a[(pos1+1+sp+(sp-1)*nTimes):(pos1+sp+sp*nTimes)])})
+    	nAges1<-nAges[1]
+    	xxx<-
+    		scan(text=a[pos1+2:(nTimes*nSp+100)],n=nTimes*nAges1*nSp,what=0,comment.char="#",quiet=!verbose)
+			dim(xxx)<-c(nAges1,nTimes,nSp)
+			aperm(xxx,c(2,1,3))
     }
   }
-  if(verbose)cat("L123 ; ") #;browser()
+  if(verbose)cat("L127 ; ") #;browser()
   yrs  <- Year1 + (0:(nTimes-1))/nRecs.yr + ifelse(nRecs.yr==1,0,1/(2*nRecs.yr))
   alltimes  <- sort(unique(as.vector(Rlz.t.fsh)))
 
@@ -131,15 +136,15 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   xxx<-scan(text=a[pos1+1:(nTimes*nReg+100)],n=nTimes*nAges1*nReg,what=0,comment.char="#",quiet=!verbose)
   dim(xxx)<-c(nAges1,nTimes,nReg)
   FatYrAgeReg <- aperm(xxx,c(2,1,3))
-    if(0){
-    for(j in 1:nReg) {
-      pos1 <- pos1 + 1
-      for(i in 1:nTimes) {
-        pos1 <- pos1 + 1
-        FatYrAgeReg[i,,j] <- charVec2numVec(a[pos1]) 
-          #as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1]) 
-          } }
-    }
+  #  if(0){
+  #  for(j in 1:nReg) {
+  #    pos1 <- pos1 + 1
+  #    for(i in 1:nTimes) {
+  #      pos1 <- pos1 + 1
+  #      FatYrAgeReg[i,,j] <- charVec2numVec(a[pos1]) 
+  #        #as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1]) 
+  #        } }
+  #  }
   if(verbose)cat("L143 ; ") #;browser()
 # SDH 2011/10/24 added 4 lines so the code works when extra comment text is added for projections
   posyr <- rep(1,nTimes)
