@@ -145,7 +145,7 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   #        #as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1]) 
   #        } }
   #  }
-  if(verbose)cat("L143 ; ") #;browser()
+  if(verbose)cat("L148 ; ") #;browser()
 # SDH 2011/10/24 added 4 lines so the code works when extra comment text is added for projections
   posyr <- rep(1,nTimes)
   if(length(grep("#   Projected",a, ignore.case = TRUE)) > 0) {
