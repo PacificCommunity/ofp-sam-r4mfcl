@@ -256,7 +256,7 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   if(nSp==1){
     pos1 <- grep("# Effort multiplier",a)[2] ; YPR.effmult <- charVec2numVec(a[pos1+1]) # as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
     pos1 <- grep("# Yield per recruit",a)[2] ; YPR <- charVec2numVec(a[pos1+1]) #  as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
-  	YPR<-getNumVector()
+  	#YPR<-getNumVector()
   }else{YPR.effmult<-NULL;YPR<-NULL}
   TagGrps <- RepRates <- nTagRetPds <- TagRetPds <- ObsTagReturns <- PredTagReturns <- MaxLiberty <- ObsvPredbyLib <- 0
   pos1 <- grep("# Grouping indicator \\(0",a) ;
