@@ -16,20 +16,30 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   # SDH September 2013 - added yrs and alltimes. Won't cover all options, but will save calculating each time they're needed.
   # YT  Feb./March 2017 Update for multi-species/sex model
 	cat("Starting read.rep ; ")
-  datfromstr<-function (datstring)
+  datfromstr<-function (datstring,transpose=FALSE)
   {
  #   print(datstring)
  #   return(as.numeric(unlist(strsplit(trimws(datstring), split = "[[:blank:]]+"))))  # trimws is avalable from  R >=3.2.0
     out<-if(length(datstring)>1){
       datstring %>% sapply("trimws") %>% strsplit(split = "[[:blank:]]+") %>% 
-      	sapply(.,"as.numeric",simplify="array",USE.NAMES =FALSE) %>% 'colnames<-'(NULL) %>% t() 
+      	lapply(.,"as.numeric") %>%
+      	{
+      		if(all(sapply(.,length) == max(sapply(.,length))))
+      			do.call("rbind",.)
+      		else
+      			# http://r.789695.n4.nabble.com/Convert-quot-ragged-quot-list-to-matrix-td895283.html
+      			matrix(unlist(lapply(., '[', 1:max(sapply(., length)))), nrow = length(.), byrow = TRUE) 
+      	} %>% 'colnames<-'(NULL) %>% 'rownames<-'(NULL) %>% {if(transpose)t(.)else .} 
     }else{
       datstring %>% trimws() %>% strsplit(split = "[[:blank:]]+") %>% "[["(1) %>% as.numeric()
     }
     return(out)
   }
   charVec2numVec<-function(x){
-  	x %>% trimws() %>% strsplit(.,split=" +") %>% "[["(1) %>% as.numeric()
+  	if(length(x)>0)
+  		x %>% trimws() %>% strsplit(.,split=" +") %>% "[["(1) %>% as.numeric()
+		else
+			NA
   }
   getNumVector<-function(keyword,a,offset=1){
     pos1 <- grep(pattern=keyword,x=a) 
@@ -45,10 +55,6 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   # Identify version number of plot.rep file
   viewerVer<-strsplit(a[2],split=" +")[[1]][2]
   viewerVer.num<-as.numeric(viewerVer)
-  # find startpoint
- # pos1 <- grep("Observed spawning Biomass",a) ;  top <- a[1:pos1]
-  # find endppoint
-#  pos2 <- grep("F at MSY",a) ; rem <- a[(pos1+1):length(a)] # YT, 2017/02//27, I do not know if this line i necessary. For the time being, it is commented out
   # load data
   frqfilename<-strsplit(a[3],split=" +")[[1]][5]
   inputParfilename<-strsplit(a[4],split=" +")[[1]][6]
@@ -70,17 +76,17 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   if(viewerVer.num>=3){pos1 <- grep("# Regions species pointer",a) ; regSpPtr<-NA; regSpPtr <- datfromstr(a[pos1+1]) }else{regSpPtr<-NA}
   pos1 <- grep("# Number of recruitments per year",a) ; nRecs.yr <- datfromstr(a[pos1+1]) 
   pos1 <- grep("# Number of fisheries",a) ; nFisheries <- datfromstr(a[pos1+1]) 
-  if(verbose)cat("L73 ; ") #;browser()
+  if(verbose)cat("L79 ; ") #;browser()
   if(viewerVer.num>=3){pos1 <- grep("# Fishery selectivity seasons",a) ; SelexSeasons <- datfromstr(a[pos1+1])}else{SelexSeasons <-rep(1,nFisheries)}
   if(viewerVer.num>=3){pos1 <- grep("# Fishery selectivity time-blocks",a) ; SelexTblocks <- datfromstr(a[pos1+1])}else{SelexTblocks <-rep(1,nFisheries)}
   pos1 <- grep("# Number of realizations per fishery",a) ; nRlz.fsh <- datfromstr(a[pos1+1]) 
-  if(verbose)cat("L76 ; ")
+  if(verbose)cat("L83 ; ")
   pos1 <- grep("# Region for each fishery",a) ; Region.fsh <- datfromstr(a[pos1+1]) 
   pos1 <- grep("# Time of each realization by fishery",a) ; Rlz.t.fsh <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh))
     for (i in 1:nFisheries) {
       Rlz.t.fsh[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i]) 
     }
-	if(verbose)cat("L82 ; ") ;if(DEBUG)browser()
+	if(verbose)cat("L89 ; ") ;if(DEBUG)browser()
   pos1 <- grep("# Mean lengths at age",a) ; mean.LatAge <-datfromstr(a[pos1+1])
   pos1 <- grep("# SD of length at age",a) ; sd.LatAge   <- datfromstr(a[pos1+1]) 
   pos1 <- grep("# Mean weights at age",a) ; mean.WatAge <- datfromstr(a[pos1+1]) 
@@ -94,17 +100,17 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
     colnames(mean.LatAge)<-colnames(sd.LatAge)<-colnames(mean.WatAge)<-paste0(1:nAges[1])
     rownames(mean.LatAge)<-rownames(sd.LatAge)<-rownames(mean.WatAge)<-c("Both")
   }
-  if(verbose)cat("L97 ; ") ;if(DEBUG)browser()
+  if(verbose)cat("L103 ; ") ;if(DEBUG)browser()
   pos1 <- grep("# Natural mortality at age",a) # ;
 
   MatAge <- datfromstr(a[pos1+1:nSp])
-  if(verbose)cat("L101 ; ")
+  if(verbose)cat("L107 ; ")
   pos1 <- grep("# Selectivity by age class ",a) ; SelAtAge <- datfromstr(a[(pos1+1):(pos1+sum(SelexTblocks))]) ## Need to check for older versions
   pos1 <- grep("# Catchability by realization ",a) ; qAtAge <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh)) ;
   for(i in 1:nFisheries) {
     qAtAge[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i])
   }
-  if(verbose)cat("L107 ; ");if(DEBUG)browser()
+  if(verbose)cat("L113 ; ");if(DEBUG)browser()
   pos1 <- grep("# Catchability\\+effort dev\\. by realization ",a) ; qEdevAtAge <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh)) ;
   for(i in 1:nFisheries) {
     qEdevAtAge[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i])
@@ -125,7 +131,7 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
 			aperm(xxx,c(2,1,3))
     }
   }
-  if(verbose)cat("L127 ; ") #;browser()
+  if(verbose)cat("L134 ; ") #;browser()
   yrs  <- Year1 + (0:(nTimes-1))/nRecs.yr + ifelse(nRecs.yr==1,0,1/(2*nRecs.yr))
   alltimes  <- sort(unique(as.vector(Rlz.t.fsh)))
 
@@ -145,18 +151,18 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   #        #as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1]) 
   #        } }
   #  }
-  if(verbose)cat("L148 ; ") #;browser()
+  if(verbose)cat("L154 ; ") #;browser()
 # SDH 2011/10/24 added 4 lines so the code works when extra comment text is added for projections
   pos1 <- grep("# Population Number by age \\(across\\), year \\(down\\) and region",a, ignore.case = TRUE)
   nAges1<-if(nSp>1){nAges[1]}else{nAges};NatYrAgeReg <- array(dim=c(nTimes,nAges1,nReg)) ;
-  if(verbose)cat("L154 ; ") #;browser()
+  if(verbose)cat("L158 ; ") #;browser()
 
   xxx<-scan(text=a[pos1+1:(nTimes*nReg+100)],n=nTimes*nAges1*nReg,what=0,comment.char="#",quiet=!verbose)
   dim(xxx)<-c(nAges1,nTimes,nReg)
   NatYrAgeReg <-aperm(xxx,c(2,1,3))
   # YT 2017/02/17 If, in the future, MFCL becomes to allow different nAges by sp/sex, this code needs to be upgrades
   
-  if(verbose)cat("L170 ; ")
+  if(verbose)cat("L163 ; ")
   pos1 <-grep("# Exploitable population biomass by fishery (down) and by year-season  (across)",a,fixed=T)
   #if(length(pos1)!=0) NexpbyYrFsh <- t(sapply(a[(pos1+1):(pos1+nTimes)],datfromstr,USE.NAMES =F)) else NexpbyYrFsh <- NA
   NexpbyYrFsh <- if(length(pos1)!=0){
@@ -172,7 +178,7 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   }else{NA}
   #pos1 <- grep("# Absolute biomass by region \\(across\\) and year \\(down\\)",a) ; Recruitment <- t(sapply(a[(pos1+2):(pos1+1+nTimes)],datfromstr,USE.NAMES =F))
   pos1 <- grep(x=a,pattern="# Recruitment");Recruitment <- datfromstr(a[(pos1+1):(pos1+nTimes)])
-  if(verbose)cat("L187 ; \n") ; browser()
+  if(verbose)cat("L181 ; ") #; browser()
   #pos1 <- grep("# Total biomass$",a) ; TotBiomass <- t(sapply(a[(pos1+1):(pos1+nTimes)],datfromstr,USE.NAMES =F))
   pos1 <- grep("# Total biomass$",a) ; TotBiomass <- datfromstr(a[(pos1+1):(pos1+nTimes)])
   #pos1 <- grep("# Adult biomass$",a) ; AdultBiomass <- t(sapply(a[(pos1+1):(pos1+nTimes)],datfromstr,USE.NAMES =F))
@@ -287,6 +293,7 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
      } else { MoveRates <- NA }
      } else { MoveRates <- NA }
   ## Note, lenLiks and wtLiks are not included current version of plot.rep 2017-05-12 YT
+  if(verbose)cat("L299 ; ") # ; browser()
   pos1 <- grep("# length-sample components of likelihood by fishery",a) ; lenLiks <- charVec2numVec(a[pos1+1]) #  as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   pos1 <- grep("# weight-sample components of likelihood by fishery",a) ; wtLiks <- charVec2numVec(a[pos1+1]) #  as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
   ######################
@@ -305,17 +312,17 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   #############################################################################################
   #  Code to create selex data base adapted from plot_selectivity.atAge
   tSelAtAge<-t(SelAtAge)
-  if(verbose)cat("L300\n") ; if(DEBUG)browser()
+  if(verbose)cat("L318 ; ") ; if(DEBUG)browser()
   tblocks<-!all(SelexTblocks==1)
   nfish<-nFisheries
   nfishWTblocks<-ifelse(tblocks,sum(SelexTblocks)/nSp,nFisheries/nSp)
-  if(verbose)cat("L304\n");if(DEBUG)browser()
+  if(verbose)cat("L322 ; ");if(DEBUG)browser()
   FL0<-unlist(sapply(1:nFisheries,function(i){
             nblk<-SelexTblocks[i]
             tmp<-if(nblk==1){paste(i)}else{paste(i,1:nblk,sep="_")}
             if(i<10){paste0("0",tmp)}else{tmp}
           }))
-  if(verbose)cat("L310\n");if(DEBUG)browser()
+  if(verbose)cat("L328 ; ");if(DEBUG)browser()
   dimnames(tSelAtAge)[[1]]<-paste0(1:dim(tSelAtAge)[1])
   dimnames(tSelAtAge)[[2]]<-if(nSp>1){
     paste0("FL",FL0,c(rep("Male",nfishWTblocks),rep("Female",nfishWTblocks)))  # Fixed 2018-04-18
@@ -328,14 +335,14 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   }else{rep("Both",nfishWTblocks)}
 
   fishlab<-paste(rep(FL0,2),paste0("FL",rep(substr(FL0,1,2),2)),sep="_")
-   if(verbose)cat("L323;") #; browser()
+   if(verbose)cat("L341 ; ") #; browser()
 
   SelAtAge.wide$Fishery<-if(nSp==1){
     fishlab[1:nfishWTblocks]
   }else{
     rep(fishlab[1:nfishWTblocks],2)
   }
-  if(verbose)cat("L325;") #;browser()
+  if(verbose)cat("L348 ;") #;browser()
   mean.LatAge %>% as.data.frame() %>% mutate(Gender=rownames(.)) %>% gather(key=AgeClass,value=mean.LatAge,-!!sym("Gender")) -> mean.LatAge.long
   mean.WatAge %>% as.data.frame() %>% mutate(Gender=rownames(.)) %>% gather(key=AgeClass,value=mean.WatAge,-!!sym("Gender")) -> mean.WatAge.long
   sd.LatAge %>% as.data.frame() %>% mutate(Gender=rownames(.)) %>% gather(key=AgeClass,value=sd.LatAge,-!!sym("Gender")) -> sd.LatAge.long
@@ -343,11 +350,11 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
       gather(key="AgeClass",value="selex",remove=-!!sym("Fishery_Gender")) %>%
       separate(col="Fishery_Gender",into=c("Fishery","Gender"),sep="-") %>%
       mutate(Age=as.numeric(!!sym("AgeClass")))-> SelAtAge.long
-  if(verbose)cat("L333\n");if(DEBUG)browser()
+  if(verbose)cat("L356 ; ");if(DEBUG)browser()
   SelAtAge.long %<>% inner_join(.,mean.LatAge.long,by=c("Gender","AgeClass")) %>% 
                     inner_join(.,mean.WatAge.long,by=c("Gender","AgeClass")) %>%
                     inner_join(.,sd.LatAge.long,by=c("Gender","AgeClass"))
-  if(verbose)cat("L337\n");if(DEBUG)browser()
+  if(verbose)cat("L360 ; ");if(DEBUG)browser()
   rep.obj <- list(nTimes=nTimes,Year1=Year1,nReg=nReg,nAges=nAges,nRecs.yr=nRecs.yr,yrs=yrs,alltimes=alltimes,
             nFisheries=nFisheries,nRlz.fsh=nRlz.fsh,Region.fsh=Region.fsh,Rlz.t.fsh=Rlz.t.fsh,mean.LatAge=mean.LatAge,
             sd.LatAge=sd.LatAge,mean.WatAge=mean.WatAge,
