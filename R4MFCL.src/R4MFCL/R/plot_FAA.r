@@ -14,8 +14,9 @@
 #' @importFrom rlang UQ UQS '!!' '!!!' parse_expr
 #' @export
 #'
-plot_FAA<-function(rep,plot=TRUE,verbose=TRUE,Year=1952:2015,YLAB="Fishing mortality/year",onlyTotal=FALSE){
-
+plot_FAA<-function(rep,plot=TRUE,verbose=TRUE,Year=1952:2015,
+			YLAB="Fishing mortality/year",onlyTotal=FALSE){
+cat("Starting plot_FAA ;")
 theme_set(theme_bw())
 
 .<-"XXXX"
@@ -33,15 +34,19 @@ add.FAAs<-function(FAA){
   FAA$Year<-Year
   return(FAA)
 }
-#cat("L26\n") #;browser()
+if(verbose)cat("L37 ; ") #;browser()
 FAA<-rep$FbyAgeYr
 #maxF<-max(FAA)
 #cat("L27\n") #;browser()
-FAAreg<-lapply(1:2,function(i){add.FAAs(rep$FatYrAgeReg[[1]][,,i])})
+FAAreg<-if(is.list(rep$FatYrAgeReg)){
+	lapply(1:2,function(i){add.FAAs(rep$FatYrAgeReg[[1]][,,i])})
+	}else{
+		apply(rep$FatYrAgeReg,1:2,add.FAAs)
+	}
 #cat("L30\n") #;browser()
 FAA<-add.FAAs(FAA)
 maxF<-max(max(FAA[,c("1_3","4_6","7+")]),sapply(FAAreg,function(x){max(x[,c("1_3","4_6","7+")])}))
-#cat("L33\n");browser()
+if(verbose)cat("L49\n");browser()
 pl.all<-FAA%>%
            gather(key="Age",value="F",-!!sym("Year")) %>%
   #         filter('%in%'( !!sym("Age"), !!!syms(c("1_3","4_6","7+")))) %>%
@@ -56,7 +61,7 @@ pl.reg<-FAAreg%>%lapply(.,function(z){
   return(pl)
 })
 for(i in 1:2)pl.reg[[i]]<-pl.reg[[i]]+labs(title=paste0("Region ",i))
-cat("L59\n") #;browser()
+if(verbose)cat("L64 ; ") #;browser()
 
 pl<-if(!onlyTotal){
   grid.arrange(pl.reg[[1]],pl.reg[[2]],pl.all,ncol=2)
@@ -64,7 +69,7 @@ pl<-if(!onlyTotal){
   pl.all
   }
 if(plot)print(pl)
-
+cat(" Finished plot_FAA\n")
 return(invisible(pl))
 
 }
