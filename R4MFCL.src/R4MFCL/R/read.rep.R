@@ -185,17 +185,19 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   pos1 <- grep("# Adult biomass$",a) ; AdultBiomass <- datfromstr(a[(pos1+1):(pos1+nTimes)])
   #pos1 <- grep("# Relative biomass by region \\(across\\) and year \\(down\\)$",a) ; RelBiomass <- t(sapply(a[(pos1+1):(pos1+nTimes)],datfromstr,USE.NAMES =F))
 	pos1 <- grep("# Relative biomass by region \\(across\\) and year \\(down\\)$",a) ; RelBiomass <- datfromstr(a[(pos1+1):(pos1+nTimes)])
-  pos1 <- grep("# Observed catch by fishery \\(down\\) and time \\(across\\)",a) ; ObsCatch <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh)) ;
-    for(i in 1:nFisheries) { ObsCatch[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i]) }
+    pos1 <- grep("# Observed catch by fishery \\(down\\) and time \\(across\\)",a) ; #ObsCatch <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh)) ;
+  #  for(i in 1:nFisheries) { ObsCatch[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i]) }
+    ObsCatch<-datfromstr(a[pos1+1:nFisheries])
+  pos1 <- grep("# Predicted catch by fishery \\(down\\) and time \\(across\\)",a) ; #PredCatch <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh)) ;
+  #  for(i in 1:nFisheries) { PredCatch[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i]) }
+    PredCatch <-datfromstr(a[pos1+1:nFisheries])
+  pos1 <- grep("# Observed CPUE by fishery \\(down\\) and time \\(across\\)",a) ; # ObsCPUE <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh)) ;
+  #  for(i in 1:nFisheries) { ObsCPUE[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i]) }
+    ObsCPUE <-datfromstr(a[pos1+1:nFisheries])
+  pos1 <- grep("# Predicted CPUE by fishery \\(down\\) and time \\(across\\)",a) ; # PredCPUE <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh)) ;
+  #  for(i in 1:nFisheries) { PredCPUE[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i]) }
+    PredCPUE <- datfromstr(a[pos1+1:nFisheries])
 
-  pos1 <- grep("# Predicted catch by fishery \\(down\\) and time \\(across\\)",a) ; PredCatch <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh)) ;
-    for(i in 1:nFisheries) { PredCatch[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i]) }
-
-  pos1 <- grep("# Observed CPUE by fishery \\(down\\) and time \\(across\\)",a) ; ObsCPUE <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh)) ;
-    for(i in 1:nFisheries) { ObsCPUE[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i]) }
-
-  pos1 <- grep("# Predicted CPUE by fishery \\(down\\) and time \\(across\\)",a) ; PredCPUE <- matrix(nrow=nFisheries,ncol=max(nRlz.fsh)) ;
-    for(i in 1:nFisheries) { PredCPUE[i,1:nRlz.fsh[i]] <- datfromstr(a[pos1+i]) }
   BH.ar<-NULL
   pos1 <- grep("# Yield analysis option",a) ; YieldOption <- as.numeric(a[pos1+1])
   if(YieldOption==1)
