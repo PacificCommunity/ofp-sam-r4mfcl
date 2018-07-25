@@ -11,22 +11,24 @@
 #' @importFrom magrittr "%>%"
 #' @export
 read.par <-
-function(par.file,verbose=TRUE,DEBUG=FALSE) {
+function(par.file,verbose=TRUE,DEBUG=FALSE,nFish=NA) {
 #  require(magrittr)
   datfromstr<-function (datstring)
   {
     out<-if(length(datstring)>1){
-      datstring %>% trimws() %>% strsplit(split = "[[:blank:]]+") %>% sapply(.,"as.numeric",USE.NAMES =FALSE,simplify="array") %>%t()
+      datstring %>% lapply(.,"trimws")  %>% strsplit(split = "[[:blank:]]+") %>% sapply(.,"as.numeric",USE.NAMES =FALSE,simplify="array") %>%t()
     }else{
       datstring %>% trimws() %>% strsplit(split = "[[:blank:]]+") %>% "[["(1) %>% as.numeric()
     }
     return(out)
   }
+  cat("Starting read.par ; file name of par.file is ",par.file,"\n")
   a <- readLines(par.file)
-  if(verbose)cat("L19 in read.par;") ; if(DEBUG)browser()
+  if(verbose)cat("L27 ; ") ; if(DEBUG)browser()
   pfl <- datfromstr(a[2]) # as.numeric(unlist(strsplit(a[2],split="[[:blank:]]+"))[-1])
   version<-pfl[200]
-  nages <- a[5]
+  pos1<-grep("# The number of age classes",a)
+  nages <- a[pos1+1]
   afl.ln<- grep(a,pattern="age flags")[1]+1 # YT 24/02/2017 To allow to read par file of multi sp/sex model
   afl <- datfromstr(a[afl.ln]) # as.numeric(unlist(strsplit(a[afl.ln],split="[[:blank:]]+"))[-1])
   mp.nages<-ifelse(!is.na(ax<-grep(a,pattern="# Multi-species the number of age classes")[1]+1),ax,NA)
@@ -39,14 +41,19 @@ function(par.file,verbose=TRUE,DEBUG=FALSE) {
   }else{NULL}
 
   pos1 <- grep("fish flags",a) ; if(length(pos1)>1)pos1<-pos1[1]
-  pos2 <- grep("tag flags",a) ;
-  if(length(pos2)==0)   pos2 <- grep("# region control flags",a) ;
+  if(!is.na(nFish)){
+  	pos2<-grep("tag flags",a) ;
+  	if(length(pos2)==0)   pos2 <- grep("# region control flags",a) 
+  }else{
+  	pos2<-pos1+nFish-1
+  }
   ffl<-datfromstr(a[(pos1+1):(pos2-1)])
-  if(verbose)cat("L37 ;")  ; if(DEBUG)browser()
+  if(verbose)cat("L51 ;")  ; if(DEBUG)browser()
 #  cat("L21 read.par.r ;");browser()
   nfisheries <- dim(ffl)[1]
   ## check if selectivity time block is implemented
-  cat("L48\n"); if(DEBUG)browser()
+  cat("L50\n"); if(DEBUG)browser()
+  cat("dim(ffl)=",dim(ffl),"\n")
   do.selblocks<-ifelse(any(ffl[,71]>0),TRUE,FALSE)
 # Check if there are the new tag report sections in the par file
   tsw <- 0  #Default switch setting on tag parameters to zero
