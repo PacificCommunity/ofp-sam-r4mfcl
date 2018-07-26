@@ -8,10 +8,13 @@
 #' @param par.file charactor file name of par file
 #' @param verbose if TRUE verbose outputs will be made
 #' @param DEBUG enable "debug" through browser()
+#' @param nfisheries Number of fisheries, default is NA and determined internally
+#' @param nReg number of regions , default : NA and determined internally 
+#'
 #' @importFrom magrittr "%>%"
 #' @export
 read.par <-
-function(par.file,verbose=TRUE,DEBUG=FALSE,nFish=NA) {
+function(par.file,verbose=TRUE,DEBUG=FALSE,nfisheries=NA,nReg=NA) {
 #  require(magrittr)
   datfromstr<-function (datstring)
   {
@@ -35,25 +38,31 @@ function(par.file,verbose=TRUE,DEBUG=FALSE,nFish=NA) {
 # 13/03/2017 YT added code to read multi-sp/sex age flags
   mp.afl.ln<-ifelse(!is.na(ax<-grep(a,pattern="# multi-species age flags")[1]+1),ax,NA)
   nSp<-ifelse(is.na(mp.afl.ln),1,2) ## YT current code does not support multi-species model with number of species more than 2
-  if(verbose)cat("L29;") ; if(DEBUG)browser()
+  if(verbose)cat("L41;") ; if(DEBUG)browser()
   mp.afl<-if(!is.na(mp.afl.ln)){
       datfromstr(a[mp.afl.ln])
   }else{NULL}
-
+  ### New code to determine number of regions 
+  if(is.na(nReg)){
+  	pos1<-grep("# region control flags",a)
+  	nReg<-a[pos1+1] %>% trimws() %>% strsplit(split="[[:blank:]]+") %>% "[["(1) %>% length()
+  }
+  ######### 
   pos1 <- grep("fish flags",a) ; if(length(pos1)>1)pos1<-pos1[1]
-  if(!is.na(nFish)){
+  if(is.na(nfisheries)){
   	pos2<-grep("tag flags",a) ;
   	if(length(pos2)==0)   pos2 <- grep("# region control flags",a) 
+  	nfisheries<-pos2-1-(pos1+1)
   }else{
-  	pos2<-pos1+nFish-1
+  	pos2<-pos1+nfisheries-1
   }
   ffl<-datfromstr(a[(pos1+1):(pos2-1)])
-  if(verbose)cat("L51 ;")  ; if(DEBUG)browser()
+  if(verbose)cat("L60 ;")  ; if(DEBUG)browser()
 #  cat("L21 read.par.r ;");browser()
-  nfisheries <- dim(ffl)[1]
+ # nfisheries <- dim(ffl)[1]
   ## check if selectivity time block is implemented
-  cat("L50\n"); if(DEBUG)browser()
-  cat("dim(ffl)=",dim(ffl),"\n")
+  if(verbose)cat("L64 ;"); if(DEBUG)browser()
+  if(verbose)cat("dim(ffl)=",dim(ffl),"\n")
   do.selblocks<-ifelse(any(ffl[,71]>0),TRUE,FALSE)
 # Check if there are the new tag report sections in the par file
   tsw <- 0  #Default switch setting on tag parameters to zero
@@ -99,14 +108,19 @@ function(par.file,verbose=TRUE,DEBUG=FALSE,nFish=NA) {
     tsw1 <- 1
   }
 ## 13/03/2017 YT Added code to read region control flags
-  pos1<-grep("# region control flags",a)+1;pos2<-ifelse(nSp>1,grep("# species flags",a)-1,grep("# percent maturity",a)-1)
-  if(verbose)cat("L94; ") #;browser()
-  rcfl<-datfromstr(a[pos1:pos2])
+	if(length(grep("# region control flags",a))>0){
+  	pos1<-grep("# region control flags",a)+1;
+  	pos2<-pos1+9
+  	if(verbose)cat("L114; ") #;browser()
+  	rcfl<-datfromstr(a[pos1:pos2])
+  }else{
+  	rcfl<-NULL	
+  }
   sp.fl<-if(nSp>1){
     pos1<-grep("# species flags",a)+1
     datfromstr(a[pos1+0:1])
   }else{NULL}
-  pos1 <- grep("# percent maturity", a)[1]+1; maturity <- as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1])
+  pos1 <- grep("# percent maturity", a)[1]+1; maturity <- as.numeric(unlist(strsplit(trimws(a[pos1]),split="[[:blank:]]+"))[-1])
   if(nSp>1){
     mp.maturity <- datfromstr(a[pos1+2]) # as.numeric(unlist(strsplit(a[pos1+2],split="[[:blank:]]+"))[-1])
   }
@@ -144,12 +158,12 @@ function(par.file,verbose=TRUE,DEBUG=FALSE,nFish=NA) {
      mp.Lmax <- datfromstr(a[pos1+8])[1] # as.numeric(unlist(strsplit(a[pos1+8],split="[[:blank:]]+"))[1])
      mp.K    <- datfromstr(a[pos1+9])[1] # as.numeric(unlist(strsplit(a[pos1+9],split="[[:blank:]]+"))[1])
   }
-  if(verbose)cat("L138;") #;browser()
+  if(verbose)cat("L161 ; ") #;browser()
   pos1 <- grep("# Variance parameters", a)[1];
   growth_vars <-c(datfromstr(a[pos1+1])[1],datfromstr(a[pos1+2])[1])
-  if(verbose)cat("L141;") #;browser()
+  if(verbose)cat("L164 ; ") #;browser()
   pos1 <- grep("# extra par for Richards", a)[1]; Richards <- as.double(a[pos1 + 1])
-  if(verbose)cat("L143;") #;browser()
+  if(verbose)cat("L166 ; ") #;browser()
   if(nSp>1){
     mp.Richards <- as.double(a[pos1 + 5])
   }
@@ -175,15 +189,15 @@ nrow<-if(version>=1052){
 }else{
   20
 }
-if(verbose)cat("L169;") #;browser()
+if(verbose)cat("L192 ;") #;browser()
 fish_pars<- datfromstr(a[pos1+1:nrow-1])
-if(verbose)cat("L171;") #;browser()
+if(verbose)cat("L194 ; ") #;browser()
 if(version>1050){
 pos1<-grep("# species parameters",a);sp_pars<-datfromstr(a[pos1+1:20+1])
 }else{
 
 }
-if(verbose)cat("L177\n") #;browser()
+if(verbose)cat("L200 ; ") #;browser()
 # Check for existence of new tagging inputs
   if(tsw != 0){
     if(tsw2 == 1){  # Load all tag reporting rate blocks
@@ -269,6 +283,6 @@ if(verbose)cat("L177\n") #;browser()
     par.obj$mp.M_offsets<-mp.M_offsets
     par.obj$mp.gr_offsets<-mp.gr_offsets
   }
-  if(verbose)cat("finished read.par\n")
+  if(verbose)cat(" finished read.par\n")
   return(invisible(par.obj))
 }
