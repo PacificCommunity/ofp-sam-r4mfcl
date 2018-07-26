@@ -197,6 +197,12 @@ pos1<-grep("# species parameters",a);sp_pars<-datfromstr(a[pos1+1:20+1])
 }else{
 
 }
+##
+if(length(grep("# The grouped_catch_dev_coffs flag",a))>0){
+	pos1<-grep("# The grouped_catch_dev_coffs flag",a)
+	grouped_catch_dev_coffs<-datfromstr(a[pos1+1:])
+}
+
 if(verbose)cat("L200 ; ") #;browser()
 # Check for existence of new tagging inputs
   if(tsw != 0){
@@ -268,6 +274,7 @@ if(verbose)cat("L200 ; ") #;browser()
   par.obj$fish_pars<-fish_pars
   par.obj$rcfl<-rcfl # region control flags
   par.obj$do.selblocks<-do.selblocks
+  par.obj$nReg <- nReg
   if(nSp>1){
     par.obj$mp.Lmin<-mp.Lmin
     par.obj$mp.Lmax<-mp.Lmax
