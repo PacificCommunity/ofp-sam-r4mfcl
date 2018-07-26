@@ -200,7 +200,8 @@ pos1<-grep("# species parameters",a);sp_pars<-datfromstr(a[pos1+1:20+1])
 ##
 if(length(grep("# The grouped_catch_dev_coffs flag",a))>0){
 	pos1<-grep("# The grouped_catch_dev_coffs flag",a)
-	grouped_catch_dev_coffs<-datfromstr(a[pos1+1:])
+  nrow<-length(unique(ffl[,29]))
+	grouped_catch_dev_coffs<-datfromstr(a[pos1+1:nrow])
 }
 
 if(verbose)cat("L200 ; ") #;browser()
