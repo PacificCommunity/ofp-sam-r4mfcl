@@ -242,8 +242,7 @@ function(fit.file,
     ifelse(nSp==1,5,6)
   }
   if(verbose)cat("L244; ") ; if(DEBUG)browser()
-  colnames(newdata)[col.offset+1:nbins]<-
-        paste0(ifelse(fit.file=="length.fit","L","W"),seq(from=binfirst,length.out=nbins,by=binwidth))
+  colnames(newdata)[col.offset+1:nbins]<-paste0(seq(from=binfirst,length.out=nbins,by=binwidth))
 
   if(verbose)cat("L248 ;") ; if(DEBUG)browser() 
   colnames(newdata.pred)[1:3]<-colnames(newdata.obs)[1:3]<-colnames(newdata)[1:3]<-c("timeperiod","month","week")
@@ -252,6 +251,7 @@ function(fit.file,
     colnames(newdata.pred)[4:(4+nSp)]<-colnames(newdata.obs)[4:(4+nSp)]<-colnames(newdata)[4:(4+nSp)]<-
                     if(nSp==1){c("Both","nsmpl")}else{c("Male","Female","nsmpl")}
   }
+  
   if(verbose)cat("L255 ;") ;if(DEBUG)browser()
   colnames(newdata.pred)[col.offset+1+nSp+1:nbins]<-
   colnames(newdata.obs)[col.offset+1+nSp+1:nbins]<-paste0(binfirst+(0:(nbins-1))*binwidth)
@@ -273,12 +273,7 @@ function(fit.file,
                     else
                       stop("nSp=",nSp)
                 }
-         #       if(version==1)
-         #         unite(.,col="United",from=!!!from.nm)
-         #       else if(version==2)
-         #         select(.,-!!"Fishery")
-              #      } %>% gather_(key_col="bin",value_col="frq",gather_cols="United")->tmp2
-                   } %>% gather(key="bin",value=!!sym("frq"),-!!sym("United"))->tmp2
+              } %>% gather(key="bin",value=!!sym("frq"),-!!sym("United"))->tmp2
   if(verbose)cat("L282 ; ")  ;if(DEBUG)browser()
   longdata<-tmp2 %>% { if(version==1)
                         separate(.,col=!!sym("United"),into=c("timeperiod","month","week","Fishery","Set"),sep="_")
@@ -293,7 +288,7 @@ function(fit.file,
                       else
                         stop("nSp=",nSp)
                     }
-  longdata$SizeBin<-as.numeric(substr(longdata$bin,start=2,stop=6))
+  #longdata$SizeBin<-as.numeric(substr(longdata$bin,start=2,stop=6))
   if(verbose)cat("L297 ;") ; if(DEBUG)browser()
 
   newdata.obs %>% {
@@ -332,7 +327,7 @@ function(fit.file,
     if(overall.composition.plot){
       if(nSp==1 || version<=2)stop("overall.composition.plot is only available for 2 sex and version 3 fit file")
       cat("L334\n"); if(DEBUG)browser()
-      plot.data <- longdata %>% group_by(!!!syms(c("RealFishery","Gender","Set","SizeBin"))) %>% summarize(n=sum(!!sym("frq")))
+      plot.data <- longdata %>% group_by(!!!syms(c("RealFishery","Gender","Set","bin"))) %>% summarize(n=sum(!!sym("frq")))
       plot.data$Fishery<-
         paste(if(nfish/nSp<10){
           plot.data$RealFishery}else{str_pad(paste(plot.data$RealFishery),width=2,pad="0")},
@@ -344,7 +339,7 @@ function(fit.file,
       cat("L344 VecFsh=",VecFsh,"\n")
       p<-plot.data %>% 
       	filter(.,!!sym("RealFishery") %in% VecFsh) %>% 
-      	filter(.,!!sym("Set")=="Obs") %>% ggplot(aes_string(x="SizeBin",y="n"))+
+      	filter(.,!!sym("Set")=="Obs") %>% ggplot(aes_string(x="bin",y="n"))+
         geom_bar(stat="identity", colour=plot.ctl$fillcol, fill=plot.ctl$fillcol)+
         facet_wrap(~Fishery,ncol=plot.ctl$Ncols,scales="free_y",dir=plot.ctl$dir)
       p<-p+xlab(plot.ctl$xlabel) + ylab(plot.ctl$ylabel)
@@ -352,7 +347,7 @@ function(fit.file,
         if(verbose){cat("L352 ; ");cat("colnames(plot.data):\n",colnames(plot.data),"\n")}
         p<-p+ plot.data %>% filter(.,!!sym("Set")=="Pred") %>%
         filter(.,!!sym("RealFishery") %in% VecFsh) %>% 
-          geom_line(data=.,aes_string(x="SizeBin",y="n",group="Gender",color="Gender"), 
+          geom_line(data=.,aes_string(x="bin",y="n",group="Gender",color="Gender"), 
           size=plot.ctl$line.wdth,position="Stack") +
           scale_colour_discrete(name  ="",
                             breaks=c("1", "2"),
