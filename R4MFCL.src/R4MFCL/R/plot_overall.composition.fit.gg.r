@@ -70,9 +70,9 @@ plot_overall.composition.fit.gg = function(filename="length.fit",
     sizebins <- seq(from=size.pars[2], by=size.pars[3], length.out=size.pars[1])   # Construct the size bins from the file header
     fishSpPtr <-if(version>=2){scan(filename,nlines=1,skip=7)}else{NA}
     if(version>=2)nSp<-length(unique(fishSpPtr))
-    #cat("L38\n");browser()
+    if(verbose)cat("L73 ; ") #;browser()
     if(nSp>1 & fit & is.null(rep))stop("rep is needed for multi species/sex model")
-    if(verbose)cat("L73 in plot.overall.composition.fit.r; nSp=",nSp,"\n") #;browser()
+    if(verbose)cat("L75 ; ") #;browser()
     VecFsh <-if(anyNA(VecFsh)){1:(Nfsh)}else{VecFsh}   # Vector of fisheries numbers - just numeric for now
     LineKeep <- (VecFsh-1) * (Nskips + 6) + 1   # Identify the lines of the observed size frequencies for the fisheries
     if(nSp>1 & fit){
@@ -80,7 +80,7 @@ plot_overall.composition.fit.gg = function(filename="length.fit",
       Year1<-rep$Year1
       Rlz.t.fsh<-rep$Rlz.t.fsh
       Rlz.t.fsh1<-Rlz.t.fsh-Year1+1
-      tmp<-read.fit(filename)
+      tmp<-read.fit(filename,rep=rep)
       yq<-lapply(tmp$dates,function(x){x[,1]+(x[,2]%/%3+1)/4-0.125})
 #cat("L50\n");browser()
       catchtotalByFsh<-VecFsh %>% sapply(function(i){
@@ -113,11 +113,8 @@ plot_overall.composition.fit.gg = function(filename="length.fit",
     if(nSp>1 & fit){
       for(i in 1:Nfsh){
         if(catchtotalByFsh[i]>0){
-          dat.pred[,i]<-if(i<=Nfsh/2 ){
-            dat.pred[,i]*catchtotalByFsh[i]/sum(catchtotalByFsh[c(i,i+Nfsh/2)])*2
-          }else{
-            dat.pred[,i]*catchtotalByFsh[i]/sum(catchtotalByFsh[c(i,i-Nfsh/2)])*2
-          }
+        	sgn<-ifelse(i<=Nfsh/2,1,-1)
+        	dat.pred[,i]<-dat.pred[,i]*catchtotalByFsh[i]/sum(catchtotalByFsh[c(i,i+sgn*Nfsh/2)])*2
         }
       }
     }
@@ -128,9 +125,12 @@ plot_overall.composition.fit.gg = function(filename="length.fit",
         dat.full <- dat.full[,match(keep.fsh,names(dat.full))]
         # If true only fisheries with data will be plotted, if false then will be plotted as zeros
     }
-
+		cat("L135 in plot_overall.composition.fit.gg.r\n") #;browser()
     plot.dat <- melt(dat.full, id=c("set","sizebin"))
-		if(verbose)cat("L133\n") #;browser()
+    plot.dat <- dat.full %>% unite(col="key",!!!syms(c("set","sizebin")),sep="_") %>%
+    										gather(key="bin",value="frq",-!!sym("key")) %>%
+    													  separate(col=!!sym("key"),into=c("set","sizebin"))
+		if(verbose)cat("L140\n") ;browser()
     names(plot.dat)[3:4] <- c("Fishery","freq")   # Format data into the shape required for ggplot
     if(nSp==1){
         plot.dat$Fishery <- factor(fleetlabs[as.numeric(paste(plot.dat$Fishery))], levels = fleetlabs)
