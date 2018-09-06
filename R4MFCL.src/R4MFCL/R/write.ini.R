@@ -1,4 +1,5 @@
 #' @importFrom utils write.table
+#' @export
 write.ini <-
 function(ini.file,ini.obj, old.format=FALSE) {
 ##============================================================================
