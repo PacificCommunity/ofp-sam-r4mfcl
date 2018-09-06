@@ -19,7 +19,7 @@ function(par.file,verbose=TRUE,DEBUG=FALSE,nfisheries=NA,nReg=NA) {
   datfromstr<-function (datstring)
   {
     out<-if(length(datstring)>1){
-      datstring %>% lapply(.,"trimws")  %>% strsplit(split = "[[:blank:]]+") %>% sapply(.,"as.numeric",USE.NAMES =FALSE,simplify="array") %>%t()
+      datstring %>% sapply(.,"trimws")  %>% strsplit(split = "[[:blank:]]+") %>% sapply(.,"as.numeric",USE.NAMES =FALSE,simplify="array") %>%t()
     }else{
       datstring %>% trimws() %>% strsplit(split = "[[:blank:]]+") %>% "[["(1) %>% as.numeric()
     }
@@ -52,12 +52,13 @@ function(par.file,verbose=TRUE,DEBUG=FALSE,nfisheries=NA,nReg=NA) {
   if(is.na(nfisheries)){
   	pos2<-grep("tag flags",a) ;
   	if(length(pos2)==0)   pos2 <- grep("# region control flags",a) 
-  	nfisheries<-pos2-1-(pos1+1)
+  	nfisheries<-pos2-1-pos1  # 2018/09/06 Corrected to cound nfisheries nfisheries<-pos2-1-(pos1+1)
   }else{
   	pos2<-pos1+nfisheries-1
   }
+  if(verbose)cat("L59 ;")  ; if(DEBUG)browser()
   ffl<-datfromstr(a[(pos1+1):(pos2-1)])
-  if(verbose)cat("L60 ;")  ; if(DEBUG)browser()
+  if(verbose)cat("L61 ;")  ; if(DEBUG)browser()
 #  cat("L21 read.par.r ;");browser()
  # nfisheries <- dim(ffl)[1]
   ## check if selectivity time block is implemented
