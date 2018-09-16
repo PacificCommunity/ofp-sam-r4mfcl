@@ -1,3 +1,6 @@
+#' Function to read *.tag file
+#' @param tagfile file name of *.tag file
+#' @export
 read.tag <- function(tagfile) {
   # by Simon Hoyle June 2008
   # SDH 10 Jul 2010 stop attaching hd
