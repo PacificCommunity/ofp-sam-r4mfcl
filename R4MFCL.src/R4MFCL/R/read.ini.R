@@ -27,6 +27,8 @@ read.ini <- function(ini.file,nSp=NA,nReg=2,mpy=4,incidence=c(1,1),verbose=TRUE)
   	if(verbose)print(dir())
   	stop("Can not find ", ini.file)
   }
+  a<-sapply(a,"trimws") # YT 2018/09/17 "trim" each line
+  a<-a[a!=""] # YT 2018/09/17 Remove blank lines 
   hpts <- grep("^#",a)
   ini.obj <- list()
 
@@ -64,7 +66,8 @@ read.ini <- function(ini.file,nSp=NA,nReg=2,mpy=4,incidence=c(1,1),verbose=TRUE)
     pos <- grep("# tag_fish_rep penalty",a,ignore.case=T)+1
     if(length(pos)>0) {
       p2 <- hpts[hpts>pos][1]-1
-      ini.obj$reppenalty <- matrix(scanText(a[pos:p2],what=0),byrow=TRUE,nrow=p2+1-pos)
+      nrow<- p2+1-pos-length(grep(a[pos:p2],pattern="^$"))
+      ini.obj$reppenalty <- matrix(scanText(a[pos:p2],what=0),byrow=TRUE,nrow=nrow)
     }
 
     pos <- grep("# sv\\(29\\)",a)+1
