@@ -252,7 +252,7 @@ read.ini1002<-function(ini.file,nSp=2,nReg=2,mpy=4,incidence=c(1,1),verbose=TRUE
       ini.obj$steepness<- rbind(ini.obj$steepness,allnums[i]);i<-i+1
     }
   }
-	ini.obj$sv29<-ini.obj$steepness<
+	ini.obj$sv29<-ini.obj$steepness
   ini.obj$sdLatA   <- allnums[i+1:3-1];i<-i+3
   ini.obj$Ldep_sd  <- allnums[i+1:3-1];i<-i+3
   if(nSp>1){

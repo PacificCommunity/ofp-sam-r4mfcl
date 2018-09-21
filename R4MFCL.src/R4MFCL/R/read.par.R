@@ -121,7 +121,9 @@ function(par.file,verbose=TRUE,DEBUG=FALSE,nfisheries=NA,nReg=NA) {
     pos1<-grep("# species flags",a)+1
     datfromstr(a[pos1+0:1])
   }else{NULL}
-  pos1 <- grep("# percent maturity", a)[1]+1; maturity <- as.numeric(unlist(strsplit(trimws(a[pos1]),split="[[:blank:]]+"))[-1])
+  pos1 <- grep("# percent maturity", a)[1]+1
+  #cat("L125\n");browser()
+  maturity <- as.numeric(unlist(strsplit(trimws(a[pos1]),split="[[:blank:]]+")))
   if(nSp>1){
     mp.maturity <- datfromstr(a[pos1+2]) # as.numeric(unlist(strsplit(a[pos1+2],split="[[:blank:]]+"))[-1])
   }
@@ -145,7 +147,7 @@ function(par.file,verbose=TRUE,DEBUG=FALSE,nfisheries=NA,nReg=NA) {
   pos1 <- grep("# effort deviation coefficients", a)[1]; pos1b <- pos1+nfisheries; effdevcoffs <- datfromstr(a[(pos1+1):pos1b]) #strsplit(a[(pos1+1):pos1b],split="[[:blank:]]+")
   rowMax <- max(sapply(effdevcoffs, length))
   effdevcoffs <- do.call(rbind, lapply(effdevcoffs, function(x){ length(x) <- rowMax; as.numeric(x[2:rowMax]) }))
-  pos1 <- grep("# average catchability coefficients", a)[1]+3; meanqs <- as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1])
+  pos1 <- grep("# average catchability coefficients", a)[1]+3; meanqs <- as.numeric(unlist(strsplit(trimws(a[pos1]),split="[[:blank:]]+")))
   pos1 <- grep("# Objective function value", a)[1]; obj <- as.double(a[pos1 + 1])
   pos1 <- grep("# The number of parameters", a)[1]; npars <- as.double(a[pos1 + 1])
   pos1 <- grep("# Maximum magnitude gradient value", a)[1]; gradient <- as.double(a[pos1 + 1])
