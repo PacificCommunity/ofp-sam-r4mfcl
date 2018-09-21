@@ -6,8 +6,11 @@
 #' @param mpy number of movement per year
 #' @param incidence size of incidence matrix
 #' @param  verbose make make verbose
+#' @param nlint number of length intervals specified in frq file. This will be used if ini version >1002 for maturity at length 
+#' @param ntag.groups number of tag release groups 
+#' @param nfl number of fleet defined in frq file . This is necessary if ini file version >=1002 and ntag.groups>0
 #' @export
-read.ini <- function(ini.file,nSp=NA,nReg=2,mpy=4,incidence=c(1,1),verbose=TRUE)
+read.ini <- function(ini.file,nSp=NA,nReg=2,mpy=4,incidence=c(1,1),verbose=TRUE,nlint=NA,ntag.groups=0,nfl=NA)
 ##============================================================================
 ## by Simon Hoyle June 2008
 ##  revised, PK June 2011
@@ -37,7 +40,7 @@ read.ini <- function(ini.file,nSp=NA,nReg=2,mpy=4,incidence=c(1,1),verbose=TRUE)
   if(length(pos)==0) ini.obj$version=0
   else ini.obj$version <- as.numeric(a[pos]) # scanText(a[pos],what=0)
   if(ini.obj$version>1001){
-    ini.obj<-read.ini1002(ini.file=ini.file,nSp=nSp,nReg=nReg,mpy=mpy,incidence=incidence)
+    ini.obj<-read.ini1002(ini.file=ini.file,nSp=nSp,nReg=nReg,mpy=mpy,incidence=incidence,nlint=nlint)
   }else{
     pos <- grep("# tag fish rep *$",a,ignore.case=T)+1
     if(length(pos)>0) {
@@ -121,7 +124,7 @@ read.ini <- function(ini.file,nSp=NA,nReg=2,mpy=4,incidence=c(1,1),verbose=TRUE)
 
 #### Function to read ini files with version==1002
 
-read.ini1002<-function(ini.file,nSp=2,nReg=2,mpy=4,incidence=c(1,1),verbose=TRUE){
+read.ini1002<-function(ini.file,nSp=2,nReg=2,mpy=4,incidence=c(1,1),verbose=TRUE,nlint=NA,ntag.groups=0,nfl=NA){
 
   if(verbose)cat("running read.ini1002\n")
   dat<-readLines(ini.file,warn=FALSE)
@@ -160,6 +163,48 @@ read.ini1002<-function(ini.file,nSp=2,nReg=2,mpy=4,incidence=c(1,1),verbose=TRUE
 #  cat("L129\n");browser()
   ini.obj$nages<-if(nSp==1){allnums[i]}else{allnums[i+1:nSp-1]};i<-i+nSp
   nages<-ini.obj$nages
+## tag related inputs
+	if(ntag.groups>0){
+		ini.obj$tag.fish.rep <- allnums[i+1:(nfl*ntag.groups)-1];i<-i+nfl*ntag.groups
+		ini.obj$tag.fish.rep <- matrix(data=ini.obj$tag.fish.rep,byrow=TRUE,nrow=ntag.groups)
+    #pos <- grep("# tag fish rep *$",a,ignore.case=T)+1
+    #if(length(pos)>0) {
+    #  p2 <- hpts[hpts>pos][1]-1
+    #  ini.obj$tag.fish.rep <- matrix(scanText(a[pos:p2],what=0),byrow=TRUE,nrow=p2+1-pos)
+    #}
+		ini.obj$grpflags <- allnums[i+1:(nfl*ntag.groups)-1];i<-i+nfl*ntag.groups
+		ini.obj$grpflags <- matrix(data=ini.obj$tag.fish.rep,byrow=TRUE,nrow=ntag.groups)
+    #pos <- grep("# tag fish rep group flags",a,ignore.case=T)+1
+    #if(length(pos)>0) {
+    #  p2 <- hpts[hpts>pos][1]-1
+    #  ini.obj$grpflags <- matrix(scanText(a[pos:p2],what=0),byrow=TRUE,nrow=p2+1-pos)
+    #}
+		ini.obj$activeflags <- allnums[i+1:(nfl*ntag.groups)-1];i<-i+nfl*ntag.groups
+		ini.obj$activeflags <- matrix(data=ini.obj$tag.fish.rep,byrow=TRUE,nrow=ntag.groups)
+    #pos <- grep("# tag_fish_rep active flags",a,ignore.case=T)+1
+    #if(length(pos)>0) {
+    #  p2 <- hpts[hpts>pos][1]-1
+    #  ini.obj$activeflags <- matrix(scanText(a[pos:p2],what=0),byrow=TRUE,nrow=p2+1-pos)
+    #}
+
+		ini.obj$reptarget <- allnums[i+1:(nfl*ntag.groups)-1];i<-i+nfl*ntag.groups
+		ini.obj$reptarget <- matrix(data=ini.obj$tag.fish.rep,byrow=TRUE,nrow=ntag.groups)
+    #pos <- grep("# tag_fish_rep target",a,ignore.case=T)+1
+    #if(length(pos)>0) {
+    #  p2 <- hpts[hpts>pos][1]-1
+    #  ini.obj$reptarget <- matrix(scanText(a[pos:p2],what=0),byrow=TRUE,nrow=p2+1-pos)
+    #}
+
+		ini.obj$reppenalty <- allnums[i+1:(nfl*ntag.groups)-1];i<-i+nfl*ntag.groups
+		ini.obj$reppenalty <- matrix(data=ini.obj$tag.fish.rep,byrow=TRUE,nrow=ntag.groups)
+    #pos <- grep("# tag_fish_rep penalty",a,ignore.case=T)+1
+    #if(length(pos)>0) {
+    #  p2 <- hpts[hpts>pos][1]-1
+    #  nrow<- p2+1-pos-length(grep(a[pos:p2],pattern="^$"))
+    #  ini.obj$reppenalty <- matrix(scanText(a[pos:p2],what=0),byrow=TRUE,nrow=nrow)
+    #}
+	}
+###
   ini.obj$reg.flg<-matrix(data=allnums[i+1:(nSp*nReg*10)-1],nrow=10,byrow=TRUE);i<-i+nSp*nReg*10
   ini.obj$sp.flg<-if(nSp==1){allnums[i+1:10-1]}else{matrix(data=allnums[i+1:(10*nSp)-1],ncol=10,byrow=TRUE)};i<-i+10*nSp
   ini.obj$mat<-if(nSp==1){
@@ -180,6 +225,13 @@ read.ini1002<-function(ini.file,nSp=2,nReg=2,mpy=4,incidence=c(1,1),verbose=TRUE
   ini.obj$age_pars <-matrix(data=allnums[i+1:(nages1*10*nSp)-1],byrow=TRUE,ncol=nages1);i<-i+nages1*10*nSp
   ini.obj$recbyreg <-if(nSp==1){allnums[i+1:nReg-1]}else{matrix(data=allnums[i+1:(nReg*nSp)-1],byrow=TRUE,ncol=nReg)};i<-i+nReg*nSp
 #  cat("L149\n");browser()
+	if(ini.obj$version>1002 & is.na(nlint))stop("value for nlint is needed for ini file with version>=1003")
+	if(ini.obj$version>1002)ini.obj$matl<-if(nSp==1){
+      allnums[i+1:nlint-1]
+    }else{
+      matrix(data=allnums[i+1:(nlint*nSp)-1],nrow=nSp,byrow=TRUE)
+    }
+  i<-i+nSp*nlint
   ini.obj$VBLmin   <- allnums[i+1:3-1];i<-i+3
   ini.obj$VBLmax   <- allnums[i+1:3-1];i<-i+3
   ini.obj$VBK      <- allnums[i+1:3-1];i<-i+3
@@ -200,7 +252,7 @@ read.ini1002<-function(ini.file,nSp=2,nReg=2,mpy=4,incidence=c(1,1),verbose=TRUE
       ini.obj$steepness<- rbind(ini.obj$steepness,allnums[i]);i<-i+1
     }
   }
-
+	ini.obj$sv29<-ini.obj$steepness<
   ini.obj$sdLatA   <- allnums[i+1:3-1];i<-i+3
   ini.obj$Ldep_sd  <- allnums[i+1:3-1];i<-i+3
   if(nSp>1){
