@@ -192,11 +192,12 @@ nrow<-if(version>=1052){
 }else{
   20
 }
-if(verbose)cat("L192 ;") #;browser()
+if(verbose)cat("L195 ;") #;browser()
 fish_pars<- datfromstr(a[pos1+1:nrow-1])
-if(verbose)cat("L194 ; ") #;browser()
-if(version>1050){
-pos1<-grep("# species parameters",a);sp_pars<-datfromstr(a[pos1+1:20+1])
+if(verbose)cat("L197 ; ") #;browser()
+if(version>1051){ 
+#  cat("L199\n");browser()
+  pos1<-grep("# species parameters",a);sp_pars<-datfromstr(a[pos1+1:20+1])
 }else{
 
 }

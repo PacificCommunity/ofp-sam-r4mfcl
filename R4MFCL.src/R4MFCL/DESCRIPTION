@@ -28,4 +28,4 @@ Date: 2017-12-18
 Suggests: mapproj
 LazyLoad: Yes
 LazyData: No
-RoxygenNote: 6.0.1
+RoxygenNote: 6.1.0

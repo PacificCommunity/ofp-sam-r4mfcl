@@ -253,6 +253,7 @@ readMFCLFrq<-function(frqfile,verbose=TRUE,convert4to6=TRUE){
   frqlist<-add_elem(frqlist,"RecMonth")
   frqlist<-add_elem(frqlist,"frqVersion")
   frqVersion<-frqlist$frqVersion
+  if(verbose)cat("L256 frqVersion : ",frqVersion,"\n")
   if(frqlist$NumSpecies==0 )frqlist$NumSpecies<-1
   NumSpecies<-frqlist$NumSpecies
 # .frq file version number – indicates for which version of MULTIFAN-CL the data
