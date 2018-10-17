@@ -16,6 +16,7 @@
 read.par <-
 function(par.file,verbose=TRUE,DEBUG=FALSE,nfisheries=NA,nReg=NA) {
 #  require(magrittr)
+  if(0){
   datfromstr<-function (datstring)
   {
     out<-if(length(datstring)>1){
@@ -25,6 +26,7 @@ function(par.file,verbose=TRUE,DEBUG=FALSE,nfisheries=NA,nReg=NA) {
     }
     if(length(datstring)>1)dimnames(out)[1:length(datstring)]<-NULL
     return(out)
+  }
   }
   cat("Starting read.par ; file name of par.file is ",par.file,"\n")
   a <- readLines(par.file)
@@ -146,8 +148,9 @@ function(par.file,verbose=TRUE,DEBUG=FALSE,nfisheries=NA,nReg=NA) {
   if(nSp>1){mp.Mbase<-as.double(a[pos1+2])}
   if(verbose)cat("L120 ; ")  #;browser()
   pos1 <- grep("# effort deviation coefficients", a)[1]; pos1b <- pos1+nfisheries; effdevcoffs <- datfromstr(a[(pos1+1):pos1b]) #strsplit(a[(pos1+1):pos1b],split="[[:blank:]]+")
-  rowMax <- max(sapply(effdevcoffs, length))
-  effdevcoffs <- do.call(rbind, lapply(effdevcoffs, function(x){ length(x) <- rowMax; as.numeric(x[2:rowMax]) }))
+  # YT 2018/10/17 Following two lines became unnecessar 
+  #rowMax <- max(sapply(effdevcoffs, length))
+  #effdevcoffs <- do.call(rbind, lapply(effdevcoffs, function(x){ length(x) <- rowMax; as.numeric(x[2:rowMax]) }))
   pos1 <- grep("# average catchability coefficients", a)[1]+3; meanqs <- as.numeric(unlist(strsplit(trimws(a[pos1]),split="[[:blank:]]+")))
   pos1 <- grep("# Objective function value", a)[1]; obj <- as.double(a[pos1 + 1])
   pos1 <- grep("# The number of parameters", a)[1]; npars <- as.double(a[pos1 + 1])
@@ -206,7 +209,7 @@ if(version>1051){
 if(length(grep("# The grouped_catch_dev_coffs flag",a))>0){
 	pos1<-grep("# The grouped_catch_dev_coffs",a)[2]
   nrow<-length(unique(ffl[,29]))
-  cat("L209\n");browser()
+  #cat("L209\n");browser()
 	grouped_catch_dev_coffs<-datfromstr(a[pos1+1:nrow])
 }else{
   grouped_catch_dev_coffs<-NULL

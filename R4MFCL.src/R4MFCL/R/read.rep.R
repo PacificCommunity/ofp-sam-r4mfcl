@@ -16,6 +16,7 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
   # SDH September 2013 - added yrs and alltimes. Won't cover all options, but will save calculating each time they're needed.
   # YT  Feb./March 2017 Update for multi-species/sex model
 	cat("Starting read.rep ; ")
+  if(0){
   datfromstr<-function (datstring,transpose=FALSE)
   {
  #   print(datstring)
@@ -34,6 +35,7 @@ read.rep <- function(rep.file,verbose=FALSE,DEBUG=FALSE) {
       datstring %>% trimws() %>% strsplit(split = "[[:blank:]]+") %>% "[["(1) %>% as.numeric()
     }
     return(out)
+  }
   }
   charVec2numVec<-function(x){
   	if(length(x)>0)
