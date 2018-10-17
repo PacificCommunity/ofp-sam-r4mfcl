@@ -23,6 +23,7 @@ function(par.file,verbose=TRUE,DEBUG=FALSE,nfisheries=NA,nReg=NA) {
     }else{
       datstring %>% trimws() %>% strsplit(split = "[[:blank:]]+") %>% "[["(1) %>% as.numeric()
     }
+    if(length(datstring)>1)dimnames(out)[1:length(datstring)]<-NULL
     return(out)
   }
   cat("Starting read.par ; file name of par.file is ",par.file,"\n")
@@ -203,9 +204,12 @@ if(version>1051){
 }
 ##
 if(length(grep("# The grouped_catch_dev_coffs flag",a))>0){
-	pos1<-grep("# The grouped_catch_dev_coffs flag",a)
+	pos1<-grep("# The grouped_catch_dev_coffs",a)[2]
   nrow<-length(unique(ffl[,29]))
+  cat("L209\n");browser()
 	grouped_catch_dev_coffs<-datfromstr(a[pos1+1:nrow])
+}else{
+  grouped_catch_dev_coffs<-NULL
 }
 
 if(verbose)cat("L200 ; ") #;browser()
@@ -295,6 +299,7 @@ if(verbose)cat("L200 ; ") #;browser()
     par.obj$mp.M_offsets<-mp.M_offsets
     par.obj$mp.gr_offsets<-mp.gr_offsets
   }
+  par.obj$grouped_catch_dev_coffs<-grouped_catch_dev_coffs
   if(verbose)cat(" finished read.par\n")
   return(invisible(par.obj))
 }
