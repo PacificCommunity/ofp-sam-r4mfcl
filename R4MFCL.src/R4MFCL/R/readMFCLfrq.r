@@ -256,10 +256,10 @@ readMFCLFrq<-function(frqfile,verbose=TRUE,convert4to6=TRUE){
   if(verbose)cat("L256 frqVersion : ",frqVersion,"\n")
   if(frqlist$NumSpecies==0 )frqlist$NumSpecies<-1
   NumSpecies<-frqlist$NumSpecies
-# .frq file version number – indicates for which version of MULTIFAN-CL the data
-#  files were constructed (intended for backward compatibility, but in practice causes
-#  MULTIFAN-CL to announce “Die yuppie scum” and quit when it encounters a .frq
-#  file that is incompatible with the MULTIFAN-CL code version)
+  #  .frq file version number indicates for which version of MULTIFAN-CL the data
+  #  files were constructed (intended for backward compatibility, but in practice causes
+  #  MULTIFAN-CL to announce "Die yuppie scum" and quit when it encounters a .frq
+  #  file that is incompatible with the MULTIFAN-CL code version)
   if(frqlist$frqVersion %in% c(8,9)){
     multisexsp<-TRUE
   }else{
