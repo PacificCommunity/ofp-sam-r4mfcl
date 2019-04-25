@@ -1,16 +1,18 @@
-#' Function to write frq file
-#'
-#' @param frqfile file name of frq file to write
-#' @param frq.obj ourputs from read.frq
-#'
-#' @importFrom utils write.table
-#' @export
+# #' Function to write frq file
+# #'
+# #' @param frqfile file name of frq file to write
+# #' @param frq.obj ourputs from read.frq
+# #'
+# #' @importFrom utils write.table
+# #' @export
 write.frq <- function(frqfile,frq.obj) {
 ##============================================================================
 ## by Simon Hoyle June 2008
 ## fishery information is in $fish[] and $mat[,4]
 ## SDH 27/6/09 change for frq version 6
 ##  enhanced  PK 13/06/2011
+## NDD 25/04/2019: fixed bug where extra "-1" was being added between effort dev column and first lf observation
+## NDD 25/04/2019: corrects for old frqs that have all 0s in the composition data instead of -1 when both lf and wf exist
 ##============================================================================
     x<-frq.obj
     version<-x$version
@@ -78,9 +80,9 @@ write.frq <- function(frqfile,frq.obj) {
   }else if(version>=6 & version <8 ){
     8
   }else if(version==8 ){
-    8+msp*3
+    8+nsp*3
   }else if(version==9 ){
-    8+msp*4
+    8+nsp*4
   }else{
     stop("frq version is ",x$struct$te)
   } 
@@ -93,17 +95,26 @@ write.frq <- function(frqfile,frq.obj) {
         matout[i] <- paste(" ",m[i,-(1:(poslf-1))],collapse=" ")
       }
     }
-  }
-  else if (lfint!=0 && wfint!=0) {
+  } else if (lfint!=0 && wfint!=0) {
     for (i in 1:nrow(m)) {
-      if (m[i,poslf]==-1 || sum(m[i,poslf+1:lfint-1]==0 )) {matout[i] <- " -1" ; nlf <- poslf+1}
-      else {matout[i] <- paste(" ",m[i,poslf:(poslf+lfint-1)],collapse=" "); nlf <- poslf+lfint}
-      if(m[i,nlf]==-1 || sum(m[i,nlf+1:wfint-1])==0) matout[i] <- paste(matout[i]," -1")
-      else matout[i] <- paste(matout[i]," ",paste(m[i,(nlf):(nlf+wfint-1)],collapse=" ")) 
-      ##struc <- paste(m[i,7:(poslf-1)],collapse=" ")
-      ##if (m[i,poslf]==-1) nlf <- 1 else nlf <- x$dl$lfint
-      ##if (m[i,poslf+nlf]==-1) nwf <- 1 else nwf <- x$dl$wfint
-      ##matout[i] <- paste(" ",c(struc, m[i,poslf:(poslf+nlf-1)], m[i,(poslf+nlf):(poslf+nlf+nwf-1)]),collapse=" ")
+      if (m[i,poslf]==-1 || sum(m[i,poslf+1:lfint-1])==0) 
+      {
+        matout[i] <- " -1"
+        if(m[i,poslf]==-1)
+        {
+          nlf <- poslf+1
+        } else {
+          nlf <- poslf+lfint
+        }
+      } else {
+        matout[i] <- paste(" ",m[i,poslf:(poslf+lfint-1)],collapse=" "); nlf <- poslf+lfint
+      }
+      if(m[i,nlf]==-1 || sum(m[i,nlf+1:wfint-1])==0)
+      {
+        matout[i] <- paste(matout[i]," -1")
+      } else {
+        matout[i] <- paste(matout[i]," ",paste(m[i,(nlf):(nlf+wfint-1)],collapse=" ")) 
+      }
     }
   }
   writeLines(top,frqfile)
