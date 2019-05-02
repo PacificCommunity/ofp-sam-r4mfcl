@@ -1,5 +1,5 @@
-rep.file <- "P:/skulls/sppsex/Testing/2012-04-29/msm_sngl_eval/plot-junk5.par.rep"
-rep2.file <- "P:/skulls/sppsex/cutbet_replct/age28_bet/plot-12.par.rep"
+# rep.file <- "P:/skulls/sppsex/Testing/2012-04-29/msm_sngl_eval/plot-junk5.par.rep"
+# rep2.file <- "P:/skulls/sppsex/cutbet_replct/age28_bet/plot-12.par.rep"
 
 
 read.mult.rep <- function(rep.file) {
