@@ -1,4 +1,4 @@
-rep.file <- "I:/assessments/Pop dy modeling/MFCL/R functions/testing/200201plot.rep"
+# rep.file <- "I:/assessments/Pop dy modeling/MFCL/R functions/testing/200201plot.rep"
 
 read_nmd.rep <- function(rep.file) {
   # Simon Hoyle June 2008
