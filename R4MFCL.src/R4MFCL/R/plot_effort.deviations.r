@@ -12,8 +12,8 @@
 #' @importFrom ggplot2 ggplot facet_wrap geom_point aes_string geom_abline stat_smooth theme element_blank
 #' @importFrom ggplot2 xlab ylab ylim theme_set theme_bw
 #' @export
-plot_effort.deviations <- function(plotrepfile, 
-                                   frqfile, 
+plot_effort.deviations <- function(plotrepfile,
+                                   frqfile,
                                    fleetlabs,
                                    ylimit=c(-2,2), fishplot=1:33, nclm = 4, spandef = 0.8,
                                    ylab="Effort deviations")
@@ -38,15 +38,15 @@ plot_effort.deviations <- function(plotrepfile,
   for(i in fishplot) {
 
   j <- j + 1
-  effort <- if(frq$version<=6){ # YT 2018-07-05 check frq version since version 9 have more columns before effort
+  effort <- if(frqfile$version<=6){ # YT 2018-07-05 check frq version since version 9 have more columns before effort
   	frqfile$mat[,"effort"][frqfile$mat[,"fishery"]==i]
-  	}else if(frq$version==9){
-  		if(is.null(frq$struct$nsp)| frq$struct$nsp==1){
+  	}else if(frqfile$version==9){
+  		if(is.null(frqfile$struct$nsp)| frqfile$struct$nsp==1){
   			frqfile$mat[,"effort"][frqfile$mat[,"fishery"]==i]
   		}else{
   			frqfile$mat[,"effort"][frqfile$mat[,"fishery"]==i & frqfile$mat[,"Sex1"]==1]
   		}
-  	}else{ 
+  	}else{
   		stop("frq version is ",frq$version," I do not know how to dealwith")
   	}
   year <- year.tmp[i,!is.na(year.tmp[i,])]
@@ -54,9 +54,9 @@ plot_effort.deviations <- function(plotrepfile,
   co <- co.tmp[i,!is.na(co.tmp[i,])]
   res <- log(co/cp)
   res[effort==-1] <- NA
-  
+
   tmpdat <- data.frame(year = year, res = res, fshnm = labs[i])
-  
+
   plotdat <- rbind(plotdat, tmpdat)
 
   }

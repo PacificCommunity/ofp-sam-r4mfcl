@@ -1,20 +1,20 @@
 #fishlab.swo<-c("DW_1N","DW_1C","DW_1S","AU_1","SP_1","Otrher_1","DW_2N","DW_2C_pre","DW_2C_post","DW_2S",
 #    "NZ_2","SP_2","Other_2N","Other_2C")
 #' Making plot of fit of agrreagted size composition data by fishery
-#' 
+#'
 #' @param filename string file name of **.fit file, either length.fit or weight.fit
 #' @param xlabel string, caption of x-axis
 #' @param remove.fsh logical or string if TRUE or "TRUE", only fishery with data be plotted
 #' @param VecFsh vector of fishery number, used
 #' @param Ncols number of columns of plot in one page
-#' @param line.wdth width of lines 
+#' @param line.wdth width of lines
 #' @param fleetlabs vector of string, names of fishery
 #' @param lincol color of line
 #' @param fillcol color of aread filled with color
-#' @param nbrks number of greaks 
+#' @param nbrks number of greaks
 #' @param nSp number of species
-#' @param aggregate LOGICAL  
-#' @param dir character either "h" or "v" if "h" plot be made horizontal order 
+#' @param aggregate LOGICAL
+#' @param dir character either "h" or "v" if "h" plot be made horizontal order
 #' @param plot LOGICAL if plot be made to grap
 #' @param verbose LOGICAL if making verbose outputs
 #' @param fit LOGICAL if making overlaying plot of fit or not
@@ -30,22 +30,22 @@
 #' @importFrom stats na.omit
 #' @importFrom rlang sym syms
 #' @export
-#' 
-plot_overall.composition.fit.gg = function(filename="length.fit", 
-                                        xlabel="Length (cm)", 
+#'
+plot_overall.composition.fit.gg = function(filename="length.fit",
+                                        xlabel="Length (cm)",
                                         remove.fsh=TRUE,
-                                        VecFsh=NA, 
-                                        Ncols=4, 
-                                        line.wdth=1.2, 
-                                        fleetlabs, 
+                                        VecFsh=NA,
+                                        Ncols=4,
+                                        line.wdth=1.2,
+                                        fleetlabs,
                                         lincol="#FF3333",
-                                        fillcol="#6699CC", 
+                                        fillcol="#6699CC",
                                         nbrks=3,
                                         nSp=1,
                                         aggregate=FALSE,
                                         dir="h",
                                         plot=TRUE,
-                                        verbose=TRUE,
+                                        verbose=FALSE,
                                         fit=TRUE,
                                         rep=NULL,
                                         ylabel="Samples")
@@ -96,7 +96,7 @@ plot_overall.composition.fit.gg = function(filename="length.fit",
     dat.obs <- as.data.frame(t(read.table(text=dat.obs, nrows=length(LineKeep))))   # Get it in the right format and transpose
     names(dat.obs) <- VecFsh   # Match the fishery names to the columns
     #cat("L98\n");browser()
-    keep.fsh = c(na.omit(ifelse(apply(dat.obs,2,sum) > 0, 
+    keep.fsh = c(na.omit(ifelse(apply(dat.obs,2,sum) > 0,
     	names(dat.obs)[names(dat.obs) %in% paste(VecFsh)] , NA)), "sizebin", "set")   # Used to identify which fisheries have data - if all zeros then removed later on if remove.fsh == "TRUE"
 #    cat("L49\n");browser()
     dat.obs$sizebin <- sizebins   # Add sizebins - becomes the x axis later on
@@ -130,16 +130,16 @@ plot_overall.composition.fit.gg = function(filename="length.fit",
     plot.dat <- dat.full %>% unite(col="key",!!!syms(c("set","sizebin")),sep="_") %>%
     										gather(key="bin",value="frq",-!!sym("key")) %>%
     													  separate(col=!!sym("key"),into=c("set","sizebin"))
-		if(verbose)cat("L140\n") ;browser()
+		if(verbose){cat("L140\n") ;browser()}
     names(plot.dat)[3:4] <- c("Fishery","freq")   # Format data into the shape required for ggplot
     if(nSp==1){
         plot.dat$Fishery <- factor(fleetlabs[as.numeric(paste(plot.dat$Fishery))], levels = fleetlabs)
     }else{
-      plot.dat %>% mutate(Sp=fishSpPtr[as.numeric(as.character(!!sym("Fishery")))]) %>% 
+      plot.dat %>% mutate(Sp=fishSpPtr[as.numeric(as.character(!!sym("Fishery")))]) %>%
         mutate(Gender=if_else(eval_tidy(parse_expr("Sp==1")),"Male","Female")) %>%
         mutate(Fishery.num=!!sym("as.numeric(as.character(Fishery))")) %>%
         mutate(tmp=!!sym("if_else(Fishery.num<=Nfsh/2,Fishery.num,Fishery.num-Nfsh/2)")) %>%
-        mutate(Fishery.tmp=if(Nfsh/2<10){tmp}else{str_pad(tmp,width=2,pad="0")}) %>% 
+        mutate(Fishery.tmp=if(Nfsh/2<10){tmp}else{str_pad(tmp,width=2,pad="0")}) %>%
         select(-!!sym("tmp")) %>%
         mutate(Fishery2=fleetlabs[ifelse(!!sym("Gender")=="Male",!!sym("Fishery.num"),!!sym("Fishery.num-Nfsh/2"))]) %>%
         unite(col="Fishery3",!!!syms(c("Fishery.tmp","Fishery2")),remove=TRUE) %>% select(-!!sym("Fishery"))  %>%

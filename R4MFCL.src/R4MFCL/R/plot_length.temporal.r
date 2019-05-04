@@ -6,11 +6,11 @@
 #' @param Nrows number of rows of plot in one page
 #' @param Ncols number of columns of plot in one page
 #' @param annual LOGICAL if summarize annually, default=FALSE
-#' @param verbose make verbose? 
+#' @param verbose make verbose?
 #' @importFrom graphics lines mtext polygon points segments plot
 #' @export
-plot_length.temporal <- function(frq, 
-                                 tmp.rep, 
+plot_length.temporal <- function(frq,
+                                 tmp.rep,
                                  fleetlabs, YLIM=c(0,200),
                                 Nrows=5, Ncols=3, annual=FALSE,verbose=TRUE)
 {
@@ -18,9 +18,9 @@ plot_length.temporal <- function(frq,
   a <- count.fields(frq, skip=line1+1)
   b <- c(0,cumsum(a))
   dat <- scan(frq, skip=line1+1, comment.char="#")
-  
+
   jnk <- read.frq(frq)
-  
+
 ## as per frq file
   lfint <- jnk$dl$lfint
   lfirst <- jnk$dl$lffirst
@@ -29,7 +29,7 @@ plot_length.temporal <- function(frq,
   wtfirst <- jnk$dl$wffirst
   wint <- jnk$dl$wfwidth
   nfish <- jnk$struct$nf
-  
+
   if(is.na(YLIM[1])){
     tmp <- lfirst + (lfint * lint) - lint
     tmp <- ceiling(tmp/100) * 100
@@ -52,7 +52,7 @@ plot_length.temporal <- function(frq,
   sumlf <- apply(mat[,5:(lfint+4)], 1, sum)
   mat <- mat[sumlf > 0,]
   rm(sumlf)
-  
+
   alb <- as.data.frame(mat)
   if(verbose)cat("L56 ;") #;browser()
   lf <- aggregate.data.frame(alb[,5:(lfint+4)], list(alb[,4]), sum)
@@ -93,7 +93,7 @@ plot_length.temporal <- function(frq,
 ##as per plot.rep
 #tmp.rep <- read.rep("P:/bigeye/2009/Model-runs/stepwise/run10/plot-11x.par.rep")
 
- 
+
   nyears <- tmp.rep$nTimes
   year1 <- tmp.rep$Year1
   nages <- tmp.rep$nAges
@@ -112,9 +112,9 @@ plot_length.temporal <- function(frq,
   if(annual){
     years <- year1+(1:nyears) - 1
   } else {
-    years <- year1+(1:nyears)/4 - 0.25  
+    years <- year1+(1:nyears)/4 - 0.25
   }
-  
+
 #plot
   par(mfrow=c(Nrows,Ncols), mar=c(2,2,2,1), omi=c(0.2,0.3,0,0))
 #  cat("L106\n");browser()
@@ -157,7 +157,7 @@ plot_length.temporal <- function(frq,
       segments(stm3[,1],stm3[,5],stm3[,1],stm3[,6], col="red", lty=1)
       mtext(side=3, fleetlabs[fishery[k]], line=0.2)
     }
-  
+
     if(k==(Nrows*2) | k==(Nrows*4) | k==length(fishery)){
       mtext(side=2, "Fish length (cm)", outer=T, line=1)
     }

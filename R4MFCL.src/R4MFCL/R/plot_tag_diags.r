@@ -1,12 +1,12 @@
 #' Function to make diagnostic plots for tag
-#' 
-# ' @importFrom lattice xyplot
+#'
+#' @importFrom lattice xyplot
 
 plot_tag_diags <- function(tmptagrepfile, parfile, type='logscale'){
 
   if(!(type %in% c('logscale','residuals')))
     stop("type arg must be either 'logscale' or 'residuals'")
-  
+
   tagz <- tmptagrepfile
   tagz$auxdat$id <- paste(tagz$auxdat$rreg, tagz$auxdat$creg, sep='-')
   lyout <- unlist(lapply(list(tagz$auxdat$creg, tagz$auxdat$rreg), function(x){length(unique(x))}))
@@ -22,7 +22,7 @@ plot_tag_diags <- function(tmptagrepfile, parfile, type='logscale'){
   res$pearson.r <- res$resids/res$resids.sd
 
   windows(width=14, height=11)
-  
+
   logscale <- function(res, lyt){
     xyplot(observed+predicted~period|id, data=res,
            type=c('p','l'), pch=c(19,NA), lty=c(0,1), col=c('black', 'black'), ylab='Recaptures (log)', xlab='Period',

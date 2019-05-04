@@ -11,8 +11,9 @@
 #' @param alpha alpha for colors of filled area
 #' @param plot LOGICAL plot be sent to graphics device or not
 #' @param reg.labels labels for each region
-#' @param femaleOnly if TRUE and the model is sex structured and type=="SSB", only female SSB be plotted  
+#' @param femaleOnly if TRUE and the model is sex structured and type=="SSB", only female SSB be plotted
 #' @param scaler scaler to apply (default=1), this is to be used to compare e.g. sex agregated model with 2 sex model
+#' @param verbose LOGICAL if to print out messages
 #' @importFrom ggplot2 ggplot geom_area aes_string guides guide_legend position_stack
 #' @importFrom ggplot2 scale_fill_manual scale_fill_discrete theme labs element_text scale_color_manual scale_color_discrete
 #' @importFrom magrittr "%>%"
@@ -23,7 +24,7 @@
 #'
 plot_biomass.stacked.gg <- function(plotrep, pmain="Run 3d", type="SSB", maxylim=NULL,
                                         lgposi=c(0.9, 0.93), reg.cols = NULL, tit.colour=grey(0.4),reverse=TRUE,fill=TRUE,
-                                        alpha=1,plot=TRUE,reg.labels=NULL,femaleOnly=TRUE,scaler=1)
+                                        alpha=1,plot=TRUE,reg.labels=NULL,femaleOnly=TRUE,scaler=1,verbose=FALSE)
 {
 #  require(ggplot2)
 #  require(tidyr)
@@ -55,13 +56,13 @@ if(length(lgposi)==1 && match(lgposi, c("none", "left", "right", "bottom", "top"
         }else{
           plotrep$AdultBiomass[,which(plotrep$regSpPtr==which(plotrep$spSexPtr==1))]/1000*scaler
         }
- #    cat("L36 in plot.biomass.stacked.gg.r\n");browser()
+if(verbose){ cat("L36 in plot.biomass.stacked.gg.r\n");browser()}
          textlab <- "Spawning potential"
   }else{
     if(type=="REC"){
       B <- if(plotrep$nSp==1 ||  !femaleOnly){
         textlab <- "Recruitment (millions of fish)"
-      	plotrep$Recruitment*tsteps/1000000*scaler	
+      	plotrep$Recruitment*tsteps/1000000*scaler
       }else{
         textlab <- "Female recruitment (millions of fish)"
       	plotrep$Recruitment[,which(plotrep$regSpPtr==which(plotrep$spSexPtr==1))]*tsteps/1000000*scaler
@@ -73,13 +74,13 @@ if(length(lgposi)==1 && match(lgposi, c("none", "left", "right", "bottom", "top"
   }
     ##--- aggregate by year
 if(plotrep$nReg > 1){
-  cat("L76\n") #;browser()
+if(verbose) cat("L76\n") #;browser()
   Bout <- aggregate(B,list(year),mean)
 } else {
   stop("This model only has one region so will look pretty stupid, that's why I'm not going to let you plot it")
 }
 
-cat("L82 in plot_biomass.stacked\n") #;browser()
+if(verbose) cat("L82 in plot_biomass.stacked\n") #;browser()
 titles <- paste("Region",seq(1,(ncol(Bout)-1)))
 if(is.null(maxylim)){
   maxylim <- max(apply(Bout[,2:ncol(Bout)],1,sum))
@@ -97,10 +98,10 @@ for(i in 3:ncol(Bout)){
 }
 dimnames(Bout)[[2]]<-
 dimnames(Bout.stacked)[[2]]<-c("Year",paste0("Region",1:(ncol(Bout.stacked)-1)))
-cat("L76 in plot.biomass.stacked\n") # ;browser()
+if(verbose)cat("L76 in plot.biomass.stacked\n") # ;browser()
 Bout.stacked.long<-Bout %>% gather(key="Region",value="val",-!!sym("Year"))
  Bout.stacked.long %>% ggplot()->plt
-# cat("L79 in plot.biomass.stacked\n");browser()
+if(verbose){ cat("L79 in plot.biomass.stacked\n");browser()}
  plt<-plt+xlab("Year")+ylab(textlab)
 if(fill){
   plt<-plt+geom_area(aes_string(x="Year",y="val",fill="Region"),position=position_stack(reverse=reverse),alpha=alpha)
