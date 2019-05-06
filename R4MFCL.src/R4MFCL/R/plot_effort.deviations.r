@@ -47,7 +47,7 @@ plot_effort.deviations <- function(plotrepfile,
   			frqfile$mat[,"effort"][frqfile$mat[,"fishery"]==i & frqfile$mat[,"Sex1"]==1]
   		}
   	}else{
-  		stop("frq version is ",frq$version," I do not know how to dealwith")
+  		stop("frq version is ",frqfile$version," I do not know how to dealwith")
   	}
   year <- year.tmp[i,!is.na(year.tmp[i,])]
   cp <- cp.tmp[i,!is.na(cp.tmp[i,])]

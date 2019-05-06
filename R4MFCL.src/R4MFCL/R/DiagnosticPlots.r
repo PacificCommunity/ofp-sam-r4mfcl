@@ -8,6 +8,7 @@
 #' @param fishcols optional vector of colors for each fishery type
 #' @param regcols optional vector of colors for each region
 #' @param tagrepfile optional name of tag reporting rate file produced by MFCL not necessary if .tag file does not exist
+#' @param rr.labs vector of labels for reporting rate groups only needed if .tag file present
 #' @importFrom magrittr "%>%"
 #' @importFrom ggplot2 alpha
 #'
@@ -44,12 +45,12 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
     ## make directory for plots if it does not exists
     if (!dir.exists(pltdir)) {dir.create(pltdir)}
     ## check if files exist and if they do then read them in
-    if (file.exists(paste0(spp,'.ini'))){ #.ini
-        readini=read.ini(paste0(spp,'.ini'))
-    } else {stop(paste0("Error: The rundir supplied does not contain a ",spp,".ini file. The rundir supplied was:\n",rundir,"\n"))}
     if (file.exists(paste0(spp,'.frq'))){ #.frq
         readfrq=read.frq(paste0(spp,'.frq'))
     } else {stop(paste0("Error: The rundir supplied does not contain a ",spp,".frq file. The rundir supplied was:\n",rundir,"\n"))}
+    if (file.exists(paste0(spp,'.ini'))){ #.ini
+        readini=read.ini(paste0(spp,'.ini'),readfrq)
+    } else {stop(paste0("Error: The rundir supplied does not contain a ",spp,".ini file. The rundir supplied was:\n",rundir,"\n"))}
     ## The number of fisheries from the frq file
     Nfish=readfrq$struct$nf
     if (!is.null(fdescloc)){            #fdesc
@@ -334,8 +335,7 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
         ##____________________________________________________________________________________________________________
         ## Plot of tagging time at liberty
         windows(2000, 1600)
-        plot.T.at.liberty(tagfl=readtagrep, logscl=FALSE, by.program=FALSE, fac.plot=TRUE, xaxe="Periods at liberty (quarters)",
-                          yaxe="Number of tag returns", ncols=2)
+        plot.T.at.liberty(tagfl=readtagrep, logscl=FALSE, by.program=FALSE, fac.plot=TRUE, xaxe="Periods at liberty (quarters)", yaxe="Number of tag returns", ncols=2)
         savePlot(file=paste0(pltdir, "/T_at_liberty.png"), type="png")
 
         ## On log scale
