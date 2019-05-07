@@ -355,6 +355,11 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
 
         ##____________________________________________________________________________________________________________
         ## Plots of tag reporting rates
+        ## Define tagging reporting rate groups
+        rr.pars <- read.csv(file =  tagrepfile, header = TRUE)
+        rr.labs <- rr.pars$Name
+        if (is.null(rr.labs)) stop("The reporting rate file does not have a column called Name that is used to label the reporting rates in the figures")
+
         windows(2200, 1600)
         plot.tag.reporting.rates(parf=readpar, grp.names = rr.labs, new.style=TRUE, xmargin=NA, nls=6)
         savePlot(file=paste0(pltdir, "/tag_reporting_rates_new.png"), type="png")
@@ -362,13 +367,11 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
         plot.tag.reporting.rates(parf=readpar, grp.names = rr.labs, new.style=FALSE, xmargin=5, nls=6)
         savePlot(file=paste0(pltdir, "/tag_reporting_rates_old.png"), type="png")
         dev.off()
-
+        NTagGrps=max(readini$grpflags)
         ## Over all tag groups
         windows(2000,1200)
         ## Including mixing period tags
-        plot.grouped.tags(tagfl = readtagrep, mix.time = NULL, remove.mix = FALSE, xaxe = "Year", yaxe = "Number of tag returns",
-                          ln.sz = 0.7, ln.col = alpha("black", 0.7), pt.sz = 2, pt.col = alpha("red", 0.7), all.fishies = TRUE,
-                          Ncols = 2, grpnms = fltlabs, keepGrps = c(1,2,4,5))
+        plot.grouped.tags(tagfl = readtagrep, mix.time = NULL, remove.mix = FALSE, xaxe = "Year", yaxe = "Number of tag returns", ln.sz = 0.7, ln.col = alpha("black", 0.7), pt.sz = 2, pt.col = alpha("red", 0.7), all.fishies = TRUE, Ncols = 4, grpnms = rr.labs, keepGrps = 1:NTagGrps,fsh.grps=1:NTagGrps,fac.levels= rr.labs)
         savePlot(file=paste0(pltdir, "/grouped_tags_overall.png"), type="png")
         ## Excluding mixing period tags
         ##    plot.grouped.tags(tagfl = readtagrep, mix.time = 1, remove.mix = TRUE, xaxe = "Year", yaxe = "Number of tag returns",
@@ -379,21 +382,10 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
         ## By tag group
         windows(2300,2400)
         ## Including mixing period tags
-        plot.grouped.tags(tagfl=readtagrep, mix.time=NULL, remove.mix=FALSE, xaxe="Year", yaxe="Number of tag returns",
-                          ln.sz=0.5, ln.col=alpha("black", 0.6), pt.sz=1, pt.col=alpha("red", 0.6), all.fishies=FALSE,
-                          Ncols=2, grpnms=tagrecgrps, keepGrps=c(1,2,4,5,7,8), fsh.grps=c(1,2,3,4,5,5,6,7,8,8,9,10,11,11,12,13,14,15,16,17,17,18,19),
-                          fac.levels=c("P-JPN-1","S-ALL-1","L-ALL-1","P-ALL-2","S-ALL-2","L-ALL-2","P-ALL-5","S-ALL-5"))
-        savePlot(file=paste0(pltdir, "/grouped_tags_bygroup1.png"), type="png")
+        plot.grouped.tags(tagfl = readtagrep, mix.time = NULL, remove.mix = FALSE, xaxe = "Year", yaxe = "Number of tag returns", ln.sz = 0.7, ln.col = alpha("black", 0.7), pt.sz = 0.9, pt.col = alpha("red", 0.7), all.fishies = FALSE, Ncols = 4, grpnms = rr.labs, keepGrps = 1:NTagGrps,fsh.grps=1:NTagGrps,fac.levels= rr.labs)
+        savePlot(file=paste0(pltdir, "/grouped_tag_returns.png"), type="png")
         dev.off()
-
-        windows(2300,2600)
-        plot.grouped.tags(tagfl=readtagrep, mix.time=NULL, remove.mix=FALSE, xaxe="Year", yaxe="Number of tag returns",
-                          ln.sz=0.5, ln.col=alpha("black", 0.6), pt.sz=1, pt.col=alpha("red", 0.6), all.fishies=FALSE,
-                          Ncols=2, grpnms=tagrecgrps, keepGrps=c(10,11,13:17), fsh.grps=c(1,2,3,4,5,5,6,7,8,8,9,10,11,11,12,13,14,15,16,17,17,18,19),
-                          fac.levels=c("P-ALL-3","S-ALL-3","Z-PH-4","Z-ID-4","S-ID.PH-4","P-ALL-4","S-ALL-4"))
-        savePlot(file=paste0(pltdir, "/grouped_tags_bygroup2.png"), type="png")
-        dev.off()
-
+        require('lattice')
         plot_tag_diags(readtagrep,readpar,'logscale')
 
         plot_tag_diags(readtagrep,readpar,'residuals')
