@@ -24,19 +24,19 @@ fdesc <- as.matrix(fdesc)
 # Check frq files and number of fisheries
 #first file
 if(is.character(file1)) frq1 <- read.frq(file1)
-else frq1 <- file1   
+else frq1 <- file1
 mat <- as.data.frame(frq1$mat)[,1:6]
 mat$tstep <- mat[,1] + mat[,2]/12
 
 #second file
 if(is.character(file2)) frq2 <- read.frq(file2)
-else frq2 <- file2   
+else frq2 <- file2
 mat2 <- as.data.frame(frq2$mat)[,1:6]
 mat2$tstep <- mat2[,1] + mat2[,2]/12
 # Get version number of frq file to determine first column for checking data
 vsn1 <- frq1$struct$te
 vsn2 <- frq2$struct$te
-if(vsn1 != vsn2){ 
+if(vsn1 != vsn2){
   print("Freq files input are different versions!")
   break()
 }
@@ -79,7 +79,7 @@ mat2$tstep <- mat2[,1] + mat2[,2]/12
 fish1 <- sort(unique(mat[,4]))
 fish2 <- sort(unique(mat2[,4]))
 
-if(is.na(dim(fm)[2])==T) fm <- rbind(sort(unique(mat[,4])),sort(unique(mat2[,4])))
+if(is.null(dim(fm)[2])==T) fm <- rbind(sort(unique(mat[,4])),sort(unique(mat2[,4])))
 #
 for(i in 1:dim(fm)[2]){
   #i <- 1
@@ -97,7 +97,7 @@ for(i in 1:dim(fm)[2]){
     legend(min(a1$tstep),(0.9*ymax),legend=(c("frq1","frq2")),col=c(1,2),lty=c(1,2))
     ti <- paste("Plot",i,"Fishery", fish1[fm[1,i]], "& Fishery", fish2[fm[2,i]])
     if (dim(fdesc)[1]>1) { ti <- paste(c("Fishery", i, "-",fdesc[i,2:4]),collapse=" ") }
-  
+
     if(!i %in% fadd){          # frq files have same number of fisheries
       mtext(side=3,line=0.5, text=ti)
     } else {            # add note to plot for missing fisheries
@@ -133,17 +133,17 @@ for(i in 1:dim(fm)[2]){
 # The MIT License
 #
 # Copyright (c) 2009 Secretariat of the Pacific Community
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy of this
-# software and associated documentation files (the "Software"), to deal in the Software 
+# software and associated documentation files (the "Software"), to deal in the Software
 # without restriction, including without limitation the rights to use, copy, modify, merge,
 # publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons
 # to whom the Software is furnished to do so, subject to the following conditions:
 #
-# The above copyright notice and this permission notice shall be included in all copies 
+# The above copyright notice and this permission notice shall be included in all copies
 # or substantial portions of the Software.
 #
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED,
 # INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR
 # PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE
 # FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR

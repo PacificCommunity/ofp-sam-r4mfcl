@@ -333,14 +333,14 @@ read.ini1002frq<-function(ini.file,frq,verbose=FALSE){
                                         #  ini.obj$tag.fish.rep <- matrix(scanText(a[pos:p2],what=0),byrow=TRUE,nrow=p2+1-pos)
                                         #}
         ini.obj$grpflags <- allnums[i+1:(nfl*ntag.groups)-1];i<-i+nfl*ntag.groups
-        ini.obj$grpflags <- matrix(data=ini.obj$tag.fish.rep,byrow=TRUE,nrow=ntag.groups)
+        ini.obj$grpflags <- matrix(data=ini.obj$grpflags,byrow=TRUE,nrow=ntag.groups)
                                         #pos <- grep("# tag fish rep group flags",a,ignore.case=T)+1
                                         #if(length(pos)>0) {
                                         #  p2 <- hpts[hpts>pos][1]-1
                                         #  ini.obj$grpflags <- matrix(scanText(a[pos:p2],what=0),byrow=TRUE,nrow=p2+1-pos)
                                         #}
         ini.obj$activeflags <- allnums[i+1:(nfl*ntag.groups)-1];i<-i+nfl*ntag.groups
-        ini.obj$activeflags <- matrix(data=ini.obj$tag.fish.rep,byrow=TRUE,nrow=ntag.groups)
+        ini.obj$activeflags <- matrix(data=ini.obj$activeflags,byrow=TRUE,nrow=ntag.groups)
                                         #pos <- grep("# tag_fish_rep active flags",a,ignore.case=T)+1
                                         #if(length(pos)>0) {
                                         #  p2 <- hpts[hpts>pos][1]-1
@@ -348,7 +348,7 @@ read.ini1002frq<-function(ini.file,frq,verbose=FALSE){
                                         #}
 
         ini.obj$reptarget <- allnums[i+1:(nfl*ntag.groups)-1];i<-i+nfl*ntag.groups
-        ini.obj$reptarget <- matrix(data=ini.obj$tag.fish.rep,byrow=TRUE,nrow=ntag.groups)
+        ini.obj$reptarget <- matrix(data=ini.obj$reptarget,byrow=TRUE,nrow=ntag.groups)
                                         #pos <- grep("# tag_fish_rep target",a,ignore.case=T)+1
                                         #if(length(pos)>0) {
                                         #  p2 <- hpts[hpts>pos][1]-1
@@ -356,7 +356,7 @@ read.ini1002frq<-function(ini.file,frq,verbose=FALSE){
                                         #}
 
         ini.obj$reppenalty <- allnums[i+1:(nfl*ntag.groups)-1];i<-i+nfl*ntag.groups
-        ini.obj$reppenalty <- matrix(data=ini.obj$tag.fish.rep,byrow=TRUE,nrow=ntag.groups)
+        ini.obj$reppenalty <- matrix(data=ini.obj$reppenalty,byrow=TRUE,nrow=ntag.groups)
                                         #pos <- grep("# tag_fish_rep penalty",a,ignore.case=T)+1
                                         #if(length(pos)>0) {
                                         #  p2 <- hpts[hpts>pos][1]-1
@@ -366,7 +366,7 @@ read.ini1002frq<-function(ini.file,frq,verbose=FALSE){
     }
 ###
     ini.obj$reg.flg<-matrix(data=allnums[i+1:(nSp*nReg*10)-1],nrow=10,byrow=TRUE);i<-i+nSp*nReg*10
-    ini.obj$sp.flg<-if(nSp==1){allnums[i+1:10-1]}else{matrix(data=allnums[i+1:(10*nSp)-1],ncol=10,byrow=TRUE)};i<-i+10*nSp
+    ini.obj$sp.flg<-if(nSp==1){NULL}else{matrix(data=allnums[i+1:(10*nSp)-1],ncol=10,byrow=TRUE)};if(nSp>1)i<-i+10*nSp
     ini.obj$mat<-if(nSp==1){
                      allnums[i+1:nages-1]
                  }else{
@@ -378,9 +378,9 @@ read.ini1002frq<-function(ini.file,frq,verbose=FALSE){
     ini.obj$diffcoffs <-if(nReg==1){
                             0
                         }else{
-                            matrix(data=allnums[i+1:(length(ini.obj$movemap)*sum(incidence)*nSp)-1],nrow=length(ini.obj$movemap)*nSp,byrow=TRUE)
+                            matrix(data=allnums[i+1:(length(ini.obj$movemap)*sum(incidence)*2*nSp)-1],nrow=length(ini.obj$movemap)*nSp,byrow=TRUE)
                         }
-    i<-i+ifelse(nReg==1,nSp,length(ini.obj$movemap)*sum(incidence)*nSp)
+    i<-i+ifelse(nReg==1,nSp,length(ini.obj$movemap)*sum(incidence)*2*nSp)
     nages1<-if(nSp==1){nages}else{nages[1]}
     ini.obj$age_pars <-matrix(data=allnums[i+1:(nages1*10*nSp)-1],byrow=TRUE,ncol=nages1);i<-i+nages1*10*nSp
     ini.obj$recbyreg <-if(nSp==1){allnums[i+1:nReg-1]}else{matrix(data=allnums[i+1:(nReg*nSp)-1],byrow=TRUE,ncol=nReg)};i<-i+nReg*nSp

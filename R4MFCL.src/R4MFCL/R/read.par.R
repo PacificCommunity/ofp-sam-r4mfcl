@@ -9,12 +9,12 @@
 #' @param verbose if TRUE verbose outputs will be made
 #' @param DEBUG enable "debug" through browser()
 #' @param nfisheries Number of fisheries, default is NA and determined internally
-#' @param nReg number of regions , default : NA and determined internally 
+#' @param nReg number of regions , default : NA and determined internally
 #'
 #' @importFrom magrittr "%>%"
 #' @export
 read.par <-
-function(par.file,verbose=TRUE,DEBUG=FALSE,nfisheries=NA,nReg=NA) {
+function(par.file,verbose=FALSE,DEBUG=FALSE,nfisheries=NA,nReg=NA) {
 #  require(magrittr)
   if(0){
   datfromstr<-function (datstring)
@@ -28,7 +28,7 @@ function(par.file,verbose=TRUE,DEBUG=FALSE,nfisheries=NA,nReg=NA) {
     return(out)
   }
   }
-  cat("Starting read.par ; file name of par.file is ",par.file,"\n")
+  if(verbose)cat("Starting read.par ; file name of par.file is ",par.file,"\n")
   a <- readLines(par.file)
   if(verbose)cat("L27 ; ") ; if(DEBUG)browser()
   pfl <- datfromstr(a[2]) # as.numeric(unlist(strsplit(a[2],split="[[:blank:]]+"))[-1])
@@ -45,16 +45,16 @@ function(par.file,verbose=TRUE,DEBUG=FALSE,nfisheries=NA,nReg=NA) {
   mp.afl<-if(!is.na(mp.afl.ln)){
       datfromstr(a[mp.afl.ln])
   }else{NULL}
-  ### New code to determine number of regions 
+  ### New code to determine number of regions
   if(is.na(nReg)){
   	pos1<-grep("# region control flags",a)
   	nReg<-a[pos1+1] %>% trimws() %>% strsplit(split="[[:blank:]]+") %>% "[["(1) %>% length()
   }
-  ######### 
+  #########
   pos1 <- grep("fish flags",a) ; if(length(pos1)>1)pos1<-pos1[1]
   if(is.na(nfisheries)){
   	pos2<-grep("tag flags",a) ;
-  	if(length(pos2)==0)   pos2 <- grep("# region control flags",a) 
+  	if(length(pos2)==0)   pos2 <- grep("# region control flags",a)
   	nfisheries<-pos2-1-pos1  # 2018/09/06 Corrected to cound nfisheries nfisheries<-pos2-1-(pos1+1)
   }else{
   	pos2<-pos1+nfisheries-1
@@ -78,10 +78,10 @@ function(par.file,verbose=TRUE,DEBUG=FALSE,nfisheries=NA,nReg=NA) {
     tsw <- 1
 #   load block of tag flags
     pos1 <- pos2 ; pos2 <- min(grep("# tag fish rep",a))
-    tfl<-datfromstr(a[(pos1+1):(pos2-1)])
+    tfl<-datfromstr(a[(pos1+1):(pos2-2)])
 #   load block of tag fish rep
     pos1 <- pos2 ; pos2 <- grep("# tag fish rep group flags",a)
-    trpfl<-datfromstr(a[(pos1+1):(pos2-1)])
+    trpfl<-datfromstr(a[(pos1+2):(pos2-2)])
 #   load block of tag fish rep group flags
     pos1 <- pos2 ; pos2 <- grep("# tag_fish_rep active flags",a)
     trpgpfl<-datfromstr(a[(pos1+1):(pos2-1)])
@@ -98,10 +98,10 @@ function(par.file,verbose=TRUE,DEBUG=FALSE,nfisheries=NA,nReg=NA) {
     if(tsw2 == 1 ){
 #   load block of tag_fish_rep target
       pos1 <- pos2 ; pos2 <- grep("# tag_fish_rep penalty",a)
-      treptarg<-datfromstr(a[(pos1+1):(pos2-1)])
+      treptarg<-datfromstr(a[(pos1+1):(pos2-2)])
 #   load block of tag_fish_rep penalty
       pos1 <- pos2 ; pos2 <- grep("# region control flags",a)
-      treppen<-datfromstr(a[(pos1+1):(pos2-1)])
+      treppen<-datfromstr(a[(pos1+1):(pos2-2)])
     }
   } else if(length(as.numeric(grep("tag flags",a))) > 0) {   # Tag reporting rate parameter blocks - just load tag flags
 #   load block of tag flags
@@ -118,7 +118,7 @@ function(par.file,verbose=TRUE,DEBUG=FALSE,nfisheries=NA,nReg=NA) {
   	if(verbose)cat("L114; ") #;browser()
   	rcfl<-datfromstr(a[pos1:pos2])
   }else{
-  	rcfl<-NULL	
+  	rcfl<-NULL
   }
   sp.fl<-if(nSp>1){
     pos1<-grep("# species flags",a)+1
@@ -148,7 +148,7 @@ function(par.file,verbose=TRUE,DEBUG=FALSE,nfisheries=NA,nReg=NA) {
   if(nSp>1){mp.Mbase<-as.double(a[pos1+2])}
   if(verbose)cat("L120 ; ")  #;browser()
   pos1 <- grep("# effort deviation coefficients", a)[1]; pos1b <- pos1+nfisheries; effdevcoffs <- datfromstr(a[(pos1+1):pos1b]) #strsplit(a[(pos1+1):pos1b],split="[[:blank:]]+")
-  # YT 2018/10/17 Following two lines became unnecessar 
+  # YT 2018/10/17 Following two lines became unnecessar
   #rowMax <- max(sapply(effdevcoffs, length))
   #effdevcoffs <- do.call(rbind, lapply(effdevcoffs, function(x){ length(x) <- rowMax; as.numeric(x[2:rowMax]) }))
   pos1 <- grep("# average catchability coefficients", a)[1]+3; meanqs <- as.numeric(unlist(strsplit(trimws(a[pos1]),split="[[:blank:]]+")))
@@ -179,6 +179,13 @@ function(par.file,verbose=TRUE,DEBUG=FALSE,nfisheries=NA,nReg=NA) {
   gr_offsets <- datfromstr(a[pos1+5]) #as.numeric(unlist(strsplit(a[pos1+5],split="[[:blank:]]+"))[-1])
   if(verbose)cat("L150;") #;browser()
 
+    if(version > 1055)    # read in the maturity at length
+    {
+        pos1 <- grep("# maturity at length", a)[1]+1; maturity_len <- as.numeric(unlist(strsplit(a[pos1],split="[[:blank:]]+"))[-1])
+    } else {
+        maturity_len <- NA
+    }
+
   if(nSp>1){
     pos1_0 <- grep("#multi-species age-class related parameters \\(age_pars\\), species:",a)
     mp.M_offsets<-list()
@@ -199,7 +206,7 @@ nrow<-if(version>=1052){
 if(verbose)cat("L195 ;") #;browser()
 fish_pars<- datfromstr(a[pos1+1:nrow-1])
 if(verbose)cat("L197 ; ") #;browser()
-if(version>1051){ 
+if(version>1051){
 #  cat("L199\n");browser()
   pos1<-grep("# species parameters",a);sp_pars<-datfromstr(a[pos1+1:20+1])
 }else{
@@ -222,7 +229,7 @@ if(verbose)cat("L200 ; ") #;browser()
       par.obj <- list(pfl=pfl,
                   nages=nages,
                   afl=afl,ffl=ffl,tfl=tfl,trpfl=trpfl,trpgpfl=trpgpfl,trpacfl=trpacfl,treptarg=treptarg,treppen=treppen,
-                  maturity=maturity,totpop=totpop,totpop_implicit=totpop_implicit,
+                  maturity=maturity,maturity_len=maturity_len,totpop=totpop,totpop_implicit=totpop_implicit,
                   rec_init=rec_init,rectimes=rectimes,rel_recruitment=rel_recruitment,
                   Mbase=Mbase,
                   selectivity=selectivity,
@@ -237,7 +244,7 @@ if(verbose)cat("L200 ; ") #;browser()
       par.obj <- list(pfl=pfl,
                   nages=nages,
                   afl=afl,ffl=ffl,tfl=tfl,trpfl=trpfl,trpgpfl=trpgpfl,trpacfl=trpacfl,
-                  maturity=maturity,totpop=totpop,totpop_implicit=totpop_implicit,
+                  maturity=maturity,maturity_len=maturity_len,totpop=totpop,totpop_implicit=totpop_implicit,
                   rec_init=rec_init,rectimes=rectimes,rel_recruitment=rel_recruitment,
                   Mbase=Mbase,
                   selectivity=selectivity,
@@ -253,7 +260,7 @@ if(verbose)cat("L200 ; ") #;browser()
     par.obj <- list(pfl=pfl,
                   nages=nages,
                   afl=afl,ffl=ffl,tfl=tfl,
-                  maturity=maturity,totpop=totpop,totpop_implicit=totpop_implicit,
+                  maturity=maturity,maturity_len=maturity_len,totpop=totpop,totpop_implicit=totpop_implicit,
                   rec_init=rec_init,rectimes=rectimes,rel_recruitment=rel_recruitment,
                   Mbase=Mbase,
                   selectivity=selectivity,
@@ -268,7 +275,7 @@ if(verbose)cat("L200 ; ") #;browser()
     par.obj <- list(pfl=pfl,
                   nages=nages,
                   afl=afl,ffl=ffl,
-                  maturity=maturity,totpop=totpop,totpop_implicit=totpop_implicit,
+                  maturity=maturity,maturity_len=maturity_len,totpop=totpop,totpop_implicit=totpop_implicit,
                   rec_init=rec_init,rectimes=rectimes,rel_recruitment=rel_recruitment,
                   Mbase=Mbase,
                   selectivity=selectivity,

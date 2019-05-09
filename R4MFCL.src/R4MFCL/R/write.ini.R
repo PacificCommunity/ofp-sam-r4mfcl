@@ -23,16 +23,6 @@ function(ini.file,ini.obj, old.format=FALSE) {
     writeLines(c("# number of age classes (for female)",o$nages[2]),con)
   }
 
-  if(!is.null(o$reg.flg)){
-    writeLines("# region_flags",con)
-    write.table(o$reg.flg,con,quote=F,append=T,row.names=F,col.names=F)
-  }
-
-  if(!is.null(o$sp.flg)){
-    writeLines("#_species_flags",con)
-    write.table(o$sp.flg,con,quote=F,append=T,row.names=F,col.names=F)
-  }
-
   if(with(o,exists("tag.fish.rep"))) {
     writeLines("# tag fish rep",con)
     write.table(o$tag.fish.rep,con,quote=F,append=T,row.names=F,col.names=F)
@@ -57,6 +47,17 @@ function(ini.file,ini.obj, old.format=FALSE) {
     writeLines("# tag_fish_rep penalty",con)
     write.table(o$reppenalty,con,quote=F,append=T,row.names=F,col.names=F)
   }
+
+  if(!is.null(o$reg.flg)){
+    writeLines("# region_flags",con)
+    write.table(o$reg.flg,con,quote=F,append=T,row.names=F,col.names=F)
+  }
+
+  if(!is.null(o$sp.flg)){
+    writeLines("#_species_flags",con)
+    write.table(o$sp.flg,con,quote=F,append=T,row.names=F,col.names=F)
+  }
+
   if(length(o$nages)==1){
     writeLines(c("# maturity at age",paste(o$mat,collapse=" ")),con)
   }else{
@@ -94,6 +95,15 @@ function(ini.file,ini.obj, old.format=FALSE) {
     writeLines(c("# recruitment distribution by region",paste(o$recbyreg[1,],collapse=" ")),con)
     writeLines(c("# recruitment distribution by region for female",paste(o$recbyreg[2,],collapse=" ")),con)
   }
+    ## Maturity at length if version >1002
+    if(o$version>1002){
+        if(length(o$nages)==1){
+            writeLines(c("# maturity at length",paste(o$matl,collapse=" ")),con)
+        }else {
+            writeLines(c("# maturity at length male/species1",paste(o$matl[1,],collapse=" ")),con)
+            writeLines(c("# maturity at length female/species2",paste(o$matl[2,],collapse=" ")),con)
+        }
+    }
   if(length(o$nages)==1){
     writeLines(c("# The von Bertalanffy parameters",
                "# Initial  lower bound  upper bound",

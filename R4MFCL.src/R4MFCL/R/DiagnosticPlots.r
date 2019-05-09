@@ -16,7 +16,7 @@
 
 ## Function to make figures from a model directory, species, fleetlabels, and possibly the par name and saves them in a Plots directory that is created within the original folder
 ## If par name is not supplied then it defaults to taking out.par and if that does not exist then it takes the largest par value
-DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescloc=NULL,par=NULL,fishcols=NULL,regcols=NULL,tagrepfile=NULL){
+DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescloc=NULL,par=NULL,fishcols=NULL,regcols=NULL,tagrepfile=NULL,gptagfile=NULL){
     ## rundir is directory that contains the .frq, .par, plot-.rep, .tag, etc. and then will create a Figures directory within it to save the plots in
     ## spp is the species name that the mfcl model is for
     ## Stndfish is a vector of number for the fisheries with the standardized CPUE
@@ -356,7 +356,7 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
         ##____________________________________________________________________________________________________________
         ## Plots of tag reporting rates
         ## Define tagging reporting rate groups
-        rr.pars <- read.csv(file =  tagrepfile, header = TRUE)
+        rr.pars <- read.csv(file =  gptagfile, header = TRUE)
         rr.labs <- rr.pars$Name
         if (is.null(rr.labs)) stop("The reporting rate file does not have a column called Name that is used to label the reporting rates in the figures")
 
@@ -395,18 +395,19 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
 
     ## Do these last because they take forever to do!
     ## need to reprogram this to be more efficient
-        ##____________________________________________________________________________________________________________
+    ##____________________________________________________________________________________________________________
     ## Plot of median length over time
     windows(2200, 1800)
     plot_length.temporal(frq = paste0(spp,'.frq'), tmp.rep = readrep, fleetlabs = fltlabs, YLIM = c(readfrq$dl$lffirst,readfrq$dl$lfint*readfrq$dl$lfwidth), Nrows = 5, Ncols = 4, annual = FALSE,verbose=FALSE)
-    savePlot(file = paste0(pltdir, "/plot_length_temporal.png"), type = "png")
+    savePlot(file = paste0(pltdir, "/length_temporal.png"), type = "png")
     dev.off()
-    ## Median weight over time
-    windows(2200, 1800)
-    plot.weight.temporal(frq = paste0(spp,".frq"), tmp.rep = readrep, ini = readini, fleetlabs = fltlabs, YLIM = c(0,100), Nrows = 4, Ncols = 4, annual = FALSE)
-    savePlot(file = paste0(pltdir, "/plot_weight_temporal.png"), type = "png")
-    dev.off()
-
+    if(readfrq$dl$wfint>0){
+        ## Median weight over time
+        windows(2200, 1800)
+        plot.weight.temporal(frq = paste0(spp,".frq"), tmp.rep = readrep, ini = readini, fleetlabs = fltlabs, YLIM = c(0,100), Nrows = 4, Ncols = 4, annual = FALSE)
+        savePlot(file = paste0(pltdir, "/weight_temporal.png"), type = "png")
+        dev.off()
+    }
 
 }
 
