@@ -315,7 +315,7 @@ read.ini1002frq<-function(ini.file,frq,verbose=FALSE){
     nReg = frq$struct$nreg
     mpy=frq$struct$tc
     nlint = frq$dl$lfint
-    ntag.groups=frq$struct$ntg
+    ntag.groups=frq$struct$ntg+1
     nfl=frq$struct$nf
     incidence=frq$reg$incidence
     i<-1
@@ -324,22 +324,23 @@ read.ini1002frq<-function(ini.file,frq,verbose=FALSE){
     ini.obj$nages<-if(nSp==1){allnums[i]}else{allnums[i+1:nSp-1]};i<-i+nSp
     nages<-ini.obj$nages
     ## tag related inputs
-    if(ntag.groups>0){
-        ini.obj$tag.fish.rep <- allnums[i+1:(nfl*ntag.groups)-1];i<-i+nfl*ntag.groups
+    if(ntag.groups>1){
+
+        ini.obj$tag.fish.rep <- allnums[i:(i+nfl*ntag.groups-1)];i<-i+nfl*ntag.groups
         ini.obj$tag.fish.rep <- matrix(data=ini.obj$tag.fish.rep,byrow=TRUE,nrow=ntag.groups)
                                         #pos <- grep("# tag fish rep *$",a,ignore.case=T)+1
                                         #if(length(pos)>0) {
                                         #  p2 <- hpts[hpts>pos][1]-1
                                         #  ini.obj$tag.fish.rep <- matrix(scanText(a[pos:p2],what=0),byrow=TRUE,nrow=p2+1-pos)
                                         #}
-        ini.obj$grpflags <- allnums[i+1:(nfl*ntag.groups)-1];i<-i+nfl*ntag.groups
+        ini.obj$grpflags <- allnums[i:(i+nfl*ntag.groups-1)];i<-i+nfl*ntag.groups
         ini.obj$grpflags <- matrix(data=ini.obj$grpflags,byrow=TRUE,nrow=ntag.groups)
                                         #pos <- grep("# tag fish rep group flags",a,ignore.case=T)+1
                                         #if(length(pos)>0) {
                                         #  p2 <- hpts[hpts>pos][1]-1
                                         #  ini.obj$grpflags <- matrix(scanText(a[pos:p2],what=0),byrow=TRUE,nrow=p2+1-pos)
                                         #}
-        ini.obj$activeflags <- allnums[i+1:(nfl*ntag.groups)-1];i<-i+nfl*ntag.groups
+        ini.obj$activeflags <- allnums[i:(i+nfl*ntag.groups-1)];i<-i+nfl*ntag.groups
         ini.obj$activeflags <- matrix(data=ini.obj$activeflags,byrow=TRUE,nrow=ntag.groups)
                                         #pos <- grep("# tag_fish_rep active flags",a,ignore.case=T)+1
                                         #if(length(pos)>0) {
@@ -347,7 +348,7 @@ read.ini1002frq<-function(ini.file,frq,verbose=FALSE){
                                         #  ini.obj$activeflags <- matrix(scanText(a[pos:p2],what=0),byrow=TRUE,nrow=p2+1-pos)
                                         #}
 
-        ini.obj$reptarget <- allnums[i+1:(nfl*ntag.groups)-1];i<-i+nfl*ntag.groups
+        ini.obj$reptarget <- allnums[i:(i+nfl*ntag.groups-1)];i<-i+nfl*ntag.groups
         ini.obj$reptarget <- matrix(data=ini.obj$reptarget,byrow=TRUE,nrow=ntag.groups)
                                         #pos <- grep("# tag_fish_rep target",a,ignore.case=T)+1
                                         #if(length(pos)>0) {
@@ -355,7 +356,7 @@ read.ini1002frq<-function(ini.file,frq,verbose=FALSE){
                                         #  ini.obj$reptarget <- matrix(scanText(a[pos:p2],what=0),byrow=TRUE,nrow=p2+1-pos)
                                         #}
 
-        ini.obj$reppenalty <- allnums[i+1:(nfl*ntag.groups)-1];i<-i+nfl*ntag.groups
+        ini.obj$reppenalty <- allnums[i:(i+nfl*ntag.groups-1)];i<-i+nfl*ntag.groups
         ini.obj$reppenalty <- matrix(data=ini.obj$reppenalty,byrow=TRUE,nrow=ntag.groups)
                                         #pos <- grep("# tag_fish_rep penalty",a,ignore.case=T)+1
                                         #if(length(pos)>0) {

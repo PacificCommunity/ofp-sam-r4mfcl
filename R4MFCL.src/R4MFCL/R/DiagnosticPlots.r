@@ -17,9 +17,16 @@
 ## Function to make figures from a model directory, species, fleetlabels, and possibly the par name and saves them in a Plots directory that is created within the original folder
 ## If par name is not supplied then it defaults to taking out.par and if that does not exist then it takes the largest par value
 DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescloc=NULL,par=NULL,fishcols=NULL,regcols=NULL,tagrepfile=NULL,gptagfile=NULL){
-    ## rundir is directory that contains the .frq, .par, plot-.rep, .tag, etc. and then will create a Figures directory within it to save the plots in
-    ## spp is the species name that the mfcl model is for
-    ## Stndfish is a vector of number for the fisheries with the standardized CPUE
+    ## Require a shitton of packages because all of the functions need a whole bunch of them to work
+    require(ggplot2)
+    require(R4MFCL)
+    require(dplyr)
+    require(magrittr)
+    require(viridis)
+    require(data.table)
+    require(tidyr)
+    require(scales)
+    require(rlang)
     ## check if last value in string is / if not add it in
     if (substr(rundir,nchar(rundir),nchar(rundir))!='/') rundir=paste0(rundir,'/')
     ## Set working directory and load some files
@@ -91,6 +98,7 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
     if (file.exists(paste0(spp,'.var'))){
          windows(2000, 1000)
          plot_biomass.wCI(paste0(spp,'.var'),years=seq(years[1],years[2],1),btype="SSB",divide=1000000,ylab="Spawning biomass(1000 t)",col=1:2,alpha=0.2)
+         dev.off()
     }
 
 
@@ -387,9 +395,9 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
         dev.off()
         require('lattice')
         plot_tag_diags(readtagrep,readpar,'logscale')
-
+        dev.off()
         plot_tag_diags(readtagrep,readpar,'residuals')
-
+        dev.off()
     } else {warning("The rundir supplied does not contain a ",spp,".tag file. Only a problem for BET, YFT, SKJ")}
 
 
@@ -398,7 +406,7 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
     ##____________________________________________________________________________________________________________
     ## Plot of median length over time
     windows(2200, 1800)
-    plot_length.temporal(frq = paste0(spp,'.frq'), tmp.rep = readrep, fleetlabs = fltlabs, YLIM = c(readfrq$dl$lffirst,readfrq$dl$lfint*readfrq$dl$lfwidth), Nrows = 5, Ncols = 4, annual = FALSE,verbose=FALSE)
+    plot_length.temporal(frq = paste0(spp,'.frq'), tmp.rep = readrep, fleetlabs = fltlabs, YLIM = c(readfrq$dl$lffirst,readfrq$dl$lfint*readfrq$dl$lfwidth), Nrows = 5, Ncols = 5, annual = FALSE,verbose=FALSE)
     savePlot(file = paste0(pltdir, "/length_temporal.png"), type = "png")
     dev.off()
     if(readfrq$dl$wfint>0){
