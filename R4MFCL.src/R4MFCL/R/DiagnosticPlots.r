@@ -86,20 +86,24 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
 
     ##____________________________________________________________________________________________________________
     ## Stacked biomass
-    windows(2000, 1000)
-    plot_biomass.stacked.gg(plotrep=readrep, pmain="Regional spawning potential", type="SSB", lgposi="topright", reg.cols=regcols, tit.colour=alpha("transparent", 0.5))
-    savePlot(file=paste0(pltdir, "/biomass_stacked_SSB.png"), type="png")
-    plot_biomass.stacked.gg(plotrep=readrep, pmain="Regional total biomass", type="TOT", lgposi="topright", reg.cols=regcols, tit.colour=alpha("transparent", 0.5))
-    savePlot(file=paste0(pltdir, "/biomass_stacked_TOT.png"), type="png")
-    plot_biomass.stacked.gg(plotrep=readrep, pmain = "Regional recruitment", type ="REC", lgposi="topright", reg.cols=regcols, tit.colour=alpha("transparent", 0.5))
-    savePlot(file=paste0(pltdir, "/biomass_stacked_REC.png"), type="png")
-    dev.off()
+    if (readrep$nReg>1)
+    {
+        windows(2000, 1000)
+        plot_biomass.stacked.gg(plotrep=readrep, pmain="Regional spawning potential", type="SSB", lgposi="topright", reg.cols=regcols, tit.colour=alpha("transparent", 0.5))
+        savePlot(file=paste0(pltdir, "/biomass_stacked_SSB.png"), type="png")
+        plot_biomass.stacked.gg(plotrep=readrep, pmain="Regional total biomass", type="TOT", lgposi="topright", reg.cols=regcols, tit.colour=alpha("transparent", 0.5))
+        savePlot(file=paste0(pltdir, "/biomass_stacked_TOT.png"), type="png")
+        plot_biomass.stacked.gg(plotrep=readrep, pmain = "Regional recruitment", type ="REC", lgposi="topright", reg.cols=regcols, tit.colour=alpha("transparent", 0.5))
+        savePlot(file=paste0(pltdir, "/biomass_stacked_REC.png"), type="png")
+        dev.off()
 
-    if (file.exists(paste0(spp,'.var'))){
-         windows(2000, 1000)
-         plot_biomass.wCI(paste0(spp,'.var'),years=seq(years[1],years[2],1),btype="SSB",divide=1000000,ylab="Spawning biomass(1000 t)",col=1:2,alpha=0.2)
-         dev.off()
+        if (file.exists(paste0(spp,'.var'))){
+             windows(2000, 1000)
+             plot_biomass.wCI(paste0(spp,'.var'),years=seq(years[1],years[2],1),btype="SSB",divide=1000000,ylab="Spawning biomass(1000 t)",col=1:2,alpha=0.2)
+             dev.off()
+        }  
     }
+
 
 
     ##____________________________________________________________________________________________________________
