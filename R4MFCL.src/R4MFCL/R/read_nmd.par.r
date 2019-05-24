@@ -36,14 +36,13 @@ function(par.file) {
 #   load block of tag flags
     pos1 <- pos2 ; 
     pos2 <- min(grep("# tag fish rep",a))
-    if(vsn > 1054) pos2 <- pos2 - 2
+    if(vsn == 1055 || pfl[195]>0) pos2 <- pos2 - 2
     tfl <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
     for (i in (pos1+2):(pos2-1)) {
       tfl <- rbind(tfl, as.numeric(unlist(strsplit(a[i],split="[[:blank:]]+"))[-1]))
     }
 #   load block of tag fish rep
     pos2 <- min(grep("# tag fish rep",a))
-    if(vsn > 1054) pos2 <- pos2 + 1
     pos1 <- pos2 ; pos2 <- grep("# tag fish rep group flags",a)
     trpfl <- as.numeric(unlist(strsplit(a[pos1+1],split="[[:blank:]]+"))[-1])
     for (i in (pos1+2):(pos2-2)) {
