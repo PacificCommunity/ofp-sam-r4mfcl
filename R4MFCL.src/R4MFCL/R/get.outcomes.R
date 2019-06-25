@@ -10,12 +10,13 @@
 #' @param re.keep  vector of string indicating which benchmarks to be included
 #' @param veryrecent range of time step from the last time step to calculate "very recent" quantity
 #' @param verbose LOGICAL verbose or not
+#' @param curr LOGICAL to calculate SBcurr or not
 #'
 #' @export
 get.outcomes <- function (file.rep=read.rep("SKJ14/plot-12.par.rep"), file.par=read.par("SKJ14/12.par"),
                               catch.rep="SKJ14/catch.rep",
                               nofish=TRUE, nofishp=c(44,4), lateyr=2014, version="original",
-                              re.keep=c("bo","sbo"),veryrecent=c(3,0),verbose=FALSE) {
+                              re.keep=c("bo","sbo"),veryrecent=c(3,0),verbose=FALSE,curr=FALSE) {
 
     ## Updated 9/30/2014 3:03:02 PM SJH - corrected F0 time period calcs which started 1 quarter to soon
     ## Updated 11/07/2014 9:33:29 AM SJH - user defined latest year
@@ -31,7 +32,7 @@ get.outcomes <- function (file.rep=read.rep("SKJ14/plot-12.par.rep"), file.par=r
     ## 4. revise the order to be consistent betwen B and SB
     ## 5. Multiply MSY and YieldFcurr by rp$nRecs.yr
     ## 6. Reads in a catch.rep file and get some recent catch stuff
-    ## 06/07/2018 MTV commented out any Bcurr or SBcurr due to the changes in calculating the new reference points time periods. SBrec calculates the average over the time period of the last 4 years including the last year
+    ## 25/07/2019 MTV put any Bcurr or SBcurr in if statment so only prints out if requested due to the changes in calculating the new reference points time periods. SBrec calculates the average over the time period of the last 4 years including the last year if veryrecent=c(3,0)
     if(verbose) cat("Starting get.outcomes\n")
     if(is.character(file.rep))
     {
@@ -57,6 +58,7 @@ get.outcomes <- function (file.rep=read.rep("SKJ14/plot-12.par.rep"), file.par=r
     msytime <- seq(from=msytime[1],to=msytime[2],by=1)
     if(verbose) cat("msytime=",msytime,"; \n")
     vrectime <- rp$nTimes - veryrecent
+    vrectime <- seq(from=vrectime[1],to=vrectime[2],by=1)
     if(verbose) cat("vrectime=",vrectime,"; \n")
     F0time <- rp$nTimes - nofishp
     F0time <- seq(F0time[1]+1,F0time[2],by=1)
@@ -67,16 +69,20 @@ get.outcomes <- function (file.rep=read.rep("SKJ14/plot-12.par.rep"), file.par=r
         if (dim(rp$TotBiomass)[1] > 1) {
             Blatest  <- mean(rowSums(rp$TotBiomass[latetime,]))
             SBlatest <- mean(rowSums(rp$AdultBiomass[latetime,]))
+            if (curr){
             ## Was used before SC14
-            ## Bcurr  <- mean(apply(rp$TotBiomass[msytime,],1,sum))
-            ## SBcurr <- mean(apply(rp$AdultBiomass[msytime,],1,sum))
+            Bcurr  <- mean(apply(rp$TotBiomass[msytime,],1,sum))
+            SBcurr <- mean(apply(rp$AdultBiomass[msytime,],1,sum))
+            }
             SBrec <- mean(apply(rp$AdultBiomass[vrectime,],1,sum))
         } else {
             Blatest  <- mean(rp$TotBiomass[latetime])
             SBlatest <- mean(rp$AdultBiomass[latetime])
+            if (curr){
             ## Was used before SC14
-            ## Bcurr  <- mean(rp$TotBiomass[msytime])
-            ## SBcurr <- mean(rp$AdultBiomass[msytime])
+            Bcurr  <- mean(rp$TotBiomass[msytime])
+            SBcurr <- mean(rp$AdultBiomass[msytime])
+            }
             SBrec <- mean(rp$AdultBiomass[vrectime])
         }
   }else{
@@ -84,20 +90,26 @@ get.outcomes <- function (file.rep=read.rep("SKJ14/plot-12.par.rep"), file.par=r
       Blatest  <- sum(rp$TotBiomass[latetime,])
       SBlatest <- sum(rp$AdultBiomass[latetime,])
   #    cat("L65\n");browser()
-      if(length(msytime)>1){
-        ## Bcurr  <- mean(apply(rp$TotBiomass[msytime,],1,sum))
-        ## SBcurr <- mean(apply(rp$AdultBiomass[msytime,],1,sum))
+                if(length(msytime)>1){
+            if (curr){
+        Bcurr  <- mean(apply(rp$TotBiomass[msytime,],1,sum))
+        SBcurr <- mean(apply(rp$AdultBiomass[msytime,],1,sum))
+                }
         SBrec <- mean(apply(rp$AdultBiomass[vrectime,],1,sum))
       }else{
-        ## Bcurr  <- sum(rp$TotBiomass[msytime,])
-        ## SBcurr <- sum(rp$AdultBiomass[msytime,])
+            if (curr){
+        Bcurr  <- sum(rp$TotBiomass[msytime,])
+        SBcurr <- sum(rp$AdultBiomass[msytime,])
+            }
         SBrec <- sum(rp$AdultBiomass[vrectime,])
       }
     } else {
       Blatest  <- sum(rp$TotBiomass[latetime])
       SBlatest <- sum(rp$AdultBiomass[latetime])
-      ## Bcurr  <- mean(rp$TotBiomass[msytime])
-      ## SBcurr <- mean(rp$AdultBiomass[msytime])
+            if (curr){
+      Bcurr  <- mean(rp$TotBiomass[msytime])
+      SBcurr <- mean(rp$AdultBiomass[msytime])
+            }
       SBrec <- mean(rp$AdultBiomass[vrectime])
 
     }
@@ -105,7 +117,8 @@ get.outcomes <- function (file.rep=read.rep("SKJ14/plot-12.par.rep"), file.par=r
   }
 
 
-    BF0 <- SBF0 <- Blatest.BF0 <- SBlatest.SBF0 <- NA #<- Bcurr.BF0 <- SBcurr.SBF0
+    BF0 <- SBF0 <- Blatest.BF0 <- SBlatest.SBF0 <- NA #<-
+                if (curr){Bcurr.BF0 <- SBcurr.SBF0 <- NA}
 
     if(nofish) {  # Using the F=0 window times provided
         if (dim(rp$TotalBiomass.nofish)[1] > 1) {
@@ -120,22 +133,28 @@ get.outcomes <- function (file.rep=read.rep("SKJ14/plot-12.par.rep"), file.par=r
 
         Blatest.BF0 <- Blatest/BF0
         SBlatest.SBF0 <- SBlatest/SBF0
-        ## Bcurr.BF0 <- Bcurr/BF0
-        ## SBcurr.SBF0 <- SBcurr/SBF0
+            if (curr){
+        Bcurr.BF0 <- Bcurr/BF0
+        SBcurr.SBF0 <- SBcurr/SBF0
+            }
         SBrec.SBF0 <- SBrec/SBF0
         SBrec.SBmsy <- SBrec/rp$SBmsy
     }
 
-    ## Bcurr.B0 <- Bcurr/rp$B0
-    ## Bcurr.BFcurr <- Bcurr/rp$BFcurr
-    ## Bcurr.Bmsy <- Bcurr/rp$Bmsy
+            if (curr){
+    Bcurr.B0 <- Bcurr/rp$B0
+    Bcurr.BFcurr <- Bcurr/rp$BFcurr
+    Bcurr.Bmsy <- Bcurr/rp$Bmsy
+            }
     Blatest.B0 <- Blatest/rp$B0
     Blatest.Bmsy <- Blatest/rp$Bmsy
 
-    ## SBcurr.SB0 <- SBcurr/rp$SB0
+            if (curr){SBcurr.SB0 <- SBcurr/rp$SB0}
     SBlatest.SB0 <- SBlatest/rp$SB0
-    ## SBcurr.SBFcurr <- SBcurr/rp$SBFcurr
-    ## SBcurr.SBmsy <- SBcurr/rp$SBmsy
+            if (curr){
+    SBcurr.SBFcurr <- SBcurr/rp$SBFcurr
+    SBcurr.SBmsy <- SBcurr/rp$SBmsy
+            }
     SBlatest.SBmsy <- SBlatest/rp$SBmsy
     BFcurr.B0 <- rp$BFcurr/rp$B0
     SBFcurr.SB0 <- rp$SBFcurr/rp$SB0
@@ -172,7 +191,6 @@ get.outcomes <- function (file.rep=read.rep("SKJ14/plot-12.par.rep"), file.par=r
         B0 = rp$B0,
         Bmsy = rp$Bmsy,
         Bmsy.B0 = Bmsy.B0,
-        ## Bcurr = Bcurr,
         Blatest = Blatest,
         BFcurr = rp$BFcurr,
         BF0 = BF0,
@@ -180,31 +198,24 @@ get.outcomes <- function (file.rep=read.rep("SKJ14/plot-12.par.rep"), file.par=r
         SB0 = rp$SB0,
         SBmsy = rp$SBmsy,
         SBmsy.SB0 = SBmsy.SB0,
-        ## SBcurr = SBcurr,
         SBrec = SBrec,
         SBlatest = SBlatest,
         SBFcurr = rp$SBFcurr,
         SBF0 = SBF0,
         SBmsy.SBF0 = rp$SBmsy/SBF0,
 
-        ## Bcurr.B0 = Bcurr.B0,
         Blatest.B0 = Blatest.B0,
         BFcurr.B0 = BFcurr.B0,
 
-        ## Bcurr.Bmsy = Bcurr.Bmsy,
         Blatest.Bmsy = Blatest.Bmsy,
         BFcurr.Bmsy = BFcurr.Bmsy,
 
-        ## Bcurr.BF0 = Bcurr.BF0,
         Blatest.BF0 = Blatest.BF0,
 
-        ## SBcurr.SB0 = SBcurr.SB0,
         SBlatest.SB0 = SBlatest.SB0,
         SBFcurr.SB0 = SBFcurr.SB0,
-        ## SBcurr.SBmsy = SBcurr.SBmsy,
         SBlatest.SBmsy = SBlatest.SBmsy,
         SBFcurr.SBmsy = SBFcurr.SBmsy,
-        ## SBcurr.SBF0 = SBcurr.SBF0,
         SBrec.SBF0= SBrec.SBF0,
         SBrec.SBmsy= SBrec.SBmsy,
         SBlatest.SBF0 = SBlatest.SBF0,
@@ -217,7 +228,68 @@ get.outcomes <- function (file.rep=read.rep("SKJ14/plot-12.par.rep"), file.par=r
         Mmin = min(rp$MatAge),
         Lmin = pr$Lmin, Lmax = pr$Lmax, K = pr$K
     )
+if (curr) {  resout <- list(
+        Ccurr = Ccurr,
+        Clatest = Clatest,
+        YFcurr = rp$YFcurr*rp$nRecs.yr,
+        MSY = rp$MSY*rp$nRecs.yr,
+        YFcurr.MSY = YFcurr.MSY,
+        Ccurr.MSY =  Ccurr.MSY,
+        Clatest.MSY = Clatest.MSY,
 
+        Fmsy = rp$Fmsy,
+        Fmult = rp$Fmult,
+        Fcurr.Fmsy = 1/rp$Fmult,
+
+        B0 = rp$B0,
+        Bmsy = rp$Bmsy,
+        Bmsy.B0 = Bmsy.B0,
+        Bcurr = Bcurr,
+        Blatest = Blatest,
+        BFcurr = rp$BFcurr,
+        BF0 = BF0,
+
+        SB0 = rp$SB0,
+        SBmsy = rp$SBmsy,
+        SBmsy.SB0 = SBmsy.SB0,
+        SBcurr = SBcurr,
+        SBrec = SBrec,
+        SBlatest = SBlatest,
+        SBFcurr = rp$SBFcurr,
+        SBF0 = SBF0,
+        SBmsy.SBF0 = rp$SBmsy/SBF0,
+
+        Bcurr.B0 = Bcurr.B0,
+        Blatest.B0 = Blatest.B0,
+        BFcurr.B0 = BFcurr.B0,
+
+        Bcurr.Bmsy = Bcurr.Bmsy,
+        Blatest.Bmsy = Blatest.Bmsy,
+        BFcurr.Bmsy = BFcurr.Bmsy,
+
+        Bcurr.BF0 = Bcurr.BF0,
+        Blatest.BF0 = Blatest.BF0,
+
+        SBcurr.SB0 = SBcurr.SB0,
+        SBlatest.SB0 = SBlatest.SB0,
+        SBFcurr.SB0 = SBFcurr.SB0,
+        SBcurr.SBmsy = SBcurr.SBmsy,
+        SBlatest.SBmsy = SBlatest.SBmsy,
+        SBFcurr.SBmsy = SBFcurr.SBmsy,
+        SBcurr.SBF0 = SBcurr.SBF0,
+        SBrec.SBF0= SBrec.SBF0,
+        SBrec.SBmsy= SBrec.SBmsy,
+        SBlatest.SBF0 = SBlatest.SBF0,
+
+        steep = rp$steep,
+
+        obj = pr$obj,
+        npars = pr$npars,
+        gradient = pr$gradient,
+        Mmin = min(rp$MatAge),
+        Lmin = pr$Lmin, Lmax = pr$Lmax, K = pr$K
+        )
+}
     latout <- list(
         clatest = Clatest,
         yfcurr = rp$YFcurr*rp$nRecs.yr,
@@ -230,14 +302,12 @@ get.outcomes <- function (file.rep=read.rep("SKJ14/plot-12.par.rep"), file.par=r
 
         bo = rp$B0,
         bmsy = rp$Bmsy,
-        ## bcurr = Bcurr,
         blatest = Blatest,
         bfo = BF0,
 
         sbo = rp$SB0,
         sbmsy = rp$SBmsy,
         sbmsysbo = SBmsy.SB0,
-        ## sbcurr = SBcurr,
         sbcurr = SBrec,
         sblatest = SBlatest,
         sbfo = SBF0,
@@ -246,25 +316,69 @@ get.outcomes <- function (file.rep=read.rep("SKJ14/plot-12.par.rep"), file.par=r
         blbmsy = Blatest.Bmsy,
         bcbmsy = BFcurr.Bmsy,
 
-        ## bcbfo = Bcurr.BF0,
         blbfo = Blatest.BF0,
 
-        ## These were the recent/current reference points before SC13
-        ## sbcsbfo = SBcurr.SBF0,
-        ## sbcsbmsy = SBcurr.SBmsy,
+
         ## These are the recent reference points for SC14
         sbcsbfo = SBrec.SBF0,
         sbcsbmsy = SBrec.SBmsy,
+
         sblsbmsy = SBlatest.SBmsy,
         sblsbo = SBlatest.SB0,
         sblsbfo = SBlatest.SBF0
     )
 
+ if (curr){    latout <- list(
+        clatest = Clatest,
+        yfcurr = rp$YFcurr*rp$nRecs.yr,
+        msy = rp$MSY*rp$nRecs.yr,
+        clatestmsy = Clatest.MSY,
+
+        fmsy = rp$Fmsy,
+        fmult = rp$Fmult,
+        fref = 1/rp$Fmult,
+
+        bo = rp$B0,
+        bmsy = rp$Bmsy,
+        bcurr = Bcurr,
+        blatest = Blatest,
+        bfo = BF0,
+
+        sbo = rp$SB0,
+        sbmsy = rp$SBmsy,
+        sbmsysbo = SBmsy.SB0,
+        sbcurr = SBrec,
+        sbcurr = SBcurr,
+        sblatest = SBlatest,
+        sbfo = SBF0,
+        sbmsysbfo =  rp$SBmsy/SBF0,
+
+        blbmsy = Blatest.Bmsy,
+        bcbmsy = BFcurr.Bmsy,
+
+        bcbfo = Bcurr.BF0,
+        blbfo = Blatest.BF0,
+
+
+        ## These are the recent reference points for SC14
+        sbcsbfo = SBrec.SBF0,
+        sbcsbmsy = SBrec.SBmsy,
+
+            ## These were the recent/current reference points before SC13
+        sbcsbfo = SBcurr.SBF0,
+        sbcsbmsy = SBcurr.SBmsy,
+
+        sblsbmsy = SBlatest.SBmsy,
+        sblsbo = SBlatest.SB0,
+        sblsbfo = SBlatest.SBF0
+        )
+ }
+
     latout <- latout[match(re.keep, names(latout))]
     latout <- unlist(latout)
+    if(version == "latex" & curr){ print("sbcurr  and bcbfo were calculated using the wrong formulation!! You should use SBrec calculation for the reference point with curr=FALSE")}
     if(verbose)cat("Finished get.outcomes\n")
     if(version == "original")  return(resout)
-    if(version == "latex") return(latout)
+    if(version == "latex"){ return(latout)}
 }
-
 

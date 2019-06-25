@@ -25,7 +25,8 @@ plot_depletion.gg <- function(plotrep,
                               ylab="Depletion",
                               femaleOnly=TRUE,
                               verbose=FALSE,
-                              plot=TRUE, overlay=FALSE)
+                              plot=TRUE, overlay=FALSE,
+                              limit=NULL, target=NULL)
 {
     ##-----------------------------------------------------------------------
                                         # Tidied up a little SJH 16/7/2011
@@ -123,7 +124,9 @@ plot_depletion.gg <- function(plotrep,
   	if(verbose)cat("L99\n")
                                         # browser()
     }
-    if(!is.null(refpoint)) plt <- plt+geom_point(aes(y=refpoint,x=refyear),col="red")
+    if(!is.null(refpoint)) plt <- plt+geom_point(aes(y=refpoint,x=refyear),col="royalblue4")
+    if(!is.null(limit)) plt <- plt+ + geom_hline(aes(yintercept = limit),col='firebrick2')
+    if(!is.null(target)) plt <- plt+ + geom_hline(aes(yintercept = target),col='forestgreen')
     if(verbose)cat("L102\n")
     if(plot)print(plt)
     return(invisible(plt))

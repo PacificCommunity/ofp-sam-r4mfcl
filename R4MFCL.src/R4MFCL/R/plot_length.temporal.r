@@ -120,8 +120,8 @@ plot_length.temporal <- function(frq,
 #  cat("L106\n");browser()
   for(k in 1:length(fishery)){
     ##get mean, median, q25,q75 for length
-    k.sel<-ifelse(k<=4,k,k+1)  # This is hard wired for swo with selex YT
-    fish2 <- t(matrix(t(agemat[,,region[fishery[k]]]) * selectivity[k.sel,1:nages], nages,  nyears))
+    ## k.sel<-ifelse(k<=4,k,k+1)  # This is hard wired for swo with selex YT
+    fish2 <- t(matrix(t(agemat[,,region[fishery[k]]]) * selectivity[k,1:nages], nages,  nyears))
     fish2 <- round(fish2/100,0)
     fishmat <- matrix(NA, nyears, 4)
 #    cat("L113, k=",k,"\n") #;browser()

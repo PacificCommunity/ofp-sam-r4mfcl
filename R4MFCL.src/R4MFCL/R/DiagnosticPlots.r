@@ -9,6 +9,7 @@
 #' @param regcols optional vector of colors for each region
 #' @param tagrepfile optional name of tag reporting rate file produced by MFCL not necessary if .tag file does not exist
 #' @param rr.labs vector of labels for reporting rate groups only needed if .tag file present
+#' @param gptagfile optional file for tag grouping names for reporting rates
 #' @importFrom magrittr "%>%"
 #' @importFrom ggplot2 alpha
 #'
@@ -178,13 +179,13 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
         ## Produces it's own windows devices and saves as two plots produced (only one plot when there is only one region, e.g. MLS)
         windows(2000, 1200)
         tmprefpt <- get.outcomes(readrep, readpar, "catch.rep", nofish = TRUE, nofishp = c(44,4), lateyr = years[2])
-        plot_depletion.gg(readrep,refpoint=tmprefpt$SBlatest.SBF0,refyear=max(readrep$alltimes), type="SSB",by.region=FALSE,femaleOnly=TRUE,verbose=FALSE)
+        plot_depletion.gg(readrep,refpoint=tmprefpt$SBrec.SBF0,refyear=years[2], type="SSB",by.region=FALSE,femaleOnly=TRUE,verbose=FALSE,limit=0.1,target=0.5)
         savePlot(file=paste0(pltdir, "/depletion_overall.png"),'png')
-        plot_depletion.gg(readrep,refpoint=tmprefpt$SBlatest.SBF0,refyear=max(readrep$alltimes), type="SSB",by.region=TRUE,femaleOnly=TRUE,verbose=FALSE,overlay=TRUE)
+        plot_depletion.gg(readrep,refpoint=tmprefpt$SBrec.SBF0,refyear=years[2], type="SSB",by.region=TRUE,femaleOnly=TRUE,verbose=FALSE,overlay=TRUE,limit=0.1,target=0.5)
         savePlot(file=paste0(pltdir, "/depletion_regional_overlayed.png"),'png')
         dev.off()
         windows(3000, 1600)
-        plot_depletion.gg(readrep,refpoint=tmprefpt$SBlatest.SBF0,refyear=max(readrep$alltimes), type="SSB",by.region=TRUE,femaleOnly=TRUE,verbose=FALSE,overlay=FALSE)
+        plot_depletion.gg(readrep,refpoint=tmprefpt$SBrec.SBF0,refyear=years[2], type="SSB",by.region=TRUE,femaleOnly=TRUE,verbose=FALSE,overlay=FALSE,limit=0.1,target=0.5)
         savePlot(file=paste0(pltdir, "/depletion_regional_grid.png"),'png')
         dev.off()
         ## plot.depletion(figdir=pltdir, plotrep=readrep, refpoint=tmprefpt$SBlatest.SBF0, refyear= years[2], type="SSB", plotdim=c(4,3),
@@ -379,19 +380,22 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
         ## Over all tag groups
         windows(2000,1200)
         ## Including mixing period tags
-        plot.grouped.tags(tagfl = readtagrep, mix.time = NULL, remove.mix = FALSE, xaxe = "Year", yaxe = "Number of tag returns", ln.sz = 0.7, ln.col = alpha("black", 0.7), pt.sz = 2, pt.col = alpha("red", 0.7), all.fishies = TRUE, Ncols = 4, grpnms = rr.labs, keepGrps = 1:NTagGrps,fsh.grps=1:NTagGrps,fac.levels= rr.labs)
-        savePlot(file=paste0(pltdir, "/grouped_tags_overall.png"), type="png")
+        plot_grouped_tags(tagfl = readtagrep, mix.time = NULL, remove.mix = FALSE, xaxe = "Year", yaxe = "Number of tag returns", ln.sz = 0.7, ln.col = alpha("black", 0.7), pt.sz = 2, pt.col = alpha("red", 0.7), all.fishies = TRUE, Ncols = 4, grpnms = rr.labs, keepGrps = 1:NTagGrps,fsh.grps=1:NTagGrps,fac.levels= rr.labs)
+        savePlot(file=paste0(pltdir, "/tag_returns_overall.png"), type="png")
         ## Excluding mixing period tags
-        ##    plot.grouped.tags(tagfl = readtagrep, mix.time = 1, remove.mix = TRUE, xaxe = "Year", yaxe = "Number of tag returns",
-        ##                      ln.sz = 0.7, ln.col = alpha("black", 0.7), pt.sz = 2, pt.col = alpha("red", 0.7), all.fishies = TRUE,
-        ##                      Ncols = 2, grpnms = fltlabs, keepGrps = c(1,2,4,5))
+           plot_grouped_tags(tagfl = readtagrep, mix.time = readpar$tfl[,1], remove.mix = TRUE, xaxe = "Year", yaxe = "Number of tag returns",
+                             ln.sz = 0.7, ln.col = alpha("black", 0.7), pt.sz = 2, pt.col = alpha("red", 0.7), all.fishies = TRUE,
+                             Ncols = 2, grpnms = fltlabs, keepGrps = c(1,2,4,5))
+        savePlot(file=paste0(pltdir, "/tag_returns_overall_exclude_mixing.png"), type="png")
         dev.off()
 
         ## By tag group
         windows(2300,2400)
         ## Including mixing period tags
-        plot.grouped.tags(tagfl = readtagrep, mix.time = NULL, remove.mix = FALSE, xaxe = "Year", yaxe = "Number of tag returns", ln.sz = 0.7, ln.col = alpha("black", 0.7), pt.sz = 0.9, pt.col = alpha("red", 0.7), all.fishies = FALSE, Ncols = 4, grpnms = rr.labs, keepGrps = 1:NTagGrps,fsh.grps=1:NTagGrps,fac.levels= rr.labs)
-        savePlot(file=paste0(pltdir, "/grouped_tag_returns.png"), type="png")
+        plot_grouped_tags(tagfl = readtagrep, mix.time = NULL, remove.mix = FALSE, xaxe = "Year", yaxe = "Number of tag returns", ln.sz = 0.7, ln.col = alpha("black", 0.7), pt.sz = 0.9, pt.col = alpha("red", 0.7), all.fishies = FALSE, Ncols = 4, grpnms = rr.labs, keepGrps = 1:NTagGrps,fsh.grps=1:NTagGrps,fac.levels= rr.labs)
+        savePlot(file=paste0(pltdir, "/tag_returns_fisheries.png"), type="png")
+        plot_grouped_tags(tagfl = readtagrep, mix.time = readpar$tfl[,1], remove.mix = TRUE, xaxe = "Year", yaxe = "Number of tag returns", ln.sz = 0.7, ln.col = alpha("black", 0.7), pt.sz = 0.9, pt.col = alpha("red", 0.7), all.fishies = FALSE, Ncols = 4, grpnms = rr.labs, keepGrps = 1:NTagGrps,fsh.grps=1:NTagGrps,fac.levels= rr.labs)
+        savePlot(file=paste0(pltdir, "/tag_returns_fisheries_exclude_mixing.png"), type="png")
         dev.off()
         require('lattice')
         plot_tag_diags(readtagrep,readpar,'logscale')
