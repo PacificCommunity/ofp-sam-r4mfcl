@@ -1,6 +1,6 @@
 #' Plot time series of biomass with and without fishing
 #'
-#' 
+#'
 #' @param plotrep output of read.rep
 #' @param type string if SSB, SSB (AdultBiomass) otherwise total biomass
 #' @param plot.layout plot.layout in one page
@@ -10,18 +10,18 @@
 #' @param YLAB YLAB
 #' @param plot logical if print plot
 #' @param female calculation only based on female biomass
-#' @param ncol number of plots in horizontal order 
+#' @param ncol number of plots in horizontal order
 #' @param free_y logical use same y-axis across plots
 #' @param verbose, make verbose?
-#' 
 #'
-#' @importFrom ggplot2 facet_wrap 
+#'
+#' @importFrom ggplot2 facet_wrap
 #' @export
 plot_nofishing.regional.gg <- function(plotrep,
-                          type="SSB", 
-                          plot.layout=c(5,2), 
-                          legpos="bottomleft", 
-                          mainleg="topleft", 
+                          type="SSB",
+                          plot.layout=c(5,2),
+                          legpos="bottomleft",
+                          mainleg="topleft",
                           legplot=5,
                           YLAB=NULL,
                           plot=TRUE,
@@ -52,7 +52,7 @@ if(type=="SSB")
 {
   #cat("L36 ; \n");browser()
   B <- plotrep$AdultBiomass
-  
+
   Bnof <- plotrep$AdultBiomass.nofish
   textlab <- ifelse(!is.null(YLAB),YLAB,"Adult biomass (1000's mt)")
 }
@@ -77,7 +77,7 @@ else
   #B <- B[,-1]
   Bnof <- aggregate(Bnof,list(year),mean)
   Bnof$type<-"Unfished"
-  
+
   B0<-rbind(B,Bnof)
   colnames(B0)[1]<-"Year"
   nRegPlot<-ifelse(nSp==1,nReg,ifelse(female,nReg/nSp,nReg))
@@ -85,13 +85,15 @@ else
   colnames(B0)[nRegPlot+2]<-"Overall"
   B0 %<>% gather(key="Region",value="B",-!!sym("Year"),-!!sym("type"))
   if(verbose)cat("L72 ;\n") #;browser()
-  plt<-ggplot()+geom_line(data=B0,aes_string(x="Year",y="B",colour="type"))
+  plt<-ggplot()+geom_line(data=B0,aes_string(x="Year",y="B",colour="type", linetype="type"),size=1.5)+ scale_color_manual(values=c("black","red"))+ scale_linetype_manual(values=c("solid", "dashed"))
   if(free_y){
-  	plt<-plt+facet_wrap(~Region,ncol=ifelse(is.na(ncol),plot.layout[2],ncol),scales="free_y")+labs(y=textlab)
+  	plt<-plt+facet_wrap(~Region,ncol=ifelse(is.na(ncol),plot.layout[2],ncol),scales="free_y")+labs(y=textlab)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.line = element_line(colour = "black"),legend.position = legpos,legend.box=("vertical"),axis.text=element_text(size=14),axis.title=element_text(size=16,face='bold'),legend.text = element_text(size = 16),legend.title=element_blank())+ expand_limits(y = 0) + scale_y_continuous(expand = c(0, 0))
   }else{
-  	plt<-plt+facet_wrap(~Region,ncol=ifelse(is.na(ncol),plot.layout[2],ncol))+labs(y=textlab)
+  	plt<-plt+facet_wrap(~Region,ncol=ifelse(is.na(ncol),plot.layout[2],ncol))+labs(y=textlab)+theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),
+panel.background = element_blank(), axis.line = element_line(colour = "black"),legend.position = legpos,legend.box=("vertical"),axis.text=element_text(size=14),axis.title=element_text(size=16,face='bold'),legend.text = element_text(size = 16),legend.title=element_blank())+ expand_limits(y = 0) + scale_y_continuous(expand = c(0, 0))
   }
-  
+
   if(plot)plot(plt)
   return(invisible(plt))
 

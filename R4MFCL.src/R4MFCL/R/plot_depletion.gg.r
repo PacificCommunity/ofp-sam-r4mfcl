@@ -124,9 +124,9 @@ plot_depletion.gg <- function(plotrep,
   	if(verbose)cat("L99\n")
                                         # browser()
     }
-    if(!is.null(refpoint)) plt <- plt+geom_point(aes(y=refpoint,x=refyear),col="royalblue4")
-    if(!is.null(limit)) plt <- plt+ + geom_hline(aes(yintercept = limit),col='firebrick2')
-    if(!is.null(target)) plt <- plt+ + geom_hline(aes(yintercept = target),col='forestgreen')
+    if(!is.null(refpoint)) plt <- plt+geom_point(aes(y=refpoint,x=refyear),col="black")
+    if(!is.null(limit)) plt <- plt+ geom_hline(aes(yintercept = limit),col='firebrick2')
+    if(!is.null(target)) plt <- plt+ geom_hline(aes(yintercept = target),col='forestgreen')
     if(verbose)cat("L102\n")
     if(plot)print(plt)
     return(invisible(plt))

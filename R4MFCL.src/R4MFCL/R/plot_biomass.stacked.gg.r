@@ -104,7 +104,7 @@ Bout.stacked.long<-Bout %>% gather(key="Region",value="val",-!!sym("Year"))
 if(verbose){ cat("L79 in plot.biomass.stacked\n");browser()}
  plt<-plt+xlab("Year")+ylab(textlab)
 if(fill){
-  plt<-plt+geom_area(aes_string(x="Year",y="val",fill="Region"),position=position_stack(reverse=reverse),alpha=alpha)
+  plt<-plt+geom_area(aes_string(x="Year",y="val",fill="Region"),position=position_stack(reverse=FALSE),alpha=alpha)
   plt<-if(!is.null(cols) && is.null(reg.labels)){
     plt+scale_fill_manual(values=cols)
   }else if(is.null(cols) && !is.null(reg.labels)){

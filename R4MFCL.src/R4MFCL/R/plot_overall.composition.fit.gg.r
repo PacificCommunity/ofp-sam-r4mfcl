@@ -20,6 +20,7 @@
 #' @param fit LOGICAL if making overlaying plot of fit or not
 #' @param rep outputs of report.rep, only needed if nSp>1 and fit==T
 #' @param ylabel string, caption of y-axis
+#' @param textsize size of all text in the plot
 #' @importFrom ggplot2 ggplot theme_set theme_bw geom_line aes_string geom_point facet_wrap guides labs ylab
 #' @importFrom ggplot2 geom_bar scale_y_continuous xlab ylab
 #' @importFrom tidyr unite
@@ -48,7 +49,8 @@ plot_overall.composition.fit.gg = function(filename="length.fit",
                                         verbose=FALSE,
                                         fit=TRUE,
                                         rep=NULL,
-                                        ylabel="Samples")
+                                        ylabel="Samples",
+                                        textsize=12)
 {
 
     if(verbose)cat("Starting plot_overall.composition.fit.r\n")
@@ -165,7 +167,7 @@ plot_overall.composition.fit.gg = function(filename="length.fit",
                 aes_string(x="sizebin", y="freq",group="Gender", colour="Gender"), size=line.wdth,position="Stack")}
     }
     p<-p+scale_y_continuous(breaks=pretty_breaks(n=nbrks)) +
-                theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+                theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),text=element_text(size=textsize))
 
     if(verbose)cat("L125\n")
     if(plot)print(p)

@@ -19,7 +19,7 @@ plot_cpue.fit.gg <- function(rep,
                           fleetlabs,
                           XLIM=c(1950,2011), addLine=TRUE,
                           fac.levels=c("P-ALL-1","P-ALL-2","P-ALL-3","S-ID.PH-4","S-ASS-ALL-5"),
-                          ncol=2)
+                          ncol=2,freeY=FALSE,annual=FALSE)
 {
 ###########################################################################
 # Adam's code turned into a function
@@ -85,16 +85,22 @@ theme_set(theme_bw())
     dat.tmp <- dat.tmp[-1,]
     dat.tmp <- dat.tmp[dat.tmp$time > XLIM[1] & dat.tmp$time < XLIM[2],]
     dat.tmp$fshry <- factor(dat.tmp$fshry, levels = fac.levels)
+
+    if(annual){
+
+        dat.tmp %<>% mutate(time=trunc(time))%>% group_by(!!sym("fshry"),!!sym("time")) %>% summarise(cpue.obs = mean(cpue.obs, na.rm=TRUE),cpue.pred=mean(cpue.pred,na.rm=TRUE))
+    }
     #cat("L63;") #;browser()
     # Produce and print plot
         p <- ggplot(dat.tmp, aes_string(x="time", y="cpue.obs/1000")) + geom_point(colour="#6699CC", alpha=0.8)
-    #    p <- p + facet_wrap(~ fshry, ncol=2, scales="free_y")
-        p <- p + facet_wrap(~ fshry)
+    if (freeY){ p <- p + facet_wrap(~ fshry,scales="free_y",ncol=ncol)
+    } else { p <- p + facet_wrap(~ fshry,ncol=ncol)
+    }
         p <- p + xlab("") + ylab("CPUE / 1000") +ylim(0,max(max(dat.tmp$cpue.obs/1000),max(dat.tmp$cpue.pred/1000))*1.1)
         if(addLine == TRUE) p <- p + geom_line(data=dat.tmp, aes_string(x="time", y="cpue.obs/1000"), colour="red", size=0.6, alpha=0.3)
         p <- p + geom_line(data=dat.tmp, aes_string(x="time", y="cpue.pred/1000"), colour="black", size=0.6, alpha=0.7)
         p <- p + geom_point(data=dat.tmp, aes_string(x="time", y="cpue.pred/1000"), colour="black", size=1, alpha=0.7)
-        p <- p + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+        p <- p + theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank() ,axis.text=element_text(size=14),axis.title=element_text(size=16,face='bold'),strip.text.x = element_text(size = 14),legend.title=element_blank(),panel.spacing.x=unit(5,"mm"))
         ## p <- p + scale_y_continuous(breaks=seq(0,20,4))
         print(p)
     return(invisible(p))

@@ -18,7 +18,7 @@ plot.fishery.impact.TFAR <- function(plotdir=figdir,
 ## SJH 29/7/2011 - make colours consistent
 ## SJH 11/8/2011 - flexible number of regions
 ## SJH 6/27/2014 5:19:56 PM - 2014 upgrade
-  
+
     if(type=="Total")
     {
         fish.lab <- "TotBiomass"
@@ -104,9 +104,9 @@ plot.fishery.impact.TFAR <- function(plotdir=figdir,
   mat <- reg.imp
   labs <- impnames
   titles <- c(paste(rep("Region ", regs), 1:regs), "Overall")
-  if(inFROG) titles <- c(paste(rep("Région", regs), 1:regs), "Global")
+  if(inFROG) titles <- c(paste(rep("R\u{E9}gion", regs), 1:regs), "Global")
   yr <- unique(year)
-  
+
   den <- rep(NULL,5)
   ang <- rep(NA,5)
 
@@ -120,7 +120,7 @@ plot.fishery.impact.TFAR <- function(plotdir=figdir,
       b <- rep(0, length(yr))
       d <- mat[,1,k]
       polygon(a, c(b,rev(d)), col=cols[1])
-      
+
       for(i in 2:length(labs)){
           b <- d
           d <- d+ mat[,i,k]
@@ -131,37 +131,37 @@ plot.fishery.impact.TFAR <- function(plotdir=figdir,
       if(k==(regs+1)) legend("topleft", legend=lnames,cex=0.8, pch=15,col=cols,bty="n")
   }
   mtext(side=2, line=1, outer =T, ifelse(inFROG, "Impact (%)", "Impact %"))
-  mtext(side=1, line=1, outer =T, ifelse(inFROG, "Année", "Year"))
+  mtext(side=1, line=1, outer =T, ifelse(inFROG, "Ann\u{E9}e", "Year"))
   savePlot(filename=paste(plotdir,paste(plotname,type,sep=""), ".png", sep=""),type=plottype)
   dev.off()
-  
-#____________________________________________________________________________________________________________  
- 
+
+#____________________________________________________________________________________________________________
+
   windows(dev.size[[2]][1], dev.size[[2]][2])
-   
+
   for (k in 1:regs){
     maxylim <- apply(mat[,1:length(labs),k], 1, sum)
-    plot(yr, maxylim,ylim=c(0,100),xlim=c(yearmin,max(yr)), type="n",xlab=ifelse(inFROG, "Année", "Year"), ylab=ifelse(inFROG, "Impact (%)", "Impact %"),las=1)
+    plot(yr, maxylim,ylim=c(0,100),xlim=c(yearmin,max(yr)), type="n",xlab=ifelse(inFROG, "Ann\u{E9}e", "Year"), ylab=ifelse(inFROG, "Impact (%)", "Impact %"),las=1)
     a <- c(yr, rev(yr))
     b <- rep(0, length(yr))
     d <- mat[,1,k]
     polygon(a, c(b,rev(d)), col=cols[1])
-    
+
     for(i in 2:length(labs)){
       b <- d
       d <- d+ mat[,i,k]
       polygon(a, c(b,rev(d)), col=cols[i], density = den[i], angle = ang[i])
     }
-    
+
     legend("top",legend=titles[k],bty="n",cex=1.3)
     legend("topleft", legend=lnames,cex=1.1, pch=15,col=cols,bty="n")
-    
+
     savePlot(filename=paste(plotdir,paste(plotname,type,"_Reg",k,sep=""), ".png", sep=""),type=plottype)
   }
 
   dev.off()
-  
-#____________________________________________________________________________________________________________   
+
+#____________________________________________________________________________________________________________
 
 # Do a separate plot for the whole area
   windows(dev.size[[2]][1], dev.size[[2]][2])
@@ -174,7 +174,7 @@ plot.fishery.impact.TFAR <- function(plotdir=figdir,
       b <- rep(0, length(yr))
       d <- mat[,1,k]
       polygon(a, c(b,rev(d)), col=cols[1])
-      
+
       for(i in 2:length(labs)){
           b <- d
           d <- d+ mat[,i,k]
@@ -184,7 +184,7 @@ plot.fishery.impact.TFAR <- function(plotdir=figdir,
 
   legend("topleft", legend=lnames,cex=1, pch=15,col=cols,bty="n")
   mtext(side=2,outer=T,text=ifelse(inFROG, "Impact (%)", "Impact %"),cex=1,line=-1.5)
-  mtext(side=1,outer=T,text=ifelse(inFROG, "Année", "Year"),cex=1,line=-2.5)
+  mtext(side=1,outer=T,text=ifelse(inFROG, "Ann\u{E9}e", "Year"),cex=1,line=-2.5)
   savePlot(filename=paste(plotdir,paste(plotname,type,"WCPO",sep=""), ".png", sep=""),type=plottype)
   dev.off()
 }

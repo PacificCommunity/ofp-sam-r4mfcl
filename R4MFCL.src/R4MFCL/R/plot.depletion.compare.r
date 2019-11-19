@@ -20,7 +20,8 @@ plot.depletion.compare <- function(legpos="topright",
       year1 <- repfiles[[i]]$Year1
     #number of time steps per year
       tsteps <- repfiles[[i]]$nRecs.yr
-      year <- trunc(seq(year1,length=nyr,by=1/tsteps))
+        ## year <- trunc(seq(year1,length=nyr,by=1/tsteps))
+        year <- seq(year1,length=nyr,by=1/tsteps)
       nregion <- repfiles[[i]]$nReg
 
     if(type=="SSB")
@@ -33,7 +34,7 @@ plot.depletion.compare <- function(legpos="topright",
           B <- repfiles[[i]]$AdultBiomass
           Bnof <- repfiles[[i]]$AdultBiomass.nofish
       }
-      textlab <- "Estimate of depletion [SB/SB(F=0)]"
+      textlab <- expression("Estimate of depletion "*phantom(10)*"SB  / SB "[" F=0"])
     }
     else
     {
@@ -49,11 +50,11 @@ plot.depletion.compare <- function(legpos="topright",
     }
 
     dplt <- B/Bnof
-      if(tsteps == 1){
+      ## if(tsteps == 1){
         recr[[i]] <- cbind(year,as.vector(dplt))
-      } else {
-        recr[[i]] <- aggregate(dplt,list(year),mean)
-      }
+      ## } else {
+      ##   recr[[i]] <- aggregate(dplt,list(year),mean)
+      ## }
     }
 
     par(las=0)

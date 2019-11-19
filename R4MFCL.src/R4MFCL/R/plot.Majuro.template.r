@@ -1,4 +1,4 @@
-plot.Majuro.template <- function(pdims=kplotdim, Green.Zone=NULL){
+plot.Majuro.template <- function(pdims=kplotdim, Green.Zone=NULL,SBname='recent'){
 # SJH 02/03/2010 - makes the base for the Kobe plot
 # Square plot with flexibility on the axes and includes type again
 
@@ -14,7 +14,8 @@ ymax <- pdims[2]
 over.loc <- c(mean(c(pdims[1],1)),mean(c(pdims[2],1)))
 #browser()
 
-par(mar=c(7,6,2,3),pty="s")
+    ## par(mar=c(7,6,2,3),pty="s")
+    par(mai=c(1.5,2.5,0,0),mar=c(7,7.5,.5,.5),ps=14)
 plot(c(0,0), c(0,0), ylim=c(0,ymax), xlim=c(0,xmax), axes=F,type="n", ylab="", xlab="")
 axis(1)
 axis(2,las=1)
@@ -26,7 +27,7 @@ polygon(c(0.2,xmax,xmax,0.2,0.2), c(1,1,ymax,ymax,1), col="orange",border=NA)
 #browser()
 if(!is.null(Green.Zone)){
 #  polygon(Green.Zone,col=Green.Zone$col,density=Green.Zone$density)
-  polygon(Green.Zone,col=Green.Zone$col,border=NA)  
+  polygon(Green.Zone,col=Green.Zone$col,border=NA)
 #  polygon(x=c(0.4,0.6,0.6,0.4,0.4),y=c(0,0,1,1,0),col="green",density=c(10,20))
 }
 #border for red zone
@@ -34,12 +35,20 @@ segments(0.2,0,0.2,ymax,lwd=3)
 segments(0,1,xmax,1, lwd=3,lty=4)
 #segments(sbmsy,0,sbmsy,1,lty=4,col="grey", lwd=2)
 
-mtext(side =1, at=0.2, text1, line=2.5, cex=.7)
-mtext(side =1, at=0.01, text2, line=2.5, cex=.7)
-mtext(side =1, at=0.6, text3, line=2.5, cex=.7)
-mtext(side =1, text4, line=4, cex=1.5)
-mtext(side =2, at=1, "F=Fmsy", line=2.5, cex=.7)
-mtext(side =2, at=0.35, "F<Fmsy", line=2.5, cex=.7)
-mtext(side =2, at=over.loc[2], "F>Fmsy", line=2.5, cex=.7)
-mtext(side =2, "F/Fmsy", line=4, cex=1.5)
+## mtext(side =1, at=0.2, text1, line=2.5, cex=.7)
+## mtext(side =1, at=0.01, text2, line=2.5, cex=.7)
+## mtext(side =1, at=0.6, text3, line=2.5, cex=.7)
+## mtext(side =1, text4, line=4, cex=1.5)
+## mtext(side =2, at=1, "F=Fmsy", line=2.5, cex=.7)
+## mtext(side =2, at=0.35, "F<Fmsy", line=2.5, cex=.7)
+## mtext(side =2, at=over.loc[2], "F>Fmsy", line=2.5, cex=.7)
+## mtext(side =2, "F/Fmsy", line=4, cex=1.5)
+    mtext(side =1, at=0.01, expression('SB<20%SB'['F=0']), line=3)#, cex=.7)
+    mtext(side =1, at=0.6, expression("SB>20%SB"['F=0']), line=3)#, cex=.7)
+    mtext(side =1, bquote('SB'[.(SBname)]*' /SB'['F=0']), line=5.5, cex=1.25)
+    mtext(side =2, at=1, expression('F=F'['MSY']), line=3)#, cex=.7)
+    mtext(side =2, at=0.35, expression('F<F'['MSY']), line=3)#, cex=.7)
+   mtext(side =2, at=mean(c(ymax,1)), expression('F>F'['MSY']), line=3)#, cex=.7)
+    mtext(side =2, expression('F'['recent']*' /F'['MSY']), line=5.5, cex=1.25)
+
 }

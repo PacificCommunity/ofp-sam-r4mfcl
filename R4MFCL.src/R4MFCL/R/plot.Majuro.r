@@ -1,10 +1,10 @@
-plot.Majuro <- function(outcome.obj=get.outcomes.2014(read.rep(baserep), read.par(basepar), catch.rep=basecat, nofish=T,
+plot.Majuro <- function(outcome.obj=get.outcomes.2014(read.rep(baserep), read.par(basepar), nofish=T,
                         nofishp=c(44,4),lateyr=2012),
                         msy.obj=basemsy, plotdir=figdir, plotrep=baserep, current=F, latest=T,
                         plotname="SBF0Kobe", plottype="png", add.labels=T, kplotdim=c(1,2),
-                        circ.cls = c("white","red"), green.zone=list(x=c(0.4,0.6,0.6,0.4,0.4), y=c(0,0,1,1,0), col="green", density=c(10,20)))
+                        circ.cls = c("white","red"), green.zone=list(x=c(0.4,0.6,0.6,0.4,0.4), y=c(0,0,1,1,0), col="green", density=c(10,20)),SBname='recent')
 {
-# trying to come up with a Kobe-like plot with the LRP on it 
+# trying to come up with a Kobe-like plot with the LRP on it
 # SJH 7/8/2014 8:34:29 PM
 
 nyr <- plotrep$nTimes
@@ -22,7 +22,7 @@ years <- unique(year)
   B <- apply(B,1,sum)
   Bnof <- apply(Bnof,1,sum)
   Brat <- B/Bnof
-  
+
   ##--- aggregate by year
   B <- aggregate(Brat,list(year),mean)
 
@@ -31,7 +31,7 @@ years <- unique(year)
 ## grab the results from the plotrep
 
 #      Brat <- msy.obj$SBSBmsy
-      Bratcurr <- outcome.obj$SBcurr.SBF0
+      Bratcurr <- outcome.obj$SBrec.SBF0
       Bratlate <- outcome.obj$SBlatest.SBF0
 
       Brat <- B[-(nrow(B)),2]  #exclude final year as we don't have an F/FMSY
@@ -41,8 +41,8 @@ years <- unique(year)
 #      browser()
 
 # add template then lines
-plot.Majuro.template(pdims=kplotdim,Green.Zone=green.zone)
-      
+plot.Majuro.template(pdims=kplotdim,Green.Zone=green.zone,SBname)
+
       cols <- hsv(0.75,1:length(years)/length(years),0.8,1)
       if(length(Brat) == length(Frat))
       {
@@ -64,7 +64,7 @@ plot.Majuro.template(pdims=kplotdim,Green.Zone=green.zone)
 
 if(add.labels)
 {
-labels <- seq(1950,2010,by=5)
+labels <- seq(1950,2015,by=5)
 a <- match(labels,years)
           for(i in a){
           text(Brat[i],Frat[i], as.character(years[i]), cex=0.75, col=textcol)

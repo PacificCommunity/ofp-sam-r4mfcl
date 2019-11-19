@@ -1,7 +1,7 @@
 plotBioDepCompare <- function(legpos="topright",
                                        repfiles,
                                        modlab = NULL,type="SSB",cls=NULL,
-                                       aggyrs = c(TRUE,FALSE,FALSE), SBlab = "Spawning potential",
+                                       SBlab = "Spawning potential",
                                        xlimits = c(1972,2018), ymult = 1,pngname=NULL,deplines=NULL)
 {
 
@@ -22,7 +22,7 @@ plotBioDepCompare <- function(legpos="topright",
         year1 <- repfiles[[i]]$Year1
                                         #number of time steps per year
         tsteps <- repfiles[[i]]$nRecs.yr
-        year <- trunc(seq(year1,length=nyr,by=1/tsteps))
+        year <- (seq(year1,length=nyr,by=1/tsteps))
         nregion <- repfiles[[i]]$nReg
 
         if(type=="SSB")
@@ -35,7 +35,7 @@ plotBioDepCompare <- function(legpos="topright",
                 B <- repfiles[[i]]$AdultBiomass
                 Bnof <- repfiles[[i]]$AdultBiomass.nofish
             }
-            textlab <- "Estimate of depletion [SB/SB(F=0)]"
+            textlab <- expression("Estimate of Depletion"*phantom(1)*"SB / SB "["F=0"])
             textlab2 <- paste(SBlab, "(1000's mt)")
         }
         else
@@ -78,7 +78,7 @@ plotBioDepCompare <- function(legpos="topright",
 	  lines(depPlot[[1]][,1],depPlot[[1]][,2], lwd=2, col=mycol)
 
     if(is.null(cls)) mycol <- c(1:length(depPlot)) else mycol <- cls
-    if(!is.null(deplines)) {abline(h=deplines[,1],col=deplines[,2])}
+    if(!is.null(deplines)) {abline(h=deplines[,1],col=deplines[,2],lty=deplines[,3])}
     legend(legpos, lwd=2, col=mycol, lty=1, legend=modlab,bty="n")
     mtext(side=2, text=textlab, line=3.5)
 

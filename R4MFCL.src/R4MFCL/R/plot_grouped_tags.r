@@ -30,7 +30,7 @@ plot_grouped_tags = function(tagfl=readtagrep, mix.time=1, remove.mix=TRUE, xaxe
 
   tmp <- tagfl$auxdat
     if(!remove.mix) mix.time <- 0
-    if(length(mix.time>1)) {
+    if(length(mix.time)>1) {
         if (length(mix.time)==max(tmp$grp)) {tmp$mix.time=mix.time[tmp$grp]
         } else { stop("Length of mixing period entered doesn't match up with the number of groups in the temporary_tag_report")}
     }

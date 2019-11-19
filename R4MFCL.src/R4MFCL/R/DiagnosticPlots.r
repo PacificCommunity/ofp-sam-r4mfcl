@@ -40,6 +40,7 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
         }else{
             numparf=list.files(path=rundir,patt='[0-9]{1,2}\\.par$')
             par= numparf %>% gsub('.par','', .) %>% as.numeric %>% sort(decreasing=TRUE) %>% '['(1)
+            if (par <10) par=paste0('0',par)
         }
     }
     ## Read in par and rep files
@@ -79,7 +80,7 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
 
     ##____________________________________________________________________________________________________________
     ##plot.catch.fit
-    windows(6000, 4000)
+    windows(6000, 4000,pointsize=16)
     plot_catch.fit.gg(plotrepfile = readrep, fleetlabs = factor(fltlabs, levels=fltlabs), yrlims = years, line.col = alpha("blue", 0.6),
                    pnt.col = alpha("black", 0.6), n.col = 4, plot.log = FALSE, lnsize = 0.6, nbrks = c(3,3), yaxe = "Annual catch (1,000's mt or No. fish)")
     savePlot(file = paste0(pltdir, "/catch_fit.png"), type="png")
@@ -89,7 +90,7 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
     ## Stacked biomass
     if (readrep$nReg>1)
     {
-        windows(2000, 1000)
+        windows(2000, 1000,pointsize=16)
         plot_biomass.stacked.gg(plotrep=readrep, pmain="Regional spawning potential", type="SSB", lgposi="topright", reg.cols=regcols, tit.colour=alpha("transparent", 0.5))
         savePlot(file=paste0(pltdir, "/biomass_stacked_SSB.png"), type="png")
         plot_biomass.stacked.gg(plotrep=readrep, pmain="Regional total biomass", type="TOT", lgposi="topright", reg.cols=regcols, tit.colour=alpha("transparent", 0.5))
@@ -99,24 +100,24 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
         dev.off()
 
         if (file.exists(paste0(spp,'.var'))){
-             windows(2000, 1000)
+             windows(2000, 1000,pointsize=16)
              plot_biomass.wCI(paste0(spp,'.var'),years=seq(years[1],years[2],1),btype="SSB",divide=1000000,ylab="Spawning biomass(1000 t)",col=1:2,alpha=0.2)
              dev.off()
-        }  
+        }
     }
 
 
 
     ##____________________________________________________________________________________________________________
     ## Plot of selectivities
-    windows(3200, 2800)
+    windows(3200, 2800,pointsize=16)
     plot_selectivity(rep = readrep,verbose=FALSE,Gender=FALSE)
     savePlot(file = paste0(pltdir, "/selectivity.png"), type = "png")
     dev.off()
 
     ##____________________________________________________________________________________________________________
     ## Plot of catchability, q
-    windows(3000, 2000)
+    windows(3000, 2000,pointsize=16)
     plot_q(parfile = readpar, plotrepfile = readrep, fleetlabs = fltlabs, line.col = alpha("blue", 0.6), n.col = Nfish, lnsize = 0.5, nbrks = 4, annual = TRUE)
     savePlot(file = paste0(pltdir, "/q.png"), type = "png")
     dev.off()
@@ -124,7 +125,7 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
     ##____________________________________________________________________________________________________________
     ## Test overall composition fit - i.e. aggregated over time
     if (file.exists("length.fit")){
-        windows(2500, 2100)
+        windows(2500, 2100,pointsize=16)
         plot_overall.composition.fit(filename = "length.fit", xlabel = "Length (cm)", remove.fsh = TRUE,  Ncols = 3, line.wdth = 0.8,lincol = "#FF3333", fleetlabs = fltlabs, fillcol = "#6699CC", nbrks = 3, nSp=readpar$nSp,verbose=FALSE,rep=readrep)
         savePlot(file = paste0(pltdir, "/overall_composition_fit_len.png"), type = "png")
         ## ## size summaries
@@ -133,23 +134,23 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
 
         ##____________________________________________________________________________________________________________
         ## Plot of residual patterns in composition data
-        windows(3200, 2200)
+        windows(3200, 2200,pointsize=16)
         plot_size.residuals(read.fit("length.fit"),readfrq,fltl=fltlabs,n.col=5,Fish.keep=1:Nfish,verbose=FALSE,rep=readrep,Year1=years[1])
         savePlot(file = paste0(pltdir, "/length_residuals.png"), type = "png")
         dev.off()
     } else {warning("length.fit does not exist")}
     if (file.exists("weight.fit")){
-        windows(2500, 2100)
+        windows(2500, 2100,pointsize=16)
         plot_overall.composition.fit(filename = "weight.fit", xlabel = "Weight (kg)", remove.fsh = TRUE,  Ncols = 3, line.wdth = 0.8,lincol = "#FF3333", fleetlabs = fltlabs, fillcol = "#6699CC", nbrks = 3, nSp=readpar$nSp,verbose=FALSE,rep=readrep)
         savePlot(file = paste0(pltdir, "/overall_composition_fit_wgt.png"), type = "png")
         dev.off()
         plot_size.residuals(read.fit("weight.fit"),readfrq,fltl=fltlabs,n.col=5,Fish.keep=1:Nfish,LenFit=FALSE,label="Weight (kg)",verbose=FALSE,rep=readrep,Year1=years[1])
         savePlot(file = paste0(pltdir, "/length_residuals.png"), type = "png")
-    } else {warning("weight.fit does not exist")}
+    } else {print("weight.fit does not exist")}
 
     ##____________________________________________________________________________________________________________
     ## Plot of effort deviations
-    windows(1900, 1200)
+    windows(1900, 1200,pointsize=16)
     ## Standardised CPUE fisheries
     plot_effort.deviations(plotrepfile=readrep, frqfile=readfrq, fleetlabs=fltlabs, ylimit=c(-2,2),
                            fishplot=stndfish, nclm=3, spandef = 2)
@@ -163,14 +164,14 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
 
     ##____________________________________________________________________________________________________________
     ## Plot of data availability
-    windows(2000, 1800) # Note that most of the colours below (apart from for BET) are just space fillers to check if the code works
+    windows(2000, 1800,pointsize=16) # Note that most of the colours below (apart from for BET) are just space fillers to check if the code works
     plot_data.availability(frqfile=readfrq, timespan=years, plotcols=fdesc$grcol, fleetlabs=fltlabs, Ylab.space=6, stand.fsh=stndfish)
     savePlot(file=paste0(pltdir, "/data_availability.png"), type="png")
     dev.off()
 
     ##____________________________________________________________________________________________________________
     ## Plot of standardised CPUE indices with the cvs used in the assessment
-    windows(3200, 2000)
+    windows(3200, 2000,pointsize=16)
     plot_cpue.with.cvs(repfile=readrep, frqfiles=readfrq, fleetlabs=fltlabs, nfish=stndfish, n.cols=3, plot.annual=TRUE, fac.levels=fltlabs[stndfish])
     savePlot(file=paste0(pltdir, "/cpue_with_cvs.png"), type="png")
     dev.off()
@@ -180,15 +181,15 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
     if (file.exists("catch.rep")){
         ##____________________________________________________________________________________________________________
         ## Plot of fishery depletion - typically the refpoint argument will come from the results of the get.outcomes function
-        ## Produces it's own windows devices and saves as two plots produced (only one plot when there is only one region, e.g. MLS)
-        windows(2000, 1200)
+        ## Produces it's own windows devices and,pointsize=16 saves as two plots produced (only one plot when there is only one region, e.g. MLS)
+        windows(2000, 1200,pointsize=16)
         tmprefpt <- get.outcomes(readrep, readpar, "catch.rep", nofish = TRUE, nofishp = c(44,4), lateyr = years[2])
         plot_depletion.gg(readrep,refpoint=tmprefpt$SBrec.SBF0,refyear=years[2], type="SSB",by.region=FALSE,femaleOnly=TRUE,verbose=FALSE,limit=0.1,target=0.5)
         savePlot(file=paste0(pltdir, "/depletion_overall.png"),'png')
         plot_depletion.gg(readrep,refpoint=tmprefpt$SBrec.SBF0,refyear=years[2], type="SSB",by.region=TRUE,femaleOnly=TRUE,verbose=FALSE,overlay=TRUE,limit=0.1,target=0.5)
         savePlot(file=paste0(pltdir, "/depletion_regional_overlayed.png"),'png')
         dev.off()
-        windows(3000, 1600)
+        windows(3000, 1600,pointsize=16)
         plot_depletion.gg(readrep,refpoint=tmprefpt$SBrec.SBF0,refyear=years[2], type="SSB",by.region=TRUE,femaleOnly=TRUE,verbose=FALSE,overlay=FALSE,limit=0.1,target=0.5)
         savePlot(file=paste0(pltdir, "/depletion_regional_grid.png"),'png')
         dev.off()
@@ -200,50 +201,50 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
 
         ##____________________________________________________________________________________________________________
         ## Plot of catch by gear at the region and full area levels
-        windows(2000, 1200)
+        windows(2000, 1200,pointsize=16)
         ## Full area
-        plot_timeseries.catch(catdat="catch.rep", repfile=readrep, nocls=NULL, gear=fdesc$method, region=fdesc$region, all.regions=TRUE,brwidth=1, collist=setNames(gearspecs$cls, gearspecs$code))
+        plot_timeseries.catch(catdat="catch.rep", repfile=readrep, nocls=NULL, gear=factor(fdesc$method,c("Z","SU","SA","S","P","L")), region=fdesc$region, all.regions=TRUE,brwidth=1, collist=setNames(gearspecs$cls, gearspecs$code))
         savePlot(file=paste0(pltdir, "/timeseries_catch_full.png"), type="png")
         dev.off()
 
-        windows(3100, 2500)
+        windows(3100, 2500,pointsize=16)
         ## By region
-        plot_timeseries.catch(catdat="catch.rep", repfile=readrep, nocls=NULL, gear=fdesc$method, region=fdesc$region, all.regions=FALSE,brwidth=1, collist=setNames(gearspecs$cls, gearspecs$code))
+        plot_timeseries.catch(catdat="catch.rep", repfile=readrep, nocls=NULL, gear=factor(fdesc$method,c("Z","SU","SA","S","P","L")), region=fdesc$region, all.regions=FALSE,brwidth=1, collist=setNames(gearspecs$cls, gearspecs$code))
         savePlot(file=paste0(pltdir, "/timeseries_catch_regional.png"), type="png")
         dev.off()
     } else {warning(paste0("Cannot create depletion plot because you do not have the catch.rep in the supplied rundir. The rundir supplied was:\n",rundir,"\n"))}
 
     ##____________________________________________________________________________________________________________
     ## Plot of overall temporal change in adult and juvenile F
-    windows(2300, 1600)
+    windows(2300, 1600,pointsize=16)
     plot.temporal.F(plotrep=readrep, inifile=readini, dome=TRUE, ymax=NULL, French=FALSE)
     savePlot(file=paste0(pltdir, "/temporal_F.png"), type="png")
     dev.off()
 
     ##____________________________________________________________________________________________________________
     ## Plot of regional temporal change in F-at-age
-    windows(2200, 1800)
+    windows(2200, 1800,pointsize=16)
     plot.regional.F.at.age(plotrep = readrep, nbrks = 3, ncls =2, lnsize = 0.5, alph = 0.7)
     savePlot(file=paste0(pltdir, "/regional_F_at_age.png"), type="png")
     dev.off()
 
     ##____________________________________________________________________________________________________________
     ## Test the plot of age-specific fishing mortality and population age distribution
-    windows(2000, 1800)
+    windows(2000, 1800,pointsize=16)
     plot.age.specific.F(plotrep=readrep, years.keep=seq(years[1], years[2], by=10), plotcol="#6699CC", nbrks=c(3,4))
     savePlot(file=paste0(pltdir, "/age_specific_F.png"), type="png")
     dev.off()
 
     ##____________________________________________________________________________________________________________
     ## Plot of natural mortality function
-    windows(2000, 1600)
+    windows(2000, 1600,pointsize=16)
     plot_natural.mortality.function.gg(repfiles=list(readrep), modlab = c(""),verbose=FALSE)
     savePlot(file=paste0(pltdir, "/natural_mortality_function.png"), type="png")
     dev.off()
 
         ##____________________________________________________________________________________________________________
     ## Plot of growth function
-    windows(2000, 1600)
+    windows(2000, 1600,pointsize=16)
     plot_growth.function.gg2(rep=readrep,YLIM=c(readfrq$dl$lffirst,readfrq$dl$lfint*readfrq$dl$lfwidth))
     savePlot(file=paste0(pltdir, "/growth_function.png"), type="png")
     dev.off()
@@ -252,7 +253,7 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
     ##____________________________________________________________________________________________________________
     ## Plot of fit to the conditional age-at-length data
     if (file.exists(paste0(spp,".age_length"))){
-        windows(2000, 1600)
+        windows(2000, 1600,pointsize=16)
         plot.age.length.fit(alfile=paste0(spp,".age_length"), frqfile=readfrq, inifile=readini, plotfile=readrep,
                             parfile=readpar, fixlog=FALSE, fix_pars=NA, sdmult=2, ylims=c(0,200), xlbl="Age (quarters)")
         savePlot(file=paste0(pltdir, "/age_length_fit.png"), type="png")
@@ -261,14 +262,14 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
 
     ##____________________________________________________________________________________________________________
     ## Spawner recruitment relationship plot
-    windows(2000, 1600)
-    plot_SRR.gg(repfile=readrep, annual=TRUE)
+    windows(2000, 1600,pointsize=16)
+    plot_SRR.gg(repfile=readrep,xlabel="Spawning Potential", annual=TRUE)
     savePlot(file=paste0(pltdir, "/SRR_Ann.png"), type="png")
     dev.off()
 
     ##____________________________________________________________________________________________________________
     ## Plot of yield curve
-    windows(2000, 1600)
+    windows(2000, 1600,pointsize=16)
     plot_yield.gg(repfile = readrep, xlimits = c(0, 3))
     savePlot(file = paste0(pltdir, "/yield.png"), type = "png")
     dev.off()
@@ -276,7 +277,7 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
     ##____________________________________________________________________________________________________________
     ## Plot of SSB vs SSB in the absence of fishing with a plot for each region
     if (readfrq$struct$nreg > 1) {
-        windows(2600, 2000) # Note that this plot is not appropriate for single region models like MLS - they can use the plot.depletion plot above instead
+        windows(2600, 2000,pointsize=16) # Note that this plot is not appropriate for single region models like MLS - they can use the plot.depletion plot above instead
         plot_nofishing.regional.gg(plotrep = readrep, type = "SSB", plot.layout = c(5,2), legpos = "bottomleft", mainleg="bottom")
         savePlot(file = paste0(pltdir, "/nofishing_regional.png"), type = "png")
         dev.off()
@@ -285,11 +286,11 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
     ##____________________________________________________________________________________________________________
     ## Plot of recruitment with a plot for each region
     ## Need var file...
-    windows(2200, 1800)
+    windows(2200, 1800,pointsize=16)
     plot.regional.recruitment(plotrep = readrep, varfile = NULL, plot.layout = c(5,2), legpos = "topleft")
     savePlot(file = paste0(pltdir, "/regional_recruitment.png"), type = "png")
     dev.off()
-    windows(5000, 2800)
+    windows(5000, 2800,pointsize=16)
     plot.regional.recruitment.gg(plotrep = readrep, annual = FALSE, divisor = 1000000, fillcol = alpha("black",0.6), varfile = NULL,
                                  Ncols = 2, nbrks = 3, brwidth = 1, p.type = "line", lnsize = 1, y.lab = "Recruitment (millions)")
     savePlot(file = paste0(pltdir, "/regional_recruitment_gg.png"), type = "png")
@@ -297,7 +298,7 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
 
     ##____________________________________________________________________________________________________________
     ## Plot of regional total and spawning biomass
-    windows(5000, 2800)
+    windows(5000, 2800,pointsize=16)
     plot.regional.biomass.gg(plotrep = readrep, annual = FALSE, divisor = 1000, fillcol = alpha("black",0.6), varfile = NULL,
                              Ncols = 2, nbrks = 3, brwidth = 1, p.type = "line", lnsize = 1, biomass = "AdultBiomass",
                              y.lab = "Biomass (1,000's of mt)")
@@ -306,12 +307,12 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
 
     ##____________________________________________________________________________________________________________
     ## Plot of the availability of composition data
-    windows(3000,2400)
+    windows(3000,2400,pointsize=16)
     plot.length.comp.availability(frq = readfrq, bordercol="#6699CC", fillcol="#6699CC", Ncols = 3, nbrks = 3,
                                   annual = TRUE, fleetlabs = fltlabs, divisor = 1,Max1000=TRUE)
     savePlot(file=paste0(pltdir, "/length_comp_available.png"), type="png")
     dev.off()
-    ## windows(3000,2400)
+    ## windows(3000,2400,pointsize=16)
     ## plot.weight.comp.availability(frq = readfrq, bordercol="#6699CC", fillcol="#6699CC", Ncols = 3, nbrks = 3,
     ##                               annual = TRUE, fleetlabs = fltlabs, divisor = 1,Max1000=TRUE)
     ## savePlot(file=paste0(pltdir, "/weight_comp_available.png"), type="png")
@@ -319,14 +320,14 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
 
     ##____________________________________________________________________________________________________________
     ## Plot of fit to the standardised CPUE data
-    windows(2000, 1500)
+    windows(2000, 1500,pointsize=16)
     plot_cpue.fit.gg(readrep,readfrq,readpar,fisheries=stndfish,fleetlabs=fltlabs,XLIM=years,fac.levels=fltlabs[stndfish])
     savePlot(file=paste0(pltdir, "/cpue_fit.png"), type="png")
     dev.off()
 
     ##____________________________________________________________________________________________________________
     ## Plot of maturity schedule
-    windows(2000, 1600)
+    windows(2000, 1600,pointsize=16)
     plot_maturity_age_par(list(readpar),ylab="Proportion Mature",modlab=c(""))
     savePlot(file=paste0(pltdir, "/maturity_at_age.png"), type="png")
     dev.off()
@@ -347,7 +348,7 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
 
         ##____________________________________________________________________________________________________________
         ## Plot of tagging time at liberty
-        windows(2000, 1600)
+        windows(2000, 1600,pointsize=16)
         plot.T.at.liberty(tagfl=readtagrep, logscl=FALSE, by.program=FALSE, fac.plot=TRUE, xaxe="Periods at liberty (quarters)", yaxe="Number of tag returns", ncols=2)
         savePlot(file=paste0(pltdir, "/T_at_liberty.png"), type="png")
 
@@ -373,7 +374,7 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
         rr.labs <- rr.pars$Name
         if (is.null(rr.labs)) stop("The reporting rate file does not have a column called Name that is used to label the reporting rates in the figures")
 
-        windows(2200, 1600)
+        windows(2200, 1600,pointsize=16)
         plot.tag.reporting.rates(parf=readpar, grp.names = rr.labs, new.style=TRUE, xmargin=NA, nls=6)
         savePlot(file=paste0(pltdir, "/tag_reporting_rates_new.png"), type="png")
 
@@ -382,7 +383,7 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
         dev.off()
         NTagGrps=max(readini$grpflags)
         ## Over all tag groups
-        windows(2000,1200)
+        windows(2000,1200,pointsize=16)
         ## Including mixing period tags
         plot_grouped_tags(tagfl = readtagrep, mix.time = NULL, remove.mix = FALSE, xaxe = "Year", yaxe = "Number of tag returns", ln.sz = 0.7, ln.col = alpha("black", 0.7), pt.sz = 2, pt.col = alpha("red", 0.7), all.fishies = TRUE, Ncols = 4, grpnms = rr.labs, keepGrps = 1:NTagGrps,fsh.grps=1:NTagGrps,fac.levels= rr.labs)
         savePlot(file=paste0(pltdir, "/tag_returns_overall.png"), type="png")
@@ -394,7 +395,7 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
         dev.off()
 
         ## By tag group
-        windows(2300,2400)
+        windows(2300,2400,pointsize=16)
         ## Including mixing period tags
         plot_grouped_tags(tagfl = readtagrep, mix.time = NULL, remove.mix = FALSE, xaxe = "Year", yaxe = "Number of tag returns", ln.sz = 0.7, ln.col = alpha("black", 0.7), pt.sz = 0.9, pt.col = alpha("red", 0.7), all.fishies = FALSE, Ncols = 4, grpnms = rr.labs, keepGrps = 1:NTagGrps,fsh.grps=1:NTagGrps,fac.levels= rr.labs)
         savePlot(file=paste0(pltdir, "/tag_returns_fisheries.png"), type="png")
@@ -413,13 +414,13 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
     ## need to reprogram this to be more efficient
     ##____________________________________________________________________________________________________________
     ## Plot of median length over time
-    windows(2200, 1800)
+    windows(2200, 1800,pointsize=16)
     plot_length.temporal(frq = paste0(spp,'.frq'), tmp.rep = readrep, fleetlabs = fltlabs, YLIM = c(readfrq$dl$lffirst,readfrq$dl$lfint*readfrq$dl$lfwidth), Nrows = 5, Ncols = 5, annual = FALSE,verbose=FALSE)
     savePlot(file = paste0(pltdir, "/length_temporal.png"), type = "png")
     dev.off()
     if(readfrq$dl$wfint>0){
         ## Median weight over time
-        windows(2200, 1800)
+        windows(2200, 1800,pointsize=16)
         plot.weight.temporal(frq = paste0(spp,".frq"), tmp.rep = readrep, ini = readini, fleetlabs = fltlabs, YLIM = c(0,100), Nrows = 4, Ncols = 4, annual = FALSE)
         savePlot(file = paste0(pltdir, "/weight_temporal.png"), type = "png")
         dev.off()

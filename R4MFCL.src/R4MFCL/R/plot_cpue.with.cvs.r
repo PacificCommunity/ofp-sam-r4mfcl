@@ -7,8 +7,10 @@
 #' @param n.cols number of columns of plot
 #' @param plot.annual LOGICAL if summarise annually
 #' @param fac.levels dac.levels
-#' @param plot logical if plot be sent to graphics device (default=TRUE) 
+#' @param plot logical if plot be sent to graphics device (default=TRUE)
 #' @param verbose verbose?
+#' @param textsize size of all text in the plot
+#' @param lnwd line width
 #' @importFrom ggplot2 geom_point geom_line facet_wrap theme element_blank theme_set theme_bw aes_string
 #' @importFrom magrittr "%<>%" "%>%"
 #' @importFrom dplyr filter mutate summarise mutate
@@ -17,7 +19,7 @@
 #' @export
 plot_cpue.with.cvs <- function(repfile=read.rep("ALB15/plot-12.par.rep"), frqfiles=read.frq("ALB15/alb.frq"),
                                fleetlabs=paste("Region",1:8), nfish=1:8, plot.layout=c(3,3), n.cols=3,
-                               plot.annual=TRUE, fac.levels=c("P-ALL-1","P-ALL-2","P-ALL-3","S-ID.PH-4","S-ASS-ALL-5"),plot=TRUE,verbose=TRUE)
+                               plot.annual=TRUE, fac.levels=c("P-ALL-1","P-ALL-2","P-ALL-3","S-ID.PH-4","S-ASS-ALL-5"),plot=TRUE,verbose=TRUE,textsize=12,lnwd=0.5)
 {
 
 # require(dplyr)
@@ -33,18 +35,18 @@ plot_cpue.with.cvs <- function(repfile=read.rep("ALB15/plot-12.par.rep"), frqfil
 
     mat <- as.data.frame(frqfiles$mat)
     mat$se[mat$effort == -1] <- NA
-    mat$effort[mat$effort == -1] <- NA  
+    mat$effort[mat$effort == -1] <- NA
     if(verbose)cat("L37 ; ") # ;browser()
-    mat %<>% filter('%in%'(!!sym("fishery"), nfish)) %>% 
+    mat %<>% filter('%in%'(!!sym("fishery"), nfish)) %>%
        # mutate(cpue = "/"(!!!syms(c("catch","effort"))), cvs = 1/sqrt(2*(!!sym("se"))), yrqtr = eval(parse_expr("year+ (qtr- 0.5)/12")))
      mutate(cpue = eval(parse_expr("catch/effort")), cvs = 1/sqrt(2*(!!sym("se"))), yrqtr = eval(parse_expr("year+ (qtr- 0.5)/12")))
-    
+
     if(verbose)cat("L40 ; ") # ;browser()
     fshmeans <- aggregate(mat$cpue, list(mat$fishery), mean, na.rm=TRUE)
     mat$cpue <- mat$cpue/fshmeans[match(mat$fishery, fshmeans[,1]),2]
 
      mat %<>% mutate(LL = eval(parse(text="exp(log(cpue) - 2*cvs)")), UL = eval(parse(text="exp(log(cpue) + 2*cvs)")))
- 
+
     pldat <- merge(mat, tmp, by=c("yrqtr","fishery"), all.y=TRUE)
     if(verbose)cat("L49 ;") #;browser()
     pldat$fishery <- factor(fleetlabs[pldat$fishery], levels = fac.levels)
@@ -52,18 +54,18 @@ plot_cpue.with.cvs <- function(repfile=read.rep("ALB15/plot-12.par.rep"), frqfil
     pldat$years <- floor(pldat$yrqtr)
 
     if(plot.annual){
-    pldat %<>% group_by(!!sym("fishery"), !!sym("years")) %>% 
+    pldat %<>% group_by(!!sym("fishery"), !!sym("years")) %>%
                 summarise(cpue = mean(!!sym("cpue"), na.rm=TRUE),
                                                           LL = mean(!!sym("LL"), na.rm=TRUE),
                                                           UL = mean(!!sym("UL"), na.rm=TRUE))
         pldat$yrqtr <- pldat$years
     }
 
-    pl <- ggplot(pldat, aes_string(x="yrqtr", y="LL")) + geom_point(size=0.5, colour="grey") + geom_line(size=0.8, colour="grey") +
+    pl <- ggplot(pldat, aes_string(x="yrqtr", y="LL")) + geom_point(size=lnwd*0.75, colour="grey") + geom_line(size=lnwd, colour="grey") +
                  facet_wrap(~ fishery, ncol=n.cols) + xlab("Year") + ylab("CPUE") +
-                 geom_line(aes_string(x="yrqtr", y="UL"), colour="grey", size=0.7) + geom_point(aes_string(x="yrqtr", y="UL"), colour="grey", size=0.5) +
-                 geom_line(aes_string(x="yrqtr", y="cpue"), colour="black", size=0.7) + geom_point(aes_string(x="yrqtr", y="cpue"), colour="black", size=0.5) +
-                 theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank())
+                 geom_line(aes_string(x="yrqtr", y="UL"), colour="grey", size=lnwd*.95) + geom_point(aes_string(x="yrqtr", y="UL"), colour="grey", size=lnwd*0.75) +
+                 geom_line(aes_string(x="yrqtr", y="cpue"), colour="black", size=lnwd) + geom_point(aes_string(x="yrqtr", y="cpue"), colour="black", size=lnwd*0.75) +
+                 theme(panel.grid.major = element_blank(), panel.grid.minor = element_blank(),text=element_text(size=textsize))+ scale_x_continuous(breaks=c(1955,1965,1975,1985,1995,2005,2015,2025))
 
     if(plot)print(pl)
     return(invisible(pl))

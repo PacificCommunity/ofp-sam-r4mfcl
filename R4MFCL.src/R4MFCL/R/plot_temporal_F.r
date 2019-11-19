@@ -71,10 +71,10 @@ plot_temporal_F  <-  function(plotrep=read.rep(baserep), par=read.par(par),dome=
         ymax=range(0,ymax)
     }
     ## Make plot
-    plot(year,Fm,type='l',ylim=ymax,ann=F,axes=F,lwd=2)
-    lines(year,Fj,lwd=2,lty=1,col=2)
+    plot(year,Fm,type='l',ylim=ymax,ann=F,axes=F,lwd=2,col='black')
+    lines(year,Fj,lwd=2,lty=1,col='red')
     box()
-    legend("topleft",lty=1,lwd=2,col=1:2,legend=leglab,y.intersp=1.5,cex=1.1,bty="n")
+    legend("topleft",lty=1,lwd=2,col=c('black','red'),legend=leglab,y.intersp=1.5,cex=1.1,bty="n")
     box(bty='l',lwd=1,cex.axis=.7)
     axis(2,lwd=1,cex.axis=0.8,las=1)
     axis(1,lwd=1,cex.axis=0.8)

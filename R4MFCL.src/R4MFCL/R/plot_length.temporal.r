@@ -87,7 +87,7 @@ plot_length.temporal <- function(frq,
   }
 
 ##drop years with limited data
-  stmlf2 <- stmlf[stmlf[,3] > 10,]
+  stmlf2 <- stmlf[stmlf[,3] > 30,]
 
 ####get predicted size composition
 ##as per plot.rep
@@ -116,13 +116,13 @@ plot_length.temporal <- function(frq,
   }
 
 #plot
-  par(mfrow=c(Nrows,Ncols), mar=c(2,2,2,1), omi=c(0.2,0.3,0,0))
+  par(mfrow=c(Nrows,Ncols), mar=c(2,2,2,1), omi=c(0.2,0.5,0,0))
 #  cat("L106\n");browser()
   for(k in 1:length(fishery)){
     ##get mean, median, q25,q75 for length
     ## k.sel<-ifelse(k<=4,k,k+1)  # This is hard wired for swo with selex YT
     fish2 <- t(matrix(t(agemat[,,region[fishery[k]]]) * selectivity[k,1:nages], nages,  nyears))
-    fish2 <- round(fish2/100,0)
+    fish2 <- round(fish2/1000,0)
     fishmat <- matrix(NA, nyears, 4)
 #    cat("L113, k=",k,"\n") #;browser()
     for(j in 1:nyears){
@@ -147,7 +147,7 @@ plot_length.temporal <- function(frq,
       lines(years, fishmat[,1], lwd=2, col="slate grey")
       points(stm3[1], stm3[4], pch=16, cex=0.75, col="red")
       segments(stm3[1],stm3[5],stm3[1],stm3[6], col="red", lty=1)
-      mtext(side=3, fleetlabs[fishery[k]], line=0.2)
+      mtext(side=3, fleetlabs[fishery[k]], line=0.2,cex=0.667)
     } else {
       plot(stmlf2[,1], stmlf2[,4], pch=16, xlim=range(years), ylim=YLIM, col="red", type="n", ylab="", xlab="",las=1)
       polygon(c(years, rev(years)), c(fishmat[,2],rev(fishmat[,3])), col="light grey", border=NA)
@@ -155,7 +155,7 @@ plot_length.temporal <- function(frq,
       lines(years, fishmat[,1], lwd=2, col="slate grey")
       points(stm3[,1], stm3[,4], pch=16, cex=0.75, col="red")
       segments(stm3[,1],stm3[,5],stm3[,1],stm3[,6], col="red", lty=1)
-      mtext(side=3, fleetlabs[fishery[k]], line=0.2)
+      mtext(side=3, fleetlabs[fishery[k]], line=0.2,cex=0.667)
     }
 
     if(k==(Nrows*2) | k==(Nrows*4) | k==length(fishery)){

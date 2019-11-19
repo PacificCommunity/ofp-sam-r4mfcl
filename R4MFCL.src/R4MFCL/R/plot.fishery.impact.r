@@ -7,7 +7,7 @@ plot.fishery.impact <- function(plotdir=figdir,
                                 plottype="wmf",
                                 yearmin=1960,
                                 specs=gearspecs,
-                                mynrows=5,
+                                mynrows=5,myncols=2,
                                 dev.size=list(c(1800, 2200),c(2000, 1600)))
 {
 #SJH 21/01/2009
@@ -17,7 +17,7 @@ plot.fishery.impact <- function(plotdir=figdir,
 ## SJH 29/7/2011 - make colours consistent
 ## SJH 11/8/2011 - flexible number of regions
 ## SJH 6/27/2014 5:19:56 PM - 2014 upgrade
-  
+
     if(type=="Total")
     {
         fish.lab <- "TotBiomass"
@@ -96,12 +96,12 @@ plot.fishery.impact <- function(plotdir=figdir,
   labs <- impnames
   titles <- c(paste(rep("Region ", regs), 1:regs), "Overall")
   yr <- unique(year)
-  
+
   den <- rep(NULL,5)
   ang <- rep(NA,5)
 
   windows(dev.size[[1]][1], dev.size[[1]][2])
-  par(mfrow=c(mynrows,2), mar=c(2,3,1,2), omi=c(0.2,0.3,0,0))
+  par(mfrow=c(mynrows,myncols), mar=c(2,3,1,2), omi=c(0.2,0.3,0,0))
 
   for (k in 1:(regs+1)){
       maxylim <- apply(mat[,1:length(labs),k], 1, sum)
@@ -110,7 +110,7 @@ plot.fishery.impact <- function(plotdir=figdir,
       b <- rep(0, length(yr))
       d <- mat[,1,k]
       polygon(a, c(b,rev(d)), col=cols[1])
-      
+
       for(i in 2:length(labs)){
           b <- d
           d <- d+ mat[,i,k]
@@ -135,7 +135,7 @@ plot.fishery.impact <- function(plotdir=figdir,
       b <- rep(0, length(yr))
       d <- mat[,1,k]
       polygon(a, c(b,rev(d)), col=cols[1])
-      
+
       for(i in 2:length(labs)){
           b <- d
           d <- d+ mat[,i,k]

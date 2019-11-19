@@ -28,13 +28,13 @@ years <- unique(year)
       if(type=="SSB")
       {
       Brat <- msy.obj$SBSBmsy
-      Bratcurr <- outcome.obj$SBcurr.SBmsy
+      Bratcurr <- outcome.obj$SBrec.SBmsy
       Bratlate <- outcome.obj$SBlatest.SBmsy
       }
       else
       {
       Brat <- msy.obj$BBmsy
-      Bratcurr <- outcome.obj$Bcurr.Bmsy
+      Bratcurr <- outcome.obj$Brec.Bmsy
       Bratlate <- outcome.obj$Blatest.Bmsy
       }
 
@@ -64,7 +64,7 @@ lines(Brat, Frat, lwd=1, col="black", lty=1)
 #labels <- 1950+1:10*5
 if(add.labels)
 {
-labels <- seq(1950,2010,by=5)
+labels <- seq(1950,2015,by=5)
 a <- match(labels,years)
           for(i in a){
           text(Brat[i],Frat[i], as.character(years[i]), cex=0.75, col=textcol)

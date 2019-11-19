@@ -1,5 +1,5 @@
-#' Making SRR plot 
-#' 
+#' Making SRR plot
+#'
 #' @param repfile outputs of read.rep
 #' @param annual LOGICAL if SRR is annualized
 #' @param xlabel string, caption to x-axis
@@ -13,7 +13,7 @@
 plot_SRR.gg <- function(repfile,  annual=FALSE,
                      xlabel="Spawning biomass",   l.overide=NULL,
                      plot=TRUE,
-                     LEGEND=TRUE){
+                     LEGEND=TRUE,textsize=12){
   # default colors is black,red,green3,cyan,magenda,yellow,gray,
 #  require(ggplot2)
   theme_set(theme_bw())
@@ -43,9 +43,9 @@ plot_SRR.gg <- function(repfile,  annual=FALSE,
  # cat("L21 in plot.SRR.gg.r\n");browser()
 
   plt<-ggplot(data=Pred)+geom_line(aes_string(x="SSB",y="Rec"))+xlim(0,max(Obs$SSB))+ylim(0,max(Obs$Rec))
-  plt<-plt+geom_point(data=Obs,aes_string(x="SSB",y="Rec",colour="year"))  
+  plt<-plt+geom_point(data=Obs,aes_string(x="SSB",y="Rec",colour="year"))
   plt<-plt+xlab(xlabel)+ylab("Recruit (milions)")+scale_color_gradient(low = cols[1], high = rev(cols)[1])
-  plt<-plt+ theme(legend.position=ifelse(!LEGEND,"none","right")) +labs(colour="") # +guides(colour=guide_legend(title=NULL)) # +labs(title="")
+  plt<-plt+ theme(legend.position=ifelse(!LEGEND,"none","right"),text=element_text(size=textsize)) +labs(colour="") # +guides(colour=guide_legend(title=NULL)) # +labs(title="")
 
 #  cat("L46\n");browser()
   if(plot)print(plt)
