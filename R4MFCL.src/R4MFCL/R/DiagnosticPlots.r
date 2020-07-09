@@ -10,6 +10,7 @@
 #' @param tagrepfile optional name of tag reporting rate file produced by MFCL not necessary if .tag file does not exist
 #' @param rr.labs vector of labels for reporting rate groups only needed if .tag file present
 #' @param gptagfile optional file for tag grouping names for reporting rates
+#' @param pltdir optional to list directory plots are created in. Default is rundir/Figures
 #' @importFrom magrittr "%>%"
 #' @importFrom ggplot2 alpha
 #'
@@ -17,7 +18,7 @@
 
 ## Function to make figures from a model directory, species, fleetlabels, and possibly the par name and saves them in a Plots directory that is created within the original folder
 ## If par name is not supplied then it defaults to taking out.par and if that does not exist then it takes the largest par value
-DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescloc=NULL,par=NULL,fishcols=NULL,regcols=NULL,tagrepfile=NULL,gptagfile=NULL){
+DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescloc=NULL,par=NULL,fishcols=NULL,regcols=NULL,tagrepfile=NULL,gptagfile=NULL,pltdir=NULL){
     ## Require a shitton of packages because all of the functions need a whole bunch of them to work
     require(ggplot2)
     require(R4MFCL)
@@ -32,7 +33,10 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
     if (substr(rundir,nchar(rundir),nchar(rundir))!='/') rundir=paste0(rundir,'/')
     ## Set working directory and load some files
     setwd(rundir)
-    pltdir=paste(rundir,"Figures",sep='/')
+    if(is.null(pltdir))
+    {
+        pltdir=paste(rundir,"Figures",sep='/')
+    }
     ## Keep out.par or find the largest par file and keep that
     if (is.null(par)){
         if('out.par' %in% list.files(rundir)) {
@@ -52,7 +56,7 @@ DiagnosticPlots <-  function(rundir,spp='skj',stndfish,years=c(1972,2018),fdescl
     if (is.null(regcols)) regcols=alpha(c("dodgerblue4","aquamarine3","steelblue2","slategray1","darkseagreen3","red","purple","yellow","orange"), 0.7)
     if (is.null(fishcols)) fishcols=c("forestgreen","firebrick3","dodgerblue2","yellow2","blue","lightblue")
     ## make directory for plots if it does not exists
-    if (!dir.exists(pltdir)) {dir.create(pltdir)}
+    if (!dir.exists(pltdir)) {dir.create(pltdir,recursive=TRUE)}
     ## check if files exist and if they do then read them in
     if (file.exists(paste0(spp,'.frq'))){ #.frq
         readfrq=read.frq(paste0(spp,'.frq'))
